@@ -28,7 +28,7 @@ class Config:
         file = "config.json"
 
         if os.path.isfile(file):
-            print "config.json found! Attempting to load configuration.."
+            print("config.json found! Attempting to load configuration..")
             try:
                 config = json.load(open(file))
 
@@ -37,12 +37,12 @@ class Config:
                 self.metadata = config["metadata"]
 
                 val = self._validate()
-                print "Configuration successfully loaded. Networks: {}, Warnings: {}.".format(val[0], val[1])
+                print("Configuration successfully loaded. Networks: {}, Warnings: {}.".format(val[0], val[1]))
             except Exception as e:
-                print "An error occured while loading config.json:\n{}".format(str(e))
+                print("An error occured while loading config.json:\n{}".format(str(e)))
                 sys.exit(1)
         else:
-            print "Could not find configuration file config.json, did you configure the bot?"
+            print("Could not find configuration file config.json, did you configure the bot?")
             sys.exit(1)
 
     def getNetwork(self, network):
@@ -103,33 +103,33 @@ class Config:
             if not self.networks[network_name]["nick"]:
                 # Todo: think of a name
                 self.networks[network_name]["nick"] = "ok"
-                print "'nick' was not configured in {} - default value assumed".format(network_name) if verbose
+                print("'nick' was not configured in {} - default value assumed".format(network_name)) if verbose
                 warnings += 1
 
             if not self.networks[network_name]["altnick"]:
                 self.networks[network_name]["altnick"] = self.networks[network_name]["nick"] + "_"
-                print "'altnick' was not configured in {} - default value assumed".format(network_name) if verbose
+                print("'altnick' was not configured in {} - default value assumed".format(network_name)) if verbose
                 warnings += 1
 
             if not self.networks[network_name]["ident"]:
                 self.networks[network_name]["ident"] = self.networks[network_name]["nick"]
-                print "'ident' was not configured in {} - default value assumed".format(network_name) if verbose
+                print("'ident' was not configured in {} - default value assumed".format(network_name)) if verbose
                 warnings += 1
 
             if not self.networks[network_name]["realname"]:
                 self.networks[network_name]["realname"] = self.networks[network_name]["nick"] + \
                     " (" + self.getGithubURL() + ")"
-                print "'realname' was not configured in {} - default value assumed".format(network_name) if verbose
+                print("'realname' was not configured in {} - default value assumed".format(network_name)) if verbose
                 warnings += 1
 
             if not self.networks[network_name]["account"]:
                 self.networks[network_name]["account"] = self.networks[network_name]["nick"]
-                print "'account' was not configured in {} - 'nick' assumed".format(network_name) if verbose
+                print("'account' was not configured in {} - 'nick' assumed".format(network_name)) if verbose
                 warnings += 1
 
             if not self.networks[network_name]["command_prefix"]:
                 self.networks[network_name]["command_prefix"] = "!"
-                print "'command_prefix' was not configured in {} - '!' assumed".format(network_name) if verbose
+                print("'command_prefix' was not configured in {} - '!' assumed".format(network_name)) if verbose
                 warnings += 1
 
             count += 1
