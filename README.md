@@ -1,4 +1,4 @@
-Reconcile
+Reconcile [![Build Status](https://travis-ci.org/Zarthus/Reconcile.svg)](https://travis-ci.org/Zarthus/Reconcile)
 =========
 
 A Python Utility bot for python3 and above.
