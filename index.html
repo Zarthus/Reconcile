@@ -1,0 +1,160 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Reconcile by Zarthus</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Reconcile</h1>
+        <p class="header">Reconcile is a Python Utility IRC bot for python3 and higher.</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/Zarthus/Reconcile/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/Zarthus/Reconcile/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/Zarthus/Reconcile">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/Zarthus">Zarthus</a></p>
+
+
+      </header>
+      <section>
+        <h1>
+<a name="reconcile-" class="anchor" href="#reconcile-"><span class="octicon octicon-link"></span></a>Reconcile </h1>
+
+<p>A Python Utility bot for python3 and above.</p>
+
+<h3>
+<a name="in-development" class="anchor" href="#in-development"><span class="octicon octicon-link"></span></a>In development</h3>
+
+<p>As of right now, Reconcile is under development and not yet ready for actual use.</p>
+
+<h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>To make use of Reconcile, ensure the following requirements are met:  </p>
+
+<ul>
+<li>Running an installation of Windows or Linux (Windows 7, Debian, and Ubuntu are tested)<br>
+</li>
+<li>Python 3 or higher is installed (<a href="http://python.org">http://python.org</a>)<br>
+</li>
+<li>A working internet connection.<br>
+</li>
+<li>You have downloaded the requirements with pip or apt-get (<code>pip install -r requirements.txt</code>) </li>
+<li>The network you wish to run this on uses Atheme services. It may not work on other services. </li>
+</ul><h3>
+<a name="configuring-your-bot" class="anchor" href="#configuring-your-bot"><span class="octicon octicon-link"></span></a>Configuring your bot.</h3>
+
+<p>Once the installation requirements are satified, copy or rename <code>config.example.json</code> to <code>config.json</code> and configure it to your liking.  </p>
+
+<p>Here is a copy of a configuration with comments -- but do not copy it directly, use <code>config.example.json</code> for that.   </p>
+
+<pre><code>{
+  "irc": { // irc block
+    "espernet": { // name of the block.
+      "server": "irc.esper.net", // server to connect to.
+      "port": 6667, // port to connect to - do not use a plus sign.
+      "ssl": false, // connecting with ssl or not 
+
+      "nick": "Reconcile", // the primary nickname to try. 
+      "altnick": "Reconcile_", // if the primary nickname is taken, we connect with this instead. Leave blank for nick_
+
+      "ident": "reconcile", // the ident (also known as username) of the bot 
+      "realname": "Zarthus his bot", // the real name of the bot, if left blank it will contain a link to the github repository
+
+      "account": "zarthus-bots", // the account to identify to.
+      "password": "irc-password", // the password the bot should use to identify to the account specified.
+
+      "command_prefix": "!", // The prefix all commands will have.
+
+      // A list of administrators, supports wildcard *, nickname (anything before !) can be left out.
+      // administrators have access to everything, use this with caution.
+      "administrators": [
+        "Zarthus!Zarthus@zarth.us"
+      ],
+
+      "moderators": [
+        "hej@hello.me",
+        "bye@goodbye.net",
+        "*@moderate.us"
+      ]
+    }
+  },
+
+  // a list of api keys some modules require, modules will automatically unload themselves if no api key was found.
+  // and will be found in disabled_modules/no_api_key/
+  "api_keys": {
+    "lastfm": "",
+    "wolframalpha": ""
+  },
+
+  // bot metadata, generally data that is used in certain modules.
+  "metadata": {
+    "bot_version": "0.1", // the bot version
+    "bot_maintainer": "Zarthus", // the bot maintainer, change this to your own name
+    "github_url": "https:\/\/github.com\/zarthus\/reconcile", // a link to the github repository where the source code can be found
+    "verbose": true // verbosity; some things will not be logged if this is set to false. Can be useful for debugging.
+  }
+}
+
+</code></pre>
+
+<p>Once these requirements are met, go ahead and run <code>python bot.py</code> to start the bot.</p>
+
+<h3>
+<a name="disabling-or-enabling-a-module" class="anchor" href="#disabling-or-enabling-a-module"><span class="octicon octicon-link"></span></a>Disabling (or enabling) a module</h3>
+
+<p>Modules are automatically loaded if they are in the <code>modules/</code> folder, therefore any modules you do not wish to load should be moved to <code>disabled_modules/</code>, and vice versa.  </p>
+
+<h2>
+<a name="contributing" class="anchor" href="#contributing"><span class="octicon octicon-link"></span></a>Contributing</h2>
+
+<p>Should you be willing to contribute to any module, or make your own - it should meet the following guidelines:<br>
+Tested thoroughly,<br>
+Non exploiting - as in that it does not try attempt malicious activies, or otherwise goes against guidelines of tools (such as websites) it is interacting with,<br>
+PEP8 compatible,<br>
+Your code is not longer than 119 characters (raised from the original 79 pep8 checks against)<br>
+Travis compatible (see <code>.travis.yml</code> to see what tests are being performed) </p>
+
+<h3>
+<a name="bugs--suggestions" class="anchor" href="#bugs--suggestions"><span class="octicon octicon-link"></span></a>Bugs / Suggestions</h3>
+
+<p>Feel free to make an <a href="https://github.com/zarthus/reconcile/issues/new">issue</a> if you think you've found a bug, or have a suggestion.</p>
+
+<h3>
+<a name="support" class="anchor" href="#support"><span class="octicon octicon-link"></span></a>Support</h3>
+
+<p>Should you have issues getting the bot running, have an issue, or have a general inquiry, you can contact me on IRC via <a href="https://webchat.esper.net/?channels=zarthus">webchat</a> or connect directly with a client  </p>
+
+<p>It may take a while to get a response; and I do not guarantee one, as I am not a 24/7 answering machine. But I'll try my best!</p>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		          <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-52901542-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
