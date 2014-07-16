@@ -12,13 +12,19 @@ matrix:
 
 install:
   - "pip install -r requirements.txt"
-  
-script:
+
+before_script:
   - "pep8 --version"
+
+script:
   - "pep8 --max-line-length=119 ."
   - "cp config.example.json config.json"
   - "python travis/test_config.py"
-  
+
 notifications:
   email: true
-  irc: "irc.esper.net#zarthus"
+  irc:
+    channels:
+      - "irc.esper.net#zarthus"
+    template:
+      - "%{repository}#%{build_number} (%{branch} - %{commit}) %{author}: %{message} -- %{build_url}"
