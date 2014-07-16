@@ -1,0 +1,21 @@
+language: python
+
+python:
+  - 2.7
+  - 3.4
+
+matrix:
+  allow_failures:
+    - python: 3.4
+
+install:
+  - pip install -r requirements.txt
+  
+script:
+  - "pep8 --max-line-length=119 ."
+  - "cp config.example.json config.json"
+  - "python travis/test_config.py"
+  
+notifications:
+  email: true
+  irc: "irc.esper.net#zarthus"
