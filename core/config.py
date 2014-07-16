@@ -9,6 +9,7 @@ import sys
 
 from tools import hostmask
 
+
 class Config:
     """
     Parse the config in the root directory (config.json)
@@ -25,7 +26,7 @@ class Config:
     def load(self):
         """Load the configuration -- called upon creation of the class"""
         file = "config.json"
-        
+
         if os.path.isfile(file):
             print "config.json found! Attempting to load configuration.."
             try:
@@ -83,14 +84,14 @@ class Config:
 
     def getGithubURL(self):
         return self.metadata["github_url"] if "github_url" in self.metadata else "http://zarth.us"
-    
+
     def getVerbose(self):
         return True if "verbose" in self.metadata and self.metadata["verbose"] else False
 
-    def _validate(self, verbose = None):
+    def _validate(self, verbose=None):
         count = 0
         warnings = 0
-        
+
         if not verbose:
             verbose = self.getVerbose()
 
@@ -101,7 +102,7 @@ class Config:
 
             if not self.networks[network_name]["nick"]:
                 # Todo: think of a name
-                self.networks[network_name]["nick"] = "ok" 
+                self.networks[network_name]["nick"] = "ok"
                 print "'nick' was not configured in {} - default value assumed".format(network_name) if verbose
                 warnings += 1
 
@@ -125,12 +126,12 @@ class Config:
                 self.networks[network_name]["account"] = self.networks[network_name]["nick"]
                 print "'account' was not configured in {} - 'nick' assumed".format(network_name) if verbose
                 warnings += 1
-                
+
             if not self.networks[network_name]["command_prefix"]:
                 self.networks[network_name]["command_prefix"] = "!"
                 print "'command_prefix' was not configured in {} - '!' assumed".format(network_name) if verbose
                 warnings += 1
 
             count += 1
-            
+
         return [count, warnings]
