@@ -18,7 +18,7 @@ for network in conf.getNetworks().iteritems():
     irc_connections[network[0]] = irc.IrcConnection(network[1])
 
 while running:
-    try: 
+    try:
         for connection in irc_connections.iteritems():
             connection[1].tick()
     except KeyboardInterrupt:
@@ -26,6 +26,5 @@ while running:
         running = False
     except Exception as e:
         print("Caught Exception:\n{}".format(str(e)))
-        
-    
+
     time.sleep(0.1)

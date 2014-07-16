@@ -39,16 +39,19 @@ class IrcConnection:
                 # Nick is already taken.
                 self.send_raw("NICK " + self.altnick)
                 continue
-            
+
             if words[1] == "422" or words[1] == "376":
-                # No MOTD found or End of MOTD 
+                # No MOTD found or End of MOTD
                 self.send_raw("JOIN :" + self.channels)
-                
+
             print(">> " + data)
 
     def send_raw(self, data):
         self.socket.send(data + "\r\n")
         print("<< " + data)
+
+    def say(self, target, message):
+        self.send_raw("PRIVMSG {} :{}".format(target, message))
 
     def connect(self):
         if self.ssl:
