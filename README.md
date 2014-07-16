@@ -7,7 +7,7 @@ A Python Utility bot for python3 and above.
 
 As of right now, Reconcile is under development and not yet ready for actual use.
 
-### Installation
+## Installation
 
 To make use of Reconcile, ensure the following requirements are met:  
 
@@ -80,7 +80,7 @@ Once these requirements are met, go ahead and run `python bot.py` to start the b
 
 Modules are automatically loaded if they are in the `modules/` folder, therefore any modules you do not wish to load should be moved to `disabled_modules/`, and vice versa.  
 
-### Contributing  
+## Contributing  
 
 Should you be willing to contribute to any module, or make your own - it should meet the following guidelines:  
 Tested thoroughly,  
