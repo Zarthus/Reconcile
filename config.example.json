@@ -4,33 +4,34 @@
       "server": "irc.esper.net",
       "port": 6667,
 	  "ssl": false,
-	  
+
       "nick": "",
       "altnick": "",
-      
+
 	  "ident": "",
       "realname": "",
-	  
+
       "account": "",
       "password": "",
-  
+
       "command_prefix": "!",
-  
+      "invite_join": true,
+
 	  "administrators": [
         "Zarthus!Zarthus@zarth.us"
       ],
-      
+
 	  "moderators": [
         "Zarthus!Zarthus@zarth.us"
       ]
     }
   },
-  
+
   "api_keys": {
     "lastfm": "",
 	"wolframalpha": ""
   },
-   
+
   "metadata": {
     "bot_version": "0.1",
     "bot_maintainer": "Zarthus",
