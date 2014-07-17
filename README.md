@@ -77,7 +77,9 @@ Here is a copy of a configuration with comments -- but do not copy it directly, 
     "bot_version": "0.1", // the bot version
     "bot_maintainer": "Zarthus", // the bot maintainer, change this to your own name
     "github_url": "https:\/\/github.com\/zarthus\/reconcile", // a link to the github repository where the source code can be found
-    "verbose": true // verbosity; some things will not be logged if this is set to false. Can be useful for debugging.
+    "verbose": true, // verbosity; some things will not be logged if this is set to false. Can be useful for debugging.
+    
+    "db_dir": "db/" // In which folder do we store database files?
   }
 }
 

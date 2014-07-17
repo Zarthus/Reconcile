@@ -35,6 +35,9 @@
   "metadata": {
     "bot_version": "0.1",
     "bot_maintainer": "Zarthus",
-    "github_url": "https:\/\/github.com\/zarthus"
+    "github_url": "https:\/\/github.com\/zarthus",
+    "verbose": false,
+    
+    "db_dir": "db/"
   }
 }

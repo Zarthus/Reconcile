@@ -11,11 +11,15 @@ from ssl import CERT_NONE
 from ssl import CERT_REQUIRED
 from ssl import SSLError
 
+from core import channel
 from tools import validator
 
+
 class IrcConnection:
-    def __init__(self, network, modules=None):
+    def __init__(self, network, config, modules=None):
+        self.config = config
         self.loadNetworkVariables(network)
+
         self.connect()
 
     def tick(self):
@@ -33,12 +37,14 @@ class IrcConnection:
 
             words = data.split()
 
-            if words[0] == "PING":
-                # Reply to PING
-                self.send_raw("PONG " + words[1])
-                continue
+            # TODO: write function to check if numeric.
+            if len(words) > 1:
 
-            if len(words) > 1: # TODO: write function to check if numeric.
+                if words[0] == "PING":
+                    # Reply to PING
+                    self.send_raw("PONG " + words[1])
+                    continue
+
                 if words[1] == "443":
                     # Nick is already taken.
                     self.send_raw("NICK " + self.altnick)
@@ -48,7 +54,6 @@ class IrcConnection:
                 if words[1] == "422" or words[1] == "376":
                     # No MOTD found or End of MOTD
                     self.send_raw("JOIN :" + ",".join(self.channels))
-
 
     def send_raw(self, data):
         self.socket.send(data + "\r\n")
@@ -64,35 +69,35 @@ class IrcConnection:
         self.send_raw("QUIT :{}".format(message))
         self.currentnick = None
         self.connected = False
-    
+
     def nick(self, newnick):
-        if self.validator.nick(newnick)):
+        if self.validator.nickname(newnick):
             print("Invalid nickname: {}".format(newnick))
             return False
 
         self.send_raw("NICK :{}".format(newnick))
         self.currentnick = newnick
         return True
-        
+
     def connect(self):
         if self.connected:
             raise Exception("Attempting to connect to {} when already connected as {}"
                 .format(self.server, self.currentnick))
-                
+
         if self.ssl:
             self._connect_ssl()
         else:
             self._connect()
-          
+
     def reconnect(self, message=None):
         if not self.connected:
             raise Exception("Cannot reconnect to {} - no connection has been established".format(self.server))
-        
+
         if message:
             self.quit("Reconnecting: {}".format(message))
         else:
             self.quit("Reconnecting.")
-        
+
         # TODO: Sleep Thread (1s) once implemented
         self.connect()
 
@@ -101,8 +106,8 @@ class IrcConnection:
 
     def loadNetworkVariables(self, network):
         self.connected = False
-        
-        self.id = int(network["id"])
+
+        self.id = network["id"]
         self.server = network["server"]
         self.port = network["port"]
         self.ssl = network["ssl"]
@@ -122,14 +127,14 @@ class IrcConnection:
 
         self.administrators = network["administrators"]
         self.moderators = network["moderators"]
-        
-        self.currentnick = None 
+
+        self.currentnick = None
 
         self.validator = validator.Validator()
-        self.channelmanager = channel.ChannelManager(self.validator)
-        
+        self.channelmanager = channel.ChannelManager(self.config.getDatabaseDir(), self.validator)
+
     def _connect_ssl(self):
-        pass
+        raise NotImplementedError("Connecting to SSL has not yet been implemented.")
 
     def _connect(self):
         self.socket = socket.socket()

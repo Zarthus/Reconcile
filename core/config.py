@@ -9,6 +9,7 @@ import sys
 
 from core import channel
 
+
 class Config:
     """
     Parse the config in the root directory (config.json)
@@ -97,9 +98,25 @@ class Config:
     def getVerbose(self):
         return True if "verbose" in self.metadata and self.metadata["verbose"] else False
 
+    def getDatabaseDir(self):
+        if "db_dir" in self.metadata:
+            if not self.metadata["db_dir"].endswith("/"):
+                self.metadata["db_dir"] + "/"
+
+            if not os.path.isdir(self.metadata["db_dir"]):
+                os.mkdir(self.metadata["db_dir"])
+
+            return self.metadata["db_dir"]
+        else:
+            if not os.path.isdir("db/"):
+                os.mkdir("db/")
+
+            return "db/"
+
     def _validate(self, verbose=None):
         count = 0
         warnings = 0
+        cm = channel.ChannelManager(self.getDatabaseDir())
 
         if not verbose:
             verbose = self.getVerbose()
@@ -136,7 +153,7 @@ class Config:
 
             if not "channels" in self.networks[network_name]:
                 # Query the database to find out which channels to join.
-                self.networks[network_name]["channels"] = channel.ChannelManager().getListFromNetwork(network_name)
+                self.networks[network_name]["channels"] = cm.getListFromNetwork(network_name)
                 if verbose:
                     print("Will join {} channels on {}: {}"
                         .format(len(self.networks[network_name]["channels"]),

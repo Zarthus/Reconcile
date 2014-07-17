@@ -3,12 +3,11 @@ bot.py: The file that starts it all
 Once your bot is configured, running this file will start it up.
 """
 
-from tools import hostmask
 from core import config
 from core import irc
 
 import time
-import sqlite3
+import sys
 
 
 conf = config.Config()
@@ -16,7 +15,7 @@ irc_connections = {}
 running = True
 
 for network in conf.getNetworks().iteritems():
-    irc_connections[network[0]] = irc.IrcConnection(network[1])
+    irc_connections[network[0]] = irc.IrcConnection(network[1], conf)
 
 while running:
     time.sleep(0.1)
@@ -32,5 +31,4 @@ while running:
         running = False
     except Exception as e:
         print("Caught Exception:\n{}".format(str(e)))
-        print(e.__traceback__)
-
+        print(sys.exc_info())

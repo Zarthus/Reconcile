@@ -1,7 +1,13 @@
+"""
+ChannelManager.py
+Manage which channels to join for each network.
+"""
+
 import sqlite3
 
+
 class ChannelManager:
-    def __init__(validator=None):
+    def __init__(self, db_dir, validator=None):
         if not validator:
             try:
                 from tools import validator
@@ -13,11 +19,13 @@ class ChannelManager:
         else:
             self.validator = validator
 
+        self.db_dir = db_dir
+
     def getListFromNetwork(self, network_name):
         channels = []
 
         try:
-            conn = sqlite3.connect(network_name + ".db")
+            conn = sqlite3.connect(self.formatDBFileName(network_name))
             c = conn.cursor()
             c.execute("CREATE TABLE IF NOT EXISTS channels (channel TEXT)")
             result = c.execute("SELECT * FROM channels")
@@ -37,7 +45,7 @@ class ChannelManager:
                 .format(channel, network_name))
 
         try:
-            conn = sqlite3.connect(network_name + ".db")
+            conn = sqlite3.connect(self.formatDBFileName(network_name))
             c = conn.cursor()
             c.execute("CREATE TABLE IF NOT EXISTS channels (channel TEXT)")
             c.execute("INSERT INTO channels (channel) VALUES (?)", channel)
@@ -52,7 +60,7 @@ class ChannelManager:
                 .format(channel, network_name))
 
         try:
-            conn = sqlite3.connect(network_name + ".db")
+            conn = sqlite3.connect(self.formatDBFileName(network_name))
             c = conn.cursor()
             c.execute("CREATE TABLE IF NOT EXISTS channels (channel TEXT)")
             c.execute("DELETE FROM channels WHERE channel = ?", channel)
@@ -61,3 +69,5 @@ class ChannelManager:
         except sqlite3.Error as e:
             print("Failed to delete channel '{}' from {}.db: {}".format(channel, network_name, str(e)))
 
+    def formatDBFileName(self, db_name):
+        return self.db_dir + db_name + ".db"
