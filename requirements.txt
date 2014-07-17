@@ -1,2 +1,2 @@
 pep8
-db-sqlite3
+pysqlite
