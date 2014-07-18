@@ -3,7 +3,6 @@ IRC class for irc connections
 """
 
 import socket
-import thread
 import re
 
 from ssl import wrap_socket

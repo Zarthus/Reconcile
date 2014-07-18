@@ -4,7 +4,12 @@ python:
   - 3.2
   - 3.3
   - 3.4
+  - 2.7
 
+matrix:
+  allow_failures:
+    - python: 2.7
+  
 install:
   - "pip install -r travis/requirements.txt"
 

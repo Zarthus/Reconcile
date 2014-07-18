@@ -122,7 +122,7 @@ class Config:
             verbose = self.getVerbose()
 
         for network in self.networks:
-            network_name = self.networks.keys()[count]
+            network_name = list(self.networks.keys())[count]
 
             self.networks[network_name]["id"] = count
 

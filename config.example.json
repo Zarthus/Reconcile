@@ -17,11 +17,11 @@
       "command_prefix": "!",
       "invite_join": true,
 
-	  "administrators": [
+      "administrators": [
         "Zarthus!Zarthus@zarth.us"
       ],
 
-	  "moderators": [
+      "moderators": [
         "Zarthus!Zarthus@zarth.us"
       ]
     }
