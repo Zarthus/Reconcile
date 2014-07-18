@@ -82,7 +82,7 @@ class IrcConnection:
     def connect(self):
         if self.connected:
             raise Exception("Attempting to connect to {} when already connected as {}"
-                .format(self.server, self.currentnick))
+                            .format(self.server, self.currentnick))
 
         if self.ssl:
             self._connect_ssl()

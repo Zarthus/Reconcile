@@ -42,7 +42,7 @@ class ChannelManager:
     def addForNetwork(self, network_name, channel):
         if not self.isValid(channel):
             raise Exception("Could not add channel '{}' to {}.db as it doesn't appear to be a channel."
-                .format(channel, network_name))
+                            .format(channel, network_name))
 
         try:
             conn = sqlite3.connect(self.formatDBFileName(network_name))
@@ -57,7 +57,7 @@ class ChannelManager:
     def delForNetwork(self, network_name, channel):
         if not self.isValid(channel):
             raise Exception("Could not delete channel '{}' from {}.db as it doesn't appear to be a channel."
-                .format(channel, network_name))
+                            .format(channel, network_name))
 
         try:
             conn = sqlite3.connect(self.formatDBFileName(network_name))
