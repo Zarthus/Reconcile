@@ -122,26 +122,50 @@ class IrcFormatter:
         """
 
         formatted = ""
-        apply_space = True
 
         for word in string.split(" "):
             if word == "$+":
-                apply_space = False
+                formatted = formatted.rstrip()
                 continue
 
             if word.startswith("$(") and word.endswith(")"):
                 formatted += self._replace(word[2:-1])
                 continue
 
-            formatted += word + (" " if apply_space else "")
-            apply_space = True
+            formatted += word + " "
 
         return formatted
 
-    def _replace(self, word):
-        if word.lower() in IRC_COLOUR_DICT:
-            return self.getColour(word)
-        if word.lower() in IRC_FORMATTING_DICT:
-            return self.getFormat(word)
+    def strip(self, string):
+        """strip: Similiar to parse, only this removes colour codes"""
 
-        return word
+        stripped = ""
+
+        for word in string.split(" "):
+            if word == "$+":
+                continue
+
+            if word.startswith("$(") and word.endswith(")"):
+                continue
+
+            stripped += word + " "
+
+        return stripped.replace("  ", " ").rstrip()
+
+    def _replace(self, string):
+        ret = ""
+        count = 1
+        split = string.lower().split(",")
+
+        for word in split:
+            if word.lower() in IRC_COLOUR_DICT:
+                if count % 2 == 0:
+                    ret += "," + self.getColour(word, False)
+                else:
+                    ret += self.getColour(word)
+
+                count += 1
+            if word.lower() in IRC_FORMATTING_DICT:
+                ret += self.getFormat(word)
+
+        return ret

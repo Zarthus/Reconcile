@@ -12,6 +12,7 @@ from ssl import SSLError
 
 from core import channel
 from tools import validator
+from tools import formatter
 
 
 class IrcConnection:
@@ -58,8 +59,17 @@ class IrcConnection:
         self.socket.send(data + "\r\n")
         print("<< {} | {}".format(self.server, data))
 
-    def say(self, target, message):
-        self.send_raw("PRIVMSG {} :{}".format(target, message))
+    def say(self, target, message, format=False):
+        """
+        Sends a message to target
+        With formatting enabled, we will attempt to parse the contents through the IrcFormatter class.
+        """
+
+        if not format:
+            self.send_raw("PRIVMSG {} :{}".format(target, message))
+        else:
+            parser = formatter.IrcFormatter()
+            self.send_raw("PRIVMSG {} :{}".format(target, parser.parse(message)))
 
     def quit(self, message=None):
         if not message:
