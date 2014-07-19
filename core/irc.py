@@ -29,8 +29,8 @@ class IrcConnection:
         self.readBuffer()
 
     def readBuffer(self):
-        buffer = self.socket.recv(4096)
-        lines = buffer.split("\n")
+        buff = self.socket.recv(4096)
+        lines = buff.decode("utf-8").split("\n")
         for data in lines:
             data = str(data).strip()
 
@@ -53,20 +53,19 @@ class IrcConnection:
                         continue
 
                 if self.isEvent(words[1]):
-                    # All events share the following syntax:
+                    # Most(?) events share the following syntax:
                     # :nick!user@host EVENT target [[:]message/params]
 
-                    uinfo = words[0][:1]
+                    uinfo = words[0][1:]
                     event = words[1]
                     target = words[2]
                     params = words[3:] if len(words) > 3 else None
 
                     self._processEvent(uinfo, event, target, params)
 
-
     def send_raw(self, data):
-        self.socket.send(data + "\r\n")
         print("<< {} | {}".format(self.server, data))
+        self.socket.send(bytes(data + "\r\n", "utf-8"))
 
     def say(self, target, message, format=False):
         """
@@ -107,17 +106,14 @@ class IrcConnection:
     def ctcp(self, target, ctcp):
         self.send_raw("PRIVMSG {} :\x01{}\x01".format(target, ctcp))
 
-    def ctcp_reply(self, target, ctcpreply):
-        self.send_raw("NOTICE {} :\x01{}\x01".format(target, ctcpreply))
+    def ctcp_reply(self, target, ctcp, ctcpreply):
+        self.send_raw("NOTICE {} :\x01{} {}\x01".format(target, ctcp, ctcpreply))
 
     def join(self, channel):
-        # Store joined_channel temporarily - wait for end of /NAMES to confirm we joined this channel.
-        self.joined_channel = channel
         self.send_raw("JOIN :{}".format(channel))
 
     def part(self, channel):
         self.send_raw("PART :{}".format(channel))
-        self.channelmanager.delForNetwork(self.network_name, channel)
 
     def quit(self, message=None):
         if not message:
@@ -158,7 +154,64 @@ class IrcConnection:
         # TODO: Sleep Thread (1s) once implemented
         self.connect()
 
-    def checkRequests(self):
+    def isEvent(self, event):
+        if event in ["PRIVMSG", "NOTICE", "MODE", "JOIN", "PART", "INVITE", "KICK", "QUIT"]:
+            return True
+        return False
+
+    def on_privmsg(self, nick, target, message):
+        if message.startswith("\x01") and message.endswith("\x01"):
+            if message.lstrip("\x01").startswith("ACTION"):
+                self.on_action(nick, target, message.strip("\x01").strip("ACTION"))
+            else:
+                self.on_ctcp(nick, target, message.strip("\x01"))
+
+    def on_action(self, nick, target, message):
+        pass
+
+    def on_ctcp(self, nick, target, ctcp):
+        if ctcp == "VERSION":
+            self.ctcp_reply(nick, ctcp, "{} by {} v{} - {} - written in python".format(self.currentnick,
+                            self.config.getMaintainer(), self.config.getVersion(), self.config.getGithubURL()))
+
+        elif ctcp == "MAINTAINER":
+            self.ctcp_reply(nick, ctcp, "Maintained by {}".format(self.config.getMaintainer()))
+
+        elif ctcp == "TIME":
+            self.ctcp_reply(nick, ctcp, "Current time: {}".format(time.strftime("%H:%M:%S - %A %d %B, %Y")))
+
+        elif ctcp == "PING":
+            self.ctcp_reply(nick, ctcp, "PONG - {}".format(time.ctime()))
+
+    def on_notice(self, nick, target, message):
+        pass
+
+    def on_mode(self, nick, target, modes):
+        pass
+
+    def on_join(self, nick, channel):
+        if nick == self.currentnick:
+            self.channelmanager.addForNetwork(self.network_name, channel)
+            if channel not in self.channels:
+                self.channels.append(channel)
+
+    def on_part(self, nick, channel):
+        if nick == self.currentnick:
+            self.channelmanager.delForNetwork(self.network_name, channel)
+            if channel in self.channels:
+                self.channels.remove(channel)
+
+    def on_kick(self, nick, channel, knick, reason):
+        if knick == self.currentnick:
+            self.channelmanager.delForNetwork(self.network_name, channel)
+            if channel in self.channels:
+                self.channels.remove(channel)
+
+    def on_invite(self, nick, channel):
+        if self.invite_join:
+            self.join(channel)
+
+    def on_quit(self, nick, message=None):
         pass
 
     def loadNetworkVariables(self, network):
@@ -195,7 +248,7 @@ class IrcConnection:
         raise NotImplementedError("Connecting to SSL has not yet been implemented.")
 
     def _connect(self):
-        self.socket = socket.socket()
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((self.server, self.port))
         self.send_raw("NICK {}".format(self.nick))
         self.currentnick = self.nick
@@ -222,72 +275,31 @@ class IrcConnection:
 
             self.send_raw("JOIN :" + ",".join(self.channels))
 
-        if numeric == "366":
-            # End of /NAMES
-            if not self.joined_channel:
-                pass
-
-            self.channelmanager.addForNetwork(self.network_name, self.joined_channel)
-            self.joined_channel = None
-
         return False
 
-    def isEvent(self, event):
-        if event in ["PRIVMSG", "NOTICE", "MODE", "JOIN", "PART", "INVITE", "KICK", "QUIT"]:
-            return True
-        return False
-
-    def _processEvent(self, uinfo, event, target, params):
+    def _processEvent(self, uinfo, event, target, params_list):
         nick = uinfo.split("!")[0]
-        user = uinfo.split("@")[0][len(nick) + 1:]
-        host = uinfo.split("@")[1]
+        # user = uinfo.split("@")[0][len(nick) + 1:]
+        # host = uinfo.split("@")[1] -- disabled for now /  :Reconcile MODE Reconcile :+i
 
+        if params_list and " ".join(params_list).startswith(":"):
+            params = " ".join(params_list)[1:]
+
+        if event == "PRIVMSG":
+            self.on_privmsg(nick, target, params)
+        elif event == "NOTICE":
+            self.on_notice(nick, target, params)
+        elif event == "MODE":
+            self.on_mode(nick, target, params)
+        elif event == "JOIN":
+            self.on_join(nick, target)
+        elif event == "PART":
+            self.on_part(nick, target)
+        elif event == "INVITE":
+            self.on_invite(nick, params)
+        elif event == "KICK":
+            self.on_kick(nick, channel, target, params)
+        elif event == "QUIT":
+            self.on_quit(nick, params)
 
         # TODO: handle modules ..
-
-    def on_privmsg(self, nick, target, message):
-        if message.startswith("\x01") and message.endswith("\x01"):
-            if message.lstrip("\x01").startswith("ACTION"):
-                self.on_action(nick, target, message.strip("\x01").strip("ACTION"))
-            else:
-                self.on_ctcp(nick, target, message.strip("\x01"))
-                
-    def on_action(self, nick, target, message):
-        pass
-
-    def on_ctcp(self, nick, target, ctcp):
-        if ctcp == "VERSION":
-            self.ctcp_reply(nick, "{} by {} v{} - {} - written in python".format(self.currentnick, 
-                            self.config.getMaintainer(), self.config.getVersion(), self.config.getGithubURL()))
-        
-        if ctcp == "MAINTAINER":
-            self.ctcp_reply(nick, "{}".format(self.config.getMaintainer()))
-        
-        if ctcp == "TIME":
-            self.ctcp_reply(nick, "{}".format(time.strftime("%H:%M:%S - %A %d %B, %Y")))
-         
-        if ctcp == "PING":
-           self.ctcp_reply(nick, "PONG - {}".format(time.ctime()))
-    
-    def on_notice(self, nick, target, message):
-        pass
-
-    def on_mode(self, nick, target, modes):
-        pass
-
-    def on_join(self, nick, target):
-        pass
-
-    def on_part(self, nick, target):
-        pass
-
-    def on_kick(self, nick, knick, reason):
-        if knick == self.currentnick:
-            self.channelmanager.addForNetwork(
-
-    def on_invite(self, nick, channel):
-        if self.invite_join:
-            self.join(channel)
-
-    def on_quit(self, nick, message=None):
-        pass
