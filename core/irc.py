@@ -20,6 +20,8 @@ class IrcConnection:
         self.config = config
         self.loadNetworkVariables(network)
 
+        self.numeric_regex = re.compile(":.* [0-9]{3}")
+
         self.connect()
 
     def tick(self):
@@ -37,23 +39,17 @@ class IrcConnection:
 
             words = data.split()
 
-            # TODO: write function to check if numeric.
             if len(words) > 1:
-
                 if words[0] == "PING":
                     # Reply to PING
                     self.send_raw("PONG " + words[1])
                     continue
 
-                if words[1] == "443":
-                    # Nick is already taken.
-                    self.send_raw("NICK " + self.altnick)
-                    self.currentnick = self.altnick
-                    continue
-
-                if words[1] == "422" or words[1] == "376":
-                    # No MOTD found or End of MOTD
-                    self.send_raw("JOIN :" + ",".join(self.channels))
+                if self.numeric_regex.match(" ".join(words[:2])):
+                    # Check if a server numeric is sent, and handle it appropriately.
+                    if self._processIrcNumeric(words[1]):
+                        # _processIrcNumeric returns true if we need to continue, false if we don't
+                        continue
 
     def send_raw(self, data):
         self.socket.send(data + "\r\n")
@@ -70,6 +66,36 @@ class IrcConnection:
         else:
             parser = formatter.IrcFormatter()
             self.send_raw("PRIVMSG {} :{}".format(target, parser.parse(message)))
+
+    def action(self, target, action, format=False):
+        """
+        Sends a CTCP ACTION to target
+        With formatting enabled, we will attempt to parse the contents through the IrcFormatter class.
+        """
+
+        if not format:
+            self.send_raw("PRIVMSG {} :\x01ACTION {}\x01".format(target, message))
+        else:
+            parser = formatter.IrcFormatter()
+            self.send_raw("PRIVMSG {} :\x01ACTION {}\x01".format(target, parser.parse(message)))
+
+    def notice(self, target, notice, format=False):
+        """
+        Sends a NOTICE to target
+        With formatting enabled, we will attempt to parse the contents through the IrcFormatter class.
+        """
+
+        if not format:
+            self.send_raw("NOTICE {} :{}".format(target, notice))
+        else:
+            parser = formatter.IrcFormatter()
+            self.send_raw("NOTICE {} :{}".format(target, parser.parse(notice)))
+
+    def ctcp(self, target, ctcp):
+        self.send_raw("PRIVMSG {} :\x01{}\x01".format(target, ctcp))
+
+    def ctcp_reply(self, target, ctcpreply):
+        self.send_raw("NOTICE {} :\x01{}\x01".format(target, ctcpreply))
 
     def quit(self, message=None):
         if not message:
@@ -153,3 +179,21 @@ class IrcConnection:
         # <username> <hostname> <servername> :<realname> - servername/hostname will be ignored by the ircd.
         self.send_raw("USER {} 0 0 :{}".format(self.ident, self.realname))
         self.connected = True
+
+    def _processIrcNumeric(self, numeric):
+        """
+        The ircd sends numerics to indicate something is wrong (or right),
+        This method will interact with a few of them
+        """
+
+        if numeric == "443":
+            # Nick is already taken.
+            self.send_raw("NICK " + self.altnick)
+            self.currentnick = self.altnick
+            return True
+
+        if numeric == "422" or numeric == "376":
+            # No MOTD found or End of MOTD
+            self.send_raw("JOIN :" + ",".join(self.channels))
+
+        return False
