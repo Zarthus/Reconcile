@@ -8,7 +8,7 @@ import re
 
 class Validator:
 
-    def hostmask(hostmask, require_nickanme=False):
+    def hostmask(self, hostmask, require_nickanme=False):
         """Check if hostmask is a valid hostmask"""
 
         if len(hostmask) > 128:
@@ -21,13 +21,13 @@ class Validator:
 
         return re.match(pattern, hostmask)
 
-    def nickname(nick):
+    def nickname(self, nick):
         """Check if nick is a valid IRC nickname"""
         if re.match(r"[^ \|`\[\]\\-_\w\d]", nick):
             return False
         return True
 
-    def channel(channel):
+    def channel(self, channel):
         """Check if channel is a valid channelname"""
         if channel.startswith("#"):
             return True

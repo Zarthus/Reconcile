@@ -40,7 +40,7 @@ class ChannelManager:
         return channels
 
     def addForNetwork(self, network_name, channel):
-        if not self.isValid(channel):
+        if not self.validator.channel(channel):
             raise Exception("Could not add channel '{}' to {}.db as it doesn't appear to be a channel."
                             .format(channel, network_name))
 
@@ -55,7 +55,7 @@ class ChannelManager:
             print("Failed to insert channel '{}' to {}.db: {}".format(channel, network_name, str(e)))
 
     def delForNetwork(self, network_name, channel):
-        if not self.isValid(channel):
+        if not self.validator.channel(channel):
             raise Exception("Could not delete channel '{}' from {}.db as it doesn't appear to be a channel."
                             .format(channel, network_name))
 
