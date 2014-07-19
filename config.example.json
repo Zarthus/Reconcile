@@ -3,12 +3,12 @@
     "espernet": {
       "server": "irc.esper.net",
       "port": 6667,
-	  "ssl": false,
+      "ssl": false,
 
       "nick": "",
       "altnick": "",
 
-	  "ident": "",
+      "ident": "",
       "realname": "",
 
       "account": "",
@@ -29,7 +29,7 @@
 
   "api_keys": {
     "lastfm": "",
-	"wolframalpha": ""
+    "wolframalpha": ""
   },
 
   "metadata": {
