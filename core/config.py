@@ -126,6 +126,9 @@ class Config:
 
             self.networks[network_name]["id"] = count
 
+            if "network_name" not in self.networks[network_name]:
+                self.network[network_name]["network_name"] = network_name
+                
             if "nick" not in self.networks[network_name]:
                 self.networks[network_name]["nick"] = "ReconcileBot"
                 if verbose:
