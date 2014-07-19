@@ -186,7 +186,7 @@ class IrcConnection:
         This method will interact with a few of them
         """
 
-        if numeric == "443":
+        if numeric == "433":
             # Nick is already taken.
             self.send_raw("NICK " + self.altnick)
             self.currentnick = self.altnick
@@ -194,6 +194,9 @@ class IrcConnection:
 
         if numeric == "422" or numeric == "376":
             # No MOTD found or End of MOTD
+            if self.password and self.account:
+                self.send_raw("PRIVMSG NickServ :IDENTIFY {} {}".format(self.account, self.password))
+            
             self.send_raw("JOIN :" + ",".join(self.channels))
 
         return False
