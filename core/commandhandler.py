@@ -22,7 +22,7 @@ class CommandHandler:
 
         if command == "permissions":
             return self.reply_notice("Permissions: Admin: {}, Moderator: {}"
-                               .format("yes" if self.admin else "no", "yes" if self.mod else "no"))
+                                     .format("yes" if self.admin else "no", "yes" if self.mod else "no"))
 
         if command == "commands":
             self.reply_notice("Commands I listen to: ping, permissions, commands, m:join, m:part, a:shutdown")
