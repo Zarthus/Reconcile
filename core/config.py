@@ -8,6 +8,7 @@ import os
 import sys
 
 from core import channel
+from tools import hostmask
 
 
 class Config:
@@ -72,7 +73,7 @@ class Config:
 
         return False
 
-    def isModerator(self, network, hostmask):
+    def isModerator(self, network, address):
         if network in self.networks:
             for addr in self.networks[network]["moderators"]:
                 if hostmask.match(address, addr):

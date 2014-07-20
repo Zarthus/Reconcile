@@ -24,5 +24,5 @@ class CommandHandler:
     def reply_notice(self, message):
         self._conn.notice(self.nick, message)
 
-    def getSuccess():
+    def getSuccess(self):
         return self.success

@@ -19,7 +19,7 @@ def match(hostmask, matchhost, require_nickname=False):
         hm = re.escape(hostmask).replace(r"\*", ".*")
         mh = re.escape(matchhost).replace(r"\*", ".*")
 
-        re.match(mh, hm):
+        if re.match(mh, hm):
             return True
 
     return False

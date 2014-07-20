@@ -12,7 +12,7 @@ from ssl import CERT_REQUIRED
 from ssl import SSLError
 
 from core import channel
-from core import command
+from core import commandhandler
 from tools import validator
 from tools import formatter
 
@@ -237,13 +237,13 @@ class IrcConnection:
             "nick": nick,
             "target": target,
 
-            "admin": self.config.isAdministrator(self.network_name, uinfo["uinfo"]),
-            "mod": self.config.isModerator(self.network_name, uinfo["uinfo"]),
+            "admin": self.config.isAdministrator(self.network_name, uinfo[3]),
+            "mod": self.config.isModerator(self.network_name, uinfo[3]),
 
             "IrcConnection": self
         }
 
-        cmd = command.CommandHandler(command, params, info)
+        cmd = commandhandler.CommandHandler(command, params, info)
         return cmd.getSuccess()
 
     def loadNetworkVariables(self, network):
@@ -313,8 +313,9 @@ class IrcConnection:
         nick = uinfo.split("!")[0]
         user = ""
         host = ""
+        params = ""
 
-        if event in ["PRIVMSG", "NOTICE", "JOIN", "PART", "KICK"]:
+        if event in ["PRIVMSG", "NOTICE", "JOIN", "PART", "KICK"] and self.validator.hostmask(uinfo):
             user = uinfo.split("@")[0][len(nick) + 1:]
             host = uinfo.split("@")[1]
 
