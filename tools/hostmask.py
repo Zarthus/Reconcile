@@ -3,6 +3,7 @@ Hostmask.py - used for altering and validating hostmasks.
 """
 
 import re
+from tools import validator
 
 
 def match(hostmask, matchhost, require_nickname=False):
@@ -12,9 +13,14 @@ def match(hostmask, matchhost, require_nickname=False):
     You may include the name (anything before !) but it is not required.
     """
 
-    if isValid(hostmask) and isValid(matchhost):
-        # todo
-        return True
+    valid = validator.Validator()
+
+    if valid.hostmask(hostmask) and valid.hostmask(matchhost):
+        hm = re.escape(hostmask).replace(r"\*", ".*")
+        mh = re.escape(matchhost).replace(r"\*", ".*")
+
+        re.match(mh, hm):
+            return True
 
     return False
 

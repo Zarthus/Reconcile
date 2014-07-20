@@ -12,6 +12,7 @@ from ssl import CERT_REQUIRED
 from ssl import SSLError
 
 from core import channel
+from core import command
 from tools import validator
 from tools import formatter
 
@@ -159,12 +160,15 @@ class IrcConnection:
             return True
         return False
 
-    def on_privmsg(self, nick, target, message):
+    def on_privmsg(self, nick, target, message, uinfo=None):
         if message.startswith("\x01") and message.endswith("\x01"):
             if message.lstrip("\x01").startswith("ACTION"):
                 self.on_action(nick, target, message.strip("\x01").strip("ACTION"))
             else:
                 self.on_ctcp(nick, target, message.strip("\x01"))
+
+        if message.startswith(self.command_prefix) or message.startswith(self.currentnick):
+            self.on_command(nick, target, message, uinfo)
 
     def on_action(self, nick, target, message):
         pass
@@ -213,6 +217,34 @@ class IrcConnection:
 
     def on_quit(self, nick, message=None):
         pass
+
+    def on_command(self, nick, target, message, uinfo):
+        split = message.split()
+        command = ""
+        params = ""
+
+        if message.startswith(self.command_prefix):
+            command = split[0][1:]
+            params = split[1:]
+        elif message.startswith(self.currentnick):
+            command = split[1]
+            params = split[2:]
+        else:
+            # This cannot be a valid command.
+            return False
+
+        info = {
+            "nick": nick,
+            "target": target,
+
+            "admin": self.config.isAdministrator(self.network_name, uinfo["uinfo"]),
+            "mod": self.config.isModerator(self.network_name, uinfo["uinfo"]),
+
+            "IrcConnection": self
+        }
+
+        cmd = command.CommandHandler(command, params, info)
+        return cmd.getSuccess()
 
     def loadNetworkVariables(self, network):
         self.connected = False
@@ -279,14 +311,18 @@ class IrcConnection:
 
     def _processEvent(self, uinfo, event, target, params_list):
         nick = uinfo.split("!")[0]
-        # user = uinfo.split("@")[0][len(nick) + 1:]
-        # host = uinfo.split("@")[1] -- disabled for now /  :Reconcile MODE Reconcile :+i
+        user = ""
+        host = ""
+
+        if event in ["PRIVMSG", "NOTICE", "JOIN", "PART", "KICK"]:
+            user = uinfo.split("@")[0][len(nick) + 1:]
+            host = uinfo.split("@")[1]
 
         if params_list and " ".join(params_list).startswith(":"):
             params = " ".join(params_list)[1:]
 
         if event == "PRIVMSG":
-            self.on_privmsg(nick, target, params)
+            self.on_privmsg(nick, target, params, [nick, user, host, uinfo])
         elif event == "NOTICE":
             self.on_notice(nick, target, params)
         elif event == "MODE":
