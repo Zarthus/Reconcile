@@ -18,11 +18,11 @@
       "invite_join": true,
 
       "administrators": [
-        "Zarthus!Zarthus@zarth.us"
+        "example!admin@admins.zarth.us"
       ],
 
       "moderators": [
-        "Zarthus!Zarthus@zarth.us"
+        "example!moderator@*.zarth.us"
       ]
     }
   },

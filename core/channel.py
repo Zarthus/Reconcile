@@ -48,9 +48,11 @@ class ChannelManager:
             conn = sqlite3.connect(self.formatDBFileName(network_name))
             c = conn.cursor()
             c.execute("CREATE TABLE IF NOT EXISTS channels (channel TEXT)")
-            c.execute("INSERT INTO channels (channel) VALUES (?)", channel)
+            c.execute("INSERT INTO channels (channel) VALUES (?)", [channel])
             conn.commit()
             conn.close()
+
+            print("Added channel {} to {}.db".format(channel, network_name))
         except sqlite3.Error as e:
             print("Failed to insert channel '{}' to {}.db: {}".format(channel, network_name, str(e)))
 
@@ -63,9 +65,10 @@ class ChannelManager:
             conn = sqlite3.connect(self.formatDBFileName(network_name))
             c = conn.cursor()
             c.execute("CREATE TABLE IF NOT EXISTS channels (channel TEXT)")
-            c.execute("DELETE FROM channels WHERE channel = ?", channel)
+            c.execute("DELETE FROM channels WHERE channel = ?", [channel])
             conn.commit()
             conn.close()
+            print("Deleted channel {} from {}.db".format(channel, network_name))
         except sqlite3.Error as e:
             print("Failed to delete channel '{}' from {}.db: {}".format(channel, network_name, str(e)))
 

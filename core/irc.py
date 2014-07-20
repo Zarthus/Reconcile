@@ -240,10 +240,11 @@ class IrcConnection:
             "admin": self.config.isAdministrator(self.network_name, uinfo[3]),
             "mod": self.config.isModerator(self.network_name, uinfo[3]),
 
-            "IrcConnection": self
+            "IrcConnection": self,
+            "command_prefix": self.command_prefix
         }
 
-        cmd = commandhandler.CommandHandler(command, params, info)
+        cmd = commandhandler.CommandHandler(command.lower(), params, info)
         return cmd.getSuccess()
 
     def loadNetworkVariables(self, network):
