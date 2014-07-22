@@ -22,7 +22,7 @@ class Isup(moduletemplate.BotModule):
             if commandtext and " " not in commandtext:
                 self.check_if_up(commandtext, channel, nick)
             else:
-                self.reply_notice(nick, "Usage: isup <website>")
+                self.reply_notice(nick, "Usage: isup <website> -- check if a website is up using isup.me")
 
             return True
 
@@ -34,7 +34,7 @@ class Isup(moduletemplate.BotModule):
 
         isup = ""
 
-        if "just you" in r.text:
+        if "looks down from here" not in r.text:
             isup = "$(green) up $+ $(clear)"
         else:
             isup = "$(red) down $+ $(clear)"

@@ -66,7 +66,6 @@ Here is a copy of a configuration with comments -- but do not copy it directly, 
   },
 
   // a list of api keys some modules require, modules will automatically unload themselves if no api key was found.
-  // and will be found in disabled_modules/no_api_key/
   "api_keys": {
     "lastfm": "",
 	"wolframalpha": ""
