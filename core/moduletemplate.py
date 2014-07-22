@@ -97,8 +97,8 @@ class BotModule:
     def requireApiKey(api_name):
         """
         If your module requires an API key, call this method in on_module_load to instruct the user to add an API
-        key to his configuration if it doesn't exist. 
-        
+        key to his configuration if it doesn't exist.
+
         We will let the Module Handler catch the error, and thus the module will not be loaded.
         """
         if not self._getApiKey(api_name):

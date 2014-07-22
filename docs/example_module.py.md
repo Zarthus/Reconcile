@@ -173,5 +173,6 @@ class MyModule(moduletemplate.BotModule):
 
 ## My module is done, what should I do now?
 
-Check if your module will pass the checks travis will invoke with `python travis/test_module.py`
+Check if your module will pass the checks travis will invoke with `python travis/test_module.py modulename` and verify it lives up to the [CONTRIBUTING.md](../CONTRIBUTING.md) standards.  
+
 If it says it's good to go, go ahead and make a pull request.
