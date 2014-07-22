@@ -2,7 +2,7 @@
 
 This is an example module class to be put in the modules/ folder.
 
-By default it has it's module name as `self.module_name` accessable and the following public callbacks:
+By default it has it's module name as `self.module_name` and `self.db_dir` accessable and the following public callbacks:
 `on_module_load(self)`, `on_module_unload(self)`, `on_privmsg(self, channel, nick, message)`, `on_action(self, channel, nick, action)`,
 `on_command(self, channel, nick, command, commandtext, mod=False, admin=False)`
 
@@ -10,6 +10,8 @@ To respond to users, you can use the methods `reply_channel(channel, nick, messa
 Be careful your bot does not trigger fantasy commands accidentally if you choose to not use it.  
 
 For a more personal message, you can use `reply_notice(nick, message)` -- sending a notice to the user.  
+
+To get a metadata entry from the config, use `getMetadata("metadata")`
 
 Last is the `requireApiKey("apiname")` to be placed in the on_module_load callback, for a proper example of this please see the class below.  
 

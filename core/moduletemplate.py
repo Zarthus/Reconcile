@@ -3,6 +3,7 @@ class BotModule:
     def __init__(self, conn, module_name):
         self._conn = conn
         self.module_name = module_name
+        self.db_dir = self._conn.config.getDatabaseDir()
 
     def on_module_load(self):
         """Module constructor"""
@@ -109,3 +110,7 @@ class BotModule:
 
     def _getApiKey(api_name):
         return self._conn.config.getApiKey(api_name)
+    
+    def getConfigMetadata(metadata):
+        return self._conn.config.getMetadata(metadata)
+    
