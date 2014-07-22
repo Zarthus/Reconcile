@@ -3,6 +3,7 @@ Module handler -- handles the loading, unloading, and sending instructions to mo
 """
 
 import os
+import importlib
 
 
 class ModuleHandler:
@@ -49,12 +50,13 @@ class ModuleHandler:
         success = True
 
         try:
-            mod = compile(open(self.module_dir + module).read(), module, 'exec')
-            mod = mod.
-
-            self.modules[module] =
-            self.modules[module].on_module_load()
+            mod = importlib.import_module(self.module_dir + module) 
+            
+            for modulename, moduleclass in inspect.getmembers(mod, inspect.isclass):
+                self.modules[module] = mod.moduleclass()
+                self.modules[module].on_module_load()
         except Exception as e:
+            print("Failed to load Module {}: {}".format(module, str(e)))
             # TODO: Log
             success = False
 
