@@ -74,7 +74,7 @@ class BotModule:
         """
         If you want your command listed as help entry, here is where we do it.
 
-        Return a dict following syntax.
+        Return a dict following syntax:
         {
             "commandname": {
                 "priv": "none",
@@ -86,7 +86,7 @@ class BotModule:
             }
         }
 
-        Supported priveleges: none, mod, moderator, admin, administrator
+        Supported privileges: none, mod, moderator, admin, administrator
         Do not include the command prefix.
 
         You don't need to include every command, although it is advised you do.
