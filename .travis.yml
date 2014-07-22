@@ -15,7 +15,7 @@ before_script:
 script:
   - "pep8 --max-line-length=119 ."
   - "python travis/test_config.py"
-  - "python travis/test_modules.py"
+  - "python travis/test_module.py"
 
 notifications:
   email: true
