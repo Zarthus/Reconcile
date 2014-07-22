@@ -27,7 +27,7 @@ class ChannelManager:
         try:
             conn = sqlite3.connect(self.formatDBFileName(network_name))
             c = conn.cursor()
-            c.execute("CREATE TABLE IF NOT EXISTS channels (channel TEXT)")
+            c.execute("CREATE TABLE IF NOT EXISTS channels (channel TEXT UNIQUE PRIMARY KEY)")
             result = c.execute("SELECT * FROM channels")
 
             for row in result.fetchall():
@@ -47,8 +47,8 @@ class ChannelManager:
         try:
             conn = sqlite3.connect(self.formatDBFileName(network_name))
             c = conn.cursor()
-            c.execute("CREATE TABLE IF NOT EXISTS channels (channel TEXT)")
-            c.execute("INSERT INTO channels (channel) VALUES (?)", [channel])
+            c.execute("CREATE TABLE IF NOT EXISTS channels (channel TEXT UNIQUE PRIMARY KEY)")
+            c.execute("INSERT OR REPLACE INTO channels (channel) VALUES (?)", [channel])
             conn.commit()
             conn.close()
 
@@ -64,7 +64,7 @@ class ChannelManager:
         try:
             conn = sqlite3.connect(self.formatDBFileName(network_name))
             c = conn.cursor()
-            c.execute("CREATE TABLE IF NOT EXISTS channels (channel TEXT)")
+            c.execute("CREATE TABLE IF NOT EXISTS channels (channel TEXT UNIQUE PRIMARY KEY)")
             c.execute("DELETE FROM channels WHERE channel = ?", [channel])
             conn.commit()
             conn.close()
