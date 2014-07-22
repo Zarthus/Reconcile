@@ -171,7 +171,7 @@ class IrcConnection:
 
         if message.startswith(self.command_prefix) or message.startswith(self.currentnick):
             self.on_command(nick, target, message, uinfo)
-            
+
         self.ModuleHandler.sendPrivmsg(target, nick, message)
 
     def on_action(self, nick, target, message):
@@ -250,7 +250,7 @@ class IrcConnection:
 
         cmd = commandhandler.CommandHandler(command.lower(), params, info)
         mod = self.ModuleHandler.sendCommand(target, nick, command, params, info["mod"], info["admin"])
-        
+
         return cmd.getSuccess() or mod
 
     def loadNetworkVariables(self, network):
@@ -347,8 +347,7 @@ class IrcConnection:
             self.on_quit(nick, params)
 
         # TODO: handle modules ..
-    
+
     def _loadModules(self):
-        self.ModuleHandler = module.ModuleHandler()
-        self.ModuleHandler.load()
-    
+        self.ModuleHandler = module.ModuleHandler(self)
+        self.ModuleHandler.loadAll()

@@ -1,6 +1,6 @@
 class BotModule:
 
-    def __init__(self, conn=None):
+    def __init__(self, conn):
         self._conn = conn
 
     def on_module_load(self):
@@ -18,12 +18,10 @@ class BotModule:
         You can handle things like regexes in here, but for general commands you should
         use on_command.
         """
-
         pass
 
     def on_action(self, channel, nick, action):
         """See on_privmsg"""
-
         pass
 
     def on_command(self, channel, nick, command, commandtext, mod=False, admin=False):
@@ -94,4 +92,3 @@ class BotModule:
         """
 
         return {}
-

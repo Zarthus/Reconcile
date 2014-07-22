@@ -4,26 +4,30 @@ Module handler -- handles the loading, unloading, and sending instructions to mo
 
 import os
 import importlib
+import inspect
+import modules
 
 
 class ModuleHandler:
 
-    def __init__(self):
-        self.modules = {}
-        self.module_dir = "modules/"
+    def __init__(self, conn):
+        self._conn = conn
 
-    def sendCommand(self, target, nick, command, commandtext, mod=False, admin=False)
+        self.modules = {}
+        self.module_dir = "modules"
+
+    def sendCommand(self, target, nick, command, commandtext, mod=False, admin=False):
         for module in self.modules:
-            if module.on_command(target, nick, command, commandtext, mod, admin):
+            if self.modules[module].on_command(target, nick, command, commandtext, mod, admin):
                 break
 
-    def sendPrivmsg(self, target, nick, message)
+    def sendPrivmsg(self, target, nick, message):
         for module in self.modules:
-            module.on_privmsg(target, nick, message)
+            self.modules[module].on_privmsg(target, nick, message)
 
-    def sendAction(self, target, nick, message)
+    def sendAction(self, target, nick, message):
         for module in self.modules:
-            module.on_action(target, nick, message)
+            self.modules[module].on_action(target, nick, message)
 
     def loadAll(self):
         for module in self.getAvailableModulesList():
@@ -32,7 +36,6 @@ class ModuleHandler:
                 continue
 
             self.load(module)
-
 
     def unloadAll(self):
         for module in self.modules:
@@ -50,18 +53,17 @@ class ModuleHandler:
         success = True
 
         try:
-            mod = importlib.import_module(self.module_dir + module) 
-            
+            mod = importlib.import_module("{}.{}".format(self.module_dir, module[:-3]))
+
             for modulename, moduleclass in inspect.getmembers(mod, inspect.isclass):
-                self.modules[module] = mod.moduleclass()
+                self.modules[module] = moduleclass(self._conn)
                 self.modules[module].on_module_load()
         except Exception as e:
-            print("Failed to load Module {}: {}".format(module, str(e)))
+            print("Failed to load module {}: {}".format(module, str(e)))
             # TODO: Log
             success = False
 
         return success
-
 
     def unload(self, module):
         if module not in self.modules:
@@ -88,6 +90,9 @@ class ModuleHandler:
         available_modules = []
 
         for file in os.listdir(self.module_dir):
+            if file == "__init__.py" or file.endswith(".pyc") or os.path.isdir(os.path.join(self.module_dir, file)):
+                continue
+
             available_modules.append(file)
 
         return available_modules
