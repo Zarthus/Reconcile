@@ -20,7 +20,7 @@ class Validator:
 
         hostmask = hostmask.replace(":", "")
 
-        if self.valid_username.match(hostmask):
+        if self.valid_username.search(hostmask):
             if require_nickname:
                 return self.valid_nickname.match(hostmask)
             return True

@@ -16,26 +16,9 @@ def match(hostmask, matchhost, require_nickname=False):
     valid = validator.Validator()
 
     if valid.hostmask(hostmask) and valid.hostmask(matchhost):
-        hm = re.escape(hostmask).replace(r"\*", ".*")
         mh = re.escape(matchhost).replace(r"\*", ".*")
 
-        if re.match(mh, hm):
+        if re.match(mh, hostmask):
             return True
 
     return False
-
-
-def isValid(hostmask, require_nickname=False):
-    """
-    Check if hostmask is a valid hostmask
-    """
-
-    if len(hostmask) > 128:
-        # Whilst possible, masks this long are nearly non existant.
-        return False
-
-    pattern = r"~?[\w]{1,16}@.*[\.|\da-h:]{1,}"
-    if require_nickname:
-        pattern = r"[\w\d\[\]\\\|]{1,32}!" + pattern
-
-    return re.match(pattern, hostmask)
