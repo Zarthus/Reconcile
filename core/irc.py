@@ -229,10 +229,10 @@ class IrcConnection:
 
         if message.startswith(self.command_prefix):
             command = split[0][1:]
-            params = split[1:]
+            params = " ".join(split[1:])
         elif message.startswith(self.currentnick):
             command = split[1]
-            params = split[2:]
+            params = " ".join(split[2:])
         else:
             # This cannot be a valid command.
             return False

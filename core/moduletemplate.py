@@ -110,7 +110,6 @@ class BotModule:
 
     def _getApiKey(api_name):
         return self._conn.config.getApiKey(api_name)
-    
+
     def getConfigMetadata(metadata):
         return self._conn.config.getMetadata(metadata)
-    

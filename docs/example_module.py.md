@@ -164,7 +164,6 @@ class MyModule(moduletemplate.BotModule):
     def on_action(self, channel, nick, action):
         pass
 
-
     def on_command(self, channel, nick, command, commandtext, mod=False, admin=False):
         return False
 
