@@ -12,6 +12,7 @@ from ssl import CERT_REQUIRED
 from ssl import SSLError
 
 from core import channel
+from core import module
 from core import commandhandler
 from tools import validator
 from tools import formatter
@@ -21,6 +22,7 @@ class IrcConnection:
     def __init__(self, network, config, modules=None):
         self.config = config
         self.loadNetworkVariables(network)
+        self._loadModules()
 
         self.numeric_regex = re.compile(":.* [0-9]{3}")
 
@@ -169,9 +171,11 @@ class IrcConnection:
 
         if message.startswith(self.command_prefix) or message.startswith(self.currentnick):
             self.on_command(nick, target, message, uinfo)
+            
+        self.ModuleHandler.sendPrivmsg(target, nick, message)
 
     def on_action(self, nick, target, message):
-        pass
+        self.ModuleHandler.sendAction(target, nick, message)
 
     def on_ctcp(self, nick, target, ctcp):
         if ctcp == "VERSION":
@@ -245,7 +249,9 @@ class IrcConnection:
         }
 
         cmd = commandhandler.CommandHandler(command.lower(), params, info)
-        return cmd.getSuccess()
+        mod = self.ModuleHandler.sendCommand(target, nick, command, params, info["mod"], info["admin"])
+        
+        return cmd.getSuccess() or mod
 
     def loadNetworkVariables(self, network):
         self.connected = False
@@ -341,3 +347,8 @@ class IrcConnection:
             self.on_quit(nick, params)
 
         # TODO: handle modules ..
+    
+    def _loadModules(self):
+        self.ModuleHandler = module.ModuleHandler()
+        self.ModuleHandler.load()
+    
