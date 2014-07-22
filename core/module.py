@@ -56,12 +56,13 @@ class ModuleHandler:
             mod = importlib.import_module("{}.{}".format(self.module_dir, module[:-3]))
 
             for modulename, moduleclass in inspect.getmembers(mod, inspect.isclass):
-                self.modules[module] = moduleclass(self._conn)
+                self.modules[module] = moduleclass(self._conn, module)
                 self.modules[module].on_module_load()
         except Exception as e:
             print("Failed to load module {}: {}".format(module, str(e)))
             # TODO: Log
             success = False
+            self.unload(module)
 
         return success
 

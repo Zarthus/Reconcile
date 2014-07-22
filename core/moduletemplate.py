@@ -1,7 +1,8 @@
 class BotModule:
 
-    def __init__(self, conn):
+    def __init__(self, conn, module_name):
         self._conn = conn
+        self.module_name = module_name
 
     def on_module_load(self):
         """Module constructor"""
@@ -92,3 +93,19 @@ class BotModule:
         """
 
         return {}
+
+    def requireApiKey(api_name):
+        """
+        If your module requires an API key, call this method in on_module_load to instruct the user to add an API
+        key to his configuration if it doesn't exist. 
+        
+        We will let the Module Handler catch the error, and thus the module will not be loaded.
+        """
+        if not self._getApiKey(api_name):
+            raise Exception("Module {} requires API key '{}', but none was provided. Please edit your configuration to"
+                            " include an API key.".format(self.module_name, api_name))
+
+        self.api_key[api_name] = self._getApiKey(api_name)
+
+    def _getApiKey(api_name):
+        return self._conn.config.getApiKey(api_name)
