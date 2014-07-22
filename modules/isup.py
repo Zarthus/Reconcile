@@ -29,6 +29,7 @@ class Isup(moduletemplate.BotModule):
         return False
 
     def check_if_up(self, url, channel, nick):
+        url = url.replace("https://", "").replace("http://", "")
         r = requests.get("http://isup.me/{}".format(url))
 
         isup = ""
