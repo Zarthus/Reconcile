@@ -112,7 +112,7 @@ class Factoids(moduletemplate.BotModule):
                     self.reply_notice(nick, "Factoid triggers may only contain A-Z and /")
                 elif self.factoid_exists(commandtext):
                     self.factoid_del(commandtext)
-                    self.reply_channel(channel, nick, "Factoid with trigger '{}' was deleted.".format(factoid_trigger))
+                    self.reply_channel(channel, nick, "Factoid with trigger '{}' was deleted.".format(commandtext))
                 else:
                     self.reply_notice(nick, "Factoid '{}' does not exist.".format(commandtext))
 
@@ -207,7 +207,7 @@ class Factoids(moduletemplate.BotModule):
         try:
             conn = sqlite3.connect(self.db_file)
             c = conn.cursor()
-            c.execute("DELETE FROM factoids WHERE factoid = ?", [factoid.lower()])
+            c.execute("DELETE FROM factoids WHERE factoid = ?", [factoid_trigger.lower()])
 
             conn.commit()
             conn.close()
