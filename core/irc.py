@@ -13,7 +13,6 @@ from ssl import SSLError
 
 from core import channel
 from core import module
-from core import commandhandler
 from tools import validator
 from tools import formatter
 
@@ -248,10 +247,15 @@ class IrcConnection:
             "command_prefix": self.command_prefix
         }
 
-        cmd = commandhandler.CommandHandler(command.lower(), params, info)
         mod = self.ModuleHandler.sendCommand(target, nick, command, params, info["mod"], info["admin"])
 
         return cmd.getSuccess() or mod
+
+    def register_command(command, help, priv, aliases):
+        pass
+        
+    def unregister_command(command):
+        pass
 
     def loadNetworkVariables(self, network):
         self.connected = False

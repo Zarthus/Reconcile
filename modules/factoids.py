@@ -23,6 +23,14 @@ class Factoids(moduletemplate.BotModule):
 
         self.db_file = os.path.join(self.db_dir, "factoids.db")
         self.factoid_make_db()
+        
+        self.register_command("isfactoid", "Check if <factoid> exists and return information if it does.", 
+                              self.PRIV_NONE, ["factoid"])
+        self.register_command("addfactoid", "Adds <factoid> with <response> to the factoid database.", self.PRIV_MOD)
+        self.register_command("editfactoid", "Edits <factoid> with <new response>", self.PRIV_MOD)
+        self.register_command("delfactoid", "Deletes <factoid> from the factoid database.", self.PRIV_MOD)
+        self.register_command("countfactoid", "Returns the number of factoids in the database.", 
+                              self.PRIV_MOD, ["countfactoids"])
 
     def on_privmsg(self, channel, nick, message):
         words = message.split()

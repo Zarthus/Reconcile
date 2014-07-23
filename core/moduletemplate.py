@@ -1,9 +1,17 @@
 class BotModule:
 
+    PRIV_NONE = "none"
+    PRIV_MOD = "mod"
+    PRIV_MODERATOR = "mod"
+    PRIV_ADMIN = "admin"
+    PRIV_ADMINISTRATOR = "admin"
+
     def __init__(self, conn, module_name):
         self._conn = conn
         self.module_name = module_name
         self.db_dir = self._conn.config.getDatabaseDir()
+
+        self._registered_commands = []
 
     def on_module_load(self):
         """Module constructor"""
@@ -71,31 +79,31 @@ class BotModule:
 
         return True
 
-    def getAvailableCommands(self):
+    def register_command(self, command, help, priv, aliases):
         """
-        If you want your command listed as help entry, here is where we do it.
+        Register a command to the bots core help module.
 
-        Return a dict following syntax:
-        {
-            "commandname": {
-                "priv": "none",
-                "help": "command help desc"
-            },
-            "command2": {
-                "priv": "mod",
-                "help": "do something good"
-            }
-        }
-
-        Supported privileges: none, mod, moderator, admin, administrator
-        Do not include the command prefix.
-
-        You don't need to include every command, although it is advised you do.
+        command: string, name of the command
+        help: string, help description
+        priv: string, privilege required to perform commands (either none, mod, moderator, admin, or administrator)
+        aliases: list, list of strings containing aliases of this command.
         """
 
-        return {}
+        self._conn.register_command(command, help, priv, aliases)
+        self._registered_commands.append(command)
 
-    def requireApiKey(api_name):
+    def unregister_command(self, command):
+        if command in self._registered_commands:
+            self._registered_commands = self._registered_commands.pop(command)
+            self._conn.unregister_command(command)
+            
+            return True
+        return False
+
+    def getConfigMetadata(metadata):
+        return self._conn.config.getMetadata(metadata)
+
+    def requireApiKey(self, api_name):
         """
         If your module requires an API key, call this method in on_module_load to instruct the user to add an API
         key to his configuration if it doesn't exist.
@@ -108,8 +116,9 @@ class BotModule:
 
         self.api_key[api_name] = self._getApiKey(api_name)
 
-    def _getApiKey(api_name):
+    def _getApiKey(self, api_name):
         return self._conn.config.getApiKey(api_name)
 
-    def getConfigMetadata(metadata):
-        return self._conn.config.getMetadata(metadata)
+    def _unregister_commands(self):
+        for cmd in self._registered_commands:
+            self._conn.unregister_command(cmd)

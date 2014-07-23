@@ -42,7 +42,11 @@ class Example(moduletemplate.BotModule):
         # the 'example' in his configuration.
         # If it does not fail, self.api_key["example"] is set to the API key.
         self.requireApiKey("example")
-
+        
+        self.register_command("example", "Reply to the user saying this is an example command.", self.PRIV_NONE)
+        self.register_command("nexample", "Notice the user saying this is an example command.", self.PRIV_NONE)
+        self.register_command("api", "Notice the user with the API key of 'example'", self.PRIV_MOD, ["getapi"])
+        
     def on_module_unload(self):
         pass
 
@@ -87,49 +91,10 @@ class Example(moduletemplate.BotModule):
 
         # Lastly, a command which checks if the user is an administrator, and then sends the 'example' API
         # key back to the admin.
-        if command == "api" and admin:
+        if (command == "api" or command == "getapi") and admin:
             return self.reply_notice(nick, "Your API key is: {}".format(self.api_key["example"]))
 
         return False
-
-    def getAvailableCommands(self):
-        """
-        If you want your command listed as help entry, here is where we do it.
-
-        Return a dict following syntax:
-        {
-            "commandname": {
-                "priv": "none",
-                "help": "command help desc"
-            },
-            "command2": {
-                "priv": "mod",
-                "help": "do something good"
-            }
-        }
-
-        Supported privileges: none, mod, moderator, admin, administrator
-        Do not include the command prefix.
-
-        You don't need to include every command, although it is advised you do.
-        """
-
-        return {
-            "example": {
-                "priv": "none",
-                "help": "This is an example command"
-            },
-
-            "nexample": {
-                "priv": "none",
-                "help": "This is an example command with a notice response"
-            },
-
-            "api": {
-                "priv": "admin",
-                "help": "Return the API key of 'example'"
-            }
-        }
 
 ```
 
@@ -166,9 +131,6 @@ class MyModule(moduletemplate.BotModule):
 
     def on_command(self, channel, nick, command, commandtext, mod=False, admin=False):
         return False
-
-    def getAvailableCommands(self):
-        return {}
 
 ```
 

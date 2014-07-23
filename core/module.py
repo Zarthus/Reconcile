@@ -71,6 +71,7 @@ class ModuleHandler:
             return False
 
         self.modules[module].on_module_unload()
+        self.modules[module]._unregister_commands()
         self.modules = self.modules.pop(module)
 
         return True
