@@ -27,28 +27,53 @@ class Factoids(moduletemplate.BotModule):
     def on_privmsg(self, channel, nick, message):
         words = message.split()
 
-        for word in words:
-            if self.factoid_isrequest(word):
-                # Slice off [[ ]]
-                factoid = word[2:-2]
-                target = None
+        if self.factoid_isrequest(message):
+            if message.startswith("$$"):
+                factoid = words[1]
 
-                # check if it was targeting a name [[name:factoid]]
-                if ":" in factoid:
-                    split = factoid.split(":")
-                    target = split[0]
+                if not self.factoid_isvalid(factoid):
+                    self.reply_notice(nick, "Factoid request '{}' is an invalid factoid trigger name.".format(factoid))
+                elif self.factoid_exists(factoid):
+                    self.reply_channel(channel, None, self.colformat.parse(self.factoid_getresponse(factoid)))
+                else:
+                    self.reply_notice(nick, "Could not find factoid '{}' in my database.".format(factoid))
+            else:
+                if len(words) < 3:
+                    return self.reply_notice(nick, "Syntax error, usage: $? <nick> <factoid>")
+                target = words[1]
+                factoid = words[2]
 
-                    if len(split) > 1:
-                        factoid = split[1]
-
-                    if not self.validator.nickname(target):
-                        target = None
-                        factoid = split[0]
-
-                if self.factoid_exists(factoid):
+                if not self.factoid_isvalid(factoid):
+                    self.reply_notice(nick, "Factoid request '{}' is an invalid factoid trigger name.".format(factoid))
+                elif self.factoid_exists(factoid):
                     self.reply_channel(channel, target, self.colformat.parse(self.factoid_getresponse(factoid)))
                 else:
                     self.reply_notice(nick, "Could not find factoid '{}' in my database.".format(factoid))
+
+            return True
+        else:
+            for word in words:
+                if self.factoid_isaltrequest(word):
+                    # Slice off [[ ]]
+                    factoid = word[2:-2]
+                    target = None
+
+                    # check if it was targeting a name [[name:factoid]]
+                    if ":" in factoid:
+                        split = factoid.split(":")
+                        target = split[0]
+
+                        if len(split) > 1:
+                            factoid = split[1]
+
+                        if not self.validator.nickname(target):
+                            target = None
+                            factoid = split[0]
+
+                    if self.factoid_exists(factoid):
+                        self.reply_channel(channel, target, self.colformat.parse(self.factoid_getresponse(factoid)))
+                    else:
+                        self.reply_notice(nick, "Could not find factoid '{}' in my database.".format(factoid))
 
     def on_command(self, channel, nick, command, commandtext, mod=False, admin=False):
 
@@ -76,7 +101,8 @@ class Factoids(moduletemplate.BotModule):
                 elif not self.factoid_isvalid(factoid_trigger):
                     self.reply_notice(nick, "Factoid triggers may only contain A-Z and /")
                 elif self.factoid_exists(factoid_trigger):
-                    self.reply_notice(nick, "Factoid trigger '{}' already exists.".format(factoid_trigger))
+                    self.reply_notice(nick, "Factoid trigger '{}' already exists. Use editfactoid instead."
+                                            .format(factoid_trigger))
                 else:
                     self.factoid_add(nick, factoid_trigger, factoid_response)
                     self.reply_channel(channel, nick, "Response was added under '{}'".format(factoid_trigger))
@@ -89,14 +115,15 @@ class Factoids(moduletemplate.BotModule):
 
                 ct = commandtext.split()
                 factoid_trigger = ct[0]
-                factoid_response = " ".join(ct[0:])
+                factoid_response = " ".join(ct[1:])
 
                 if len(ct) < 4:
                     self.reply_notice(nick, "Factoid response '{}' is too short.".format(factoid_response))
                 elif not self.factoid_isvalid(factoid_trigger):
                     self.reply_notice(nick, "Factoid triggers may only contain A-Z and /")
                 elif not self.factoid_exists(factoid_trigger):
-                    self.reply_notice(nick, "Factoid trigger '{}' doesn't exist.".format(factoid_trigger))
+                    self.reply_notice(nick, "Factoid trigger '{}' doesn't exist. Use addfactoid instead."
+                                            .format(factoid_trigger))
                 else:
                     self.factoid_del(factoid_trigger)
                     self.factoid_add(nick, factoid_trigger, factoid_response)
@@ -125,12 +152,13 @@ class Factoids(moduletemplate.BotModule):
         return False
 
     def factoid_getresponse(self, factoid):
+        factoid = factoid.lower()
         response = ""
 
         try:
             conn = sqlite3.connect(self.db_file)
             c = conn.cursor()
-            result = (c.execute("SELECT response FROM factoids WHERE factoid = ?", [factoid.lower()])
+            result = (c.execute("SELECT response FROM factoids WHERE factoid = ?", [factoid])
                       .fetchone())
 
             if len(result) == 1:
@@ -141,17 +169,18 @@ class Factoids(moduletemplate.BotModule):
             conn.close()
         except sqlite3.Error as e:
             # TODO: Log
-            response = "An error has occured: {}".format(str(e))
+            response = "factoid_getresponse({}) error: {}".format(factoid, str(e))
 
         return response
 
     def factoid_getinfo(self, factoid):
+        factoid = factoid.lower()
         response = ""
 
         try:
             conn = sqlite3.connect(self.db_file)
             c = conn.cursor()
-            result = (c.execute("SELECT adder, timestamp, response FROM factoids WHERE factoid = ?", [factoid.lower()])
+            result = (c.execute("SELECT adder, timestamp, response FROM factoids WHERE factoid = ?", [factoid])
                       .fetchone())
 
             if len(result) > 2:
@@ -168,12 +197,13 @@ class Factoids(moduletemplate.BotModule):
         return response
 
     def factoid_exists(self, factoid):
+        factoid = factoid.lower()
         exists = False
 
         try:
             conn = sqlite3.connect(self.db_file)
             c = conn.cursor()
-            result = c.execute("SELECT adder FROM factoids WHERE factoid = ?", [factoid.lower()])
+            result = c.execute("SELECT adder FROM factoids WHERE factoid = ?", [factoid])
 
             if result.fetchone():
                 exists = True
@@ -204,10 +234,11 @@ class Factoids(moduletemplate.BotModule):
         return rows
 
     def factoid_del(self, factoid_trigger):
+        factoid_trigger = factoid_trigger.lower()
         try:
             conn = sqlite3.connect(self.db_file)
             c = conn.cursor()
-            c.execute("DELETE FROM factoids WHERE factoid = ?", [factoid_trigger.lower()])
+            c.execute("DELETE FROM factoids WHERE factoid = ?", [factoid_trigger])
 
             conn.commit()
             conn.close()
@@ -216,13 +247,14 @@ class Factoids(moduletemplate.BotModule):
             print("factoid_del({}) error: {}".format(factoid_trigger, str(e)))
 
     def factoid_add(self, adder, factoid_trigger, factoid_response):
+        factoid_trigger = factoid_trigger.lower()
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
 
         try:
             conn = sqlite3.connect(self.db_file)
             c = conn.cursor()
             c.execute("INSERT INTO factoids (adder, timestamp, factoid, response) VALUES (?, ?, ?, ?)",
-                      [adder, timestamp, factoid_trigger.lower(), factoid_response])
+                      [adder, timestamp, factoid_trigger, factoid_response])
 
             conn.commit()
             conn.close()
@@ -230,8 +262,16 @@ class Factoids(moduletemplate.BotModule):
             # TODO: log
             print("factoid_add({}, {}, {}) error: {}".format(adder, factoid_trigger, factoid_response, str(e)))
 
-    def factoid_isrequest(self, word):
+    def factoid_isrequest(self, line):
         """What to check for to validate user is requesting a bot factoid"""
+        linelen = len(line.split())
+
+        if linelen > 1 and linelen < 4 and (line.startswith("$$") or line.startswith("$?")):
+            return True
+        return False
+
+    def factoid_isaltrequest(self, word):
+        """What to check for to validate user is requesting a bot factoid - alternative syntax"""
 
         if word.startswith("[[") and word.endswith("]]"):
             return True
