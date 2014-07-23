@@ -130,7 +130,7 @@ class Factoids(moduletemplate.BotModule):
         try:
             conn = sqlite3.connect(self.db_file)
             c = conn.cursor()
-            result = (c.execute("SELECT response FROM factoids WHERE factoid = ?", [factoid])
+            result = (c.execute("SELECT response FROM factoids WHERE factoid = ?", [factoid.lower()])
                       .fetchone())
 
             if len(result) == 1:
@@ -151,7 +151,7 @@ class Factoids(moduletemplate.BotModule):
         try:
             conn = sqlite3.connect(self.db_file)
             c = conn.cursor()
-            result = (c.execute("SELECT adder, timestamp, response FROM factoids WHERE factoid = ?", [factoid])
+            result = (c.execute("SELECT adder, timestamp, response FROM factoids WHERE factoid = ?", [factoid.lower()])
                       .fetchone())
 
             if len(result) > 2:
@@ -173,7 +173,7 @@ class Factoids(moduletemplate.BotModule):
         try:
             conn = sqlite3.connect(self.db_file)
             c = conn.cursor()
-            result = c.execute("SELECT adder FROM factoids WHERE factoid = ?", [factoid])
+            result = c.execute("SELECT adder FROM factoids WHERE factoid = ?", [factoid.lower()])
 
             if result.fetchone():
                 exists = True
@@ -215,14 +215,14 @@ class Factoids(moduletemplate.BotModule):
             # TODO: log
             print("factoid_del({}) error: {}".format(factoid_trigger, str(e)))
 
-    def factoid_add(self, adder, factoid_trigger, factoid_response):
+    def factoid_add(self, adder, factoid_trigger.lower(), factoid_response):
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
 
         try:
             conn = sqlite3.connect(self.db_file)
             c = conn.cursor()
             c.execute("INSERT INTO factoids (adder, timestamp, factoid, response) VALUES (?, ?, ?, ?)",
-                      [adder, timestamp, factoid_trigger, factoid_response])
+                      [adder, timestamp, factoid_trigger.lower(), factoid_response])
 
             conn.commit()
             conn.close()
