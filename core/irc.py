@@ -251,10 +251,10 @@ class IrcConnection:
 
         return cmd.getSuccess() or mod
 
-    def register_command(command, help, priv, aliases):
+    def register_command(self, command, help, priv, aliases=None):
         pass
-        
-    def unregister_command(command):
+
+    def unregister_command(self, command):
         pass
 
     def loadNetworkVariables(self, network):

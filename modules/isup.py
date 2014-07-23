@@ -16,7 +16,7 @@ class Isup(moduletemplate.BotModule):
 
     def on_module_load(self):
         self.colformat = formatter.IrcFormatter()
-        
+
         self.register_command("isup", "Checks if <website> is up using isup.me", self.PRIV_NONE, ["isdown"])
 
     def on_command(self, channel, nick, command, commandtext, mod=False, admin=False):

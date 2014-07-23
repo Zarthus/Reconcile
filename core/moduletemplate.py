@@ -79,7 +79,7 @@ class BotModule:
 
         return True
 
-    def register_command(self, command, help, priv, aliases):
+    def register_command(self, command, help, priv, aliases=None):
         """
         Register a command to the bots core help module.
 
@@ -96,7 +96,7 @@ class BotModule:
         if command in self._registered_commands:
             self._registered_commands = self._registered_commands.pop(command)
             self._conn.unregister_command(command)
-            
+
             return True
         return False
 
