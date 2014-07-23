@@ -108,7 +108,7 @@ class Factoids(moduletemplate.BotModule):
 
                 if not commandtext:
                     self.reply_notice(nick, "Please select a factoid trigger to delete")
-                if not self.factoid_isvalid(factoid_trigger):
+                if not self.factoid_isvalid(commandtext):
                     self.reply_notice(nick, "Factoid triggers may only contain A-Z and /")
                 elif self.factoid_exists(commandtext):
                     self.factoid_del(commandtext)
