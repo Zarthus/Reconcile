@@ -207,7 +207,7 @@ class Factoids(moduletemplate.BotModule):
         try:
             conn = sqlite3.connect(self.db_file)
             c = conn.cursor()
-            c.execute("DELETE FROM factoids WHERE factoid = ?", [factoid])
+            c.execute("DELETE FROM factoids WHERE factoid = ?", [factoid.lower()])
 
             conn.commit()
             conn.close()
@@ -215,7 +215,7 @@ class Factoids(moduletemplate.BotModule):
             # TODO: log
             print("factoid_del({}) error: {}".format(factoid_trigger, str(e)))
 
-    def factoid_add(self, adder, factoid_trigger.lower(), factoid_response):
+    def factoid_add(self, adder, factoid_trigger, factoid_response):
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
 
         try:
