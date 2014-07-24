@@ -20,7 +20,8 @@ class ModuleHandler:
     def sendCommand(self, target, nick, command, commandtext, mod=False, admin=False):
         for module in self.modules:
             if self.modules[module].on_command(target, nick, command, commandtext, mod, admin):
-                break
+                return True
+        return False
 
     def sendPrivmsg(self, target, nick, message):
         for module in self.modules:

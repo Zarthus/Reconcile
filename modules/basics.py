@@ -31,15 +31,21 @@ class BasicCommands(moduletemplate.BotModule):
 
         if mod:
             if command == "join":
+                if not commandtext:
+                    return self.reply_notice(nick, "Usage: join <channels to psart>")
+
                 self._conn.join(commandtext)
                 return self.reply_notice(nick, "Attempting to join: {}".format(commandtext.replace(",", ", ")))
 
             if command == "part":
+                if not commandtext:
+                    return self.reply_notice(nick, "Usage: part <channels to psart>")
+
                 self._conn.part(commandtext)
                 return self.reply_notice(nick, "Attempting to part: {}".format(commandtext.replace(",", ", ")))
 
             if command == "modules":
-                self.reply_notice(nick, "The following modules are loaded: {}"
+                return self.reply_notice(nick, "The following modules are loaded: {}"
                                         .format(str(self._conn.ModuleHandler.getLoadedModulesList())))
 
             if admin:
