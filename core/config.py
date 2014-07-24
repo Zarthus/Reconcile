@@ -134,41 +134,38 @@ class Config:
 
             if "nick" not in self.networks[network_name]:
                 self.networks[network_name]["nick"] = "ReconcileBot"
-                if verbose:
-                    print("'nick' was not configured in {} - default value assumed".format(network_name))
+                self.logger.log_verbose("'nick' was not configured in {} - default value assumed".format(network_name))
                 warnings += 1
 
             if "altnick" not in self.networks[network_name]:
                 self.networks[network_name]["altnick"] = self.networks[network_name]["nick"] + "_"
-                if verbose:
-                    print("'altnick' was not configured in {} - default value assumed".format(network_name))
+                self.logger.log_verbose("'altnick' was not configured in {} - default value assumed"
+                                        .format(network_name))
                 warnings += 1
 
             if "ident" not in self.networks[network_name]:
                 self.networks[network_name]["ident"] = self.networks[network_name]["nick"]
-                if verbose:
-                    print("'ident' was not configured in {} - default value assumed".format(network_name))
+                self.logger.log_verbose("'ident' was not configured in {} - default value assumed"
+                                        .format(network_name))
                 warnings += 1
 
             if "realname" not in self.networks[network_name]:
                 self.networks[network_name]["realname"] = self.networks[network_name]["nick"] + \
                     " (" + self.getGithubURL() + ")"
-                if verbose:
-                    print("'realname' was not configured in {} - default value assumed".format(network_name))
+                self.logger.log_verbose("'realname' was not configured in {} - default value assumed"
+                                        .format(network_name))
                 warnings += 1
 
             if "channels" not in self.networks[network_name]:
                 # Query the database to find out which channels to join.
                 self.networks[network_name]["channels"] = cm.getListFromNetwork(network_name)
-                if verbose:
-                    print("Will join {} channels on {}: {}"
-                          .format(len(self.networks[network_name]["channels"]),
-                                  network_name, self.networks[network_name]["channels"]))
+                self.logger.log_verbose("Will join {} channels on {}: {}"
+                                        .format(len(self.networks[network_name]["channels"]),
+                                                network_name, self.networks[network_name]["channels"]))
 
             if "account" not in self.networks[network_name]:
                 self.networks[network_name]["account"] = self.networks[network_name]["nick"]
-                if verbose:
-                    print("'account' was not configured in {} - 'nick' assumed".format(network_name))
+                self.logger.log_verbose("'account' was not configured in {} - 'nick' assumed".format(network_name))
                 warnings += 1
 
             if "password" not in self.networks[network_name]:
@@ -176,14 +173,12 @@ class Config:
 
             if "command_prefix" not in self.networks[network_name]:
                 self.networks[network_name]["command_prefix"] = "!"
-                if verbose:
-                    print("'command_prefix' was not configured in {} - '!' assumed".format(network_name))
+                self.logger.log_verbose("'command_prefix' was not configured in {} - '!' assumed".format(network_name))
                 warnings += 1
 
             if "invite_join" not in self.networks[network_name]:
                 self.networks[network_name]["invite_join"] = False
-                if verbose:
-                    print("'invite_join' was not configured in {} - False assumed".format(network_name))
+                self.logger.log_verbose("'invite_join' was not configured in {} - False assumed".format(network_name))
                 warnings += 1
 
             if "moderators" not in self.networks[network_name]:

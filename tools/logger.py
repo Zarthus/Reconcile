@@ -20,11 +20,11 @@ class Logger:
     def event(self, event, text):
         print("{} | {} - {}".format(self.network_name, event, text))
 
-    def verbose_log(self, text):
+    def log_verbose(self, text):
         if self.verbose:
             print("{} | {}".format(self.network_name, text))
 
-    def verbose_notice(self, text):
+    def notice_verbose(self, text):
         if self.verbose:
             print("{} | Notice: {}".format(self.network_name, text))
 
