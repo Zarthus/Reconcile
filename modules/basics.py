@@ -39,7 +39,7 @@ class BasicCommands(moduletemplate.BotModule):
 
         if command == "commandinfo":
             if not commandtext:
-                return reply_notice(nick, "Usage: commandinfo <command>")
+                return self.reply_notice(nick, "Usage: commandinfo <command>")
             return self.reply_notice(nick, self._conn.commandhelp.getCommandInfo(commandtext))
 
         if command == "help":
