@@ -76,7 +76,7 @@ def check_module(module_name):
         if opt[1]:
             print("  [x] Optional checks: This module: {}".format(opt[0].replace("_", " ")))
 
-    print("check_module('{}') ran with {} errors, information was printed to the console.\n"
+    print("check_module('{}') ran with {} errors.\n"
           .format(module_name, error_count))
 
     return error_count
