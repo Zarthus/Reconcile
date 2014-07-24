@@ -71,7 +71,7 @@ class CommandHelp:
         if self.commands[command]["aliases"]:
             for alias in self.commands[command]["aliases"]:
                 aliasstring += ", {}".format(alias)
-            aliasstring = "- aliases: {}".format(aliasstring[2:])
+            aliasstring = " - aliases: {}".format(aliasstring[2:])
 
         return "{}{} - {}{}{}".format(self.command_prefix, command, self.commands[command]["help"],
                                       privstring, aliasstring)
