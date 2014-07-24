@@ -30,7 +30,7 @@ def check_module(module_name):
         "imports_template": False,
         "extends_template": False,
         "utilises_callback": False,
-        "utilises_logger": False,  # Check against use of print() instead of self.logger.log
+        "utilises_logger": True,  # Check against use of print() instead of self.logger.log
     }
 
     optional = {
@@ -57,7 +57,7 @@ def check_module(module_name):
             requirements["utilises_callback"] = True
 
         if line.startswith("print("):
-            requirements["utilises_logger"] = True
+            requirements["utilises_logger"] = False
 
         if line.startswith("requireapikey"):
             optional["requires_api_key"] = True
