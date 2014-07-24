@@ -15,6 +15,7 @@ from core import channel
 from core import module
 from tools import validator
 from tools import formatter
+from tools import logger
 
 
 class IrcConnection:
@@ -38,7 +39,6 @@ class IrcConnection:
 
             if not data:
                 continue
-            print(">> {} | {}".format(self.server, data))
 
             words = data.split()
 
@@ -66,7 +66,6 @@ class IrcConnection:
                     self._processEvent(uinfo, event, target, params)
 
     def send_raw(self, data):
-        print("<< {} | {}".format(self.server, data))
         self.socket.send(bytes(data + "\r\n", "utf-8"))
 
     def say(self, target, message, format=False):
@@ -76,9 +75,11 @@ class IrcConnection:
         """
 
         if not format:
+            self.logger.log("Sending PRIVMSG '{}' to {}.".format(message, target))
             self.send_raw("PRIVMSG {} :{}".format(target, message))
         else:
             parser = formatter.IrcFormatter()
+            self.logger.log("Sending parsed PRIVMSG '{}' to {}.".format(message, target))
             self.send_raw("PRIVMSG {} :{}".format(target, parser.parse(message)))
 
     def action(self, target, action, format=False):
@@ -88,10 +89,12 @@ class IrcConnection:
         """
 
         if not format:
-            self.send_raw("PRIVMSG {} :\x01ACTION {}\x01".format(target, message))
+            self.logger.log("Sending ACTION '{}' to {}.".format(action, target))
+            self.send_raw("PRIVMSG {} :\x01ACTION {}\x01".format(target, action))
         else:
             parser = formatter.IrcFormatter()
-            self.send_raw("PRIVMSG {} :\x01ACTION {}\x01".format(target, parser.parse(message)))
+            self.logger.log("Sending parsed ACTION '{}' to {}.".format(action, target))
+            self.send_raw("PRIVMSG {} :\x01ACTION {}\x01".format(target, parser.parse(action)))
 
     def notice(self, target, notice, format=False):
         """
@@ -100,27 +103,34 @@ class IrcConnection:
         """
 
         if not format:
+            self.logger.log("Sending NOTICE '{}' to {}.".format(notice, target))
             self.send_raw("NOTICE {} :{}".format(target, notice))
         else:
             parser = formatter.IrcFormatter()
+            self.logger.log("Sending parsed NOTICE '{}' to {}.".format(action, target))
             self.send_raw("NOTICE {} :{}".format(target, parser.parse(notice)))
 
     def ctcp(self, target, ctcp):
+        self.logger.log("Sending CTCP '{}' to {}.".format(ctcp, target))
         self.send_raw("PRIVMSG {} :\x01{}\x01".format(target, ctcp))
 
     def ctcp_reply(self, target, ctcp, ctcpreply):
+        self.logger.log("Sending CTCPREPLY '{}' to {}.".format(ctcp, target))
         self.send_raw("NOTICE {} :\x01{} {}\x01".format(target, ctcp, ctcpreply))
 
     def join(self, channel):
+        self.logger.log("Joining channel: ".format(channel))
         self.send_raw("JOIN :{}".format(channel))
 
     def part(self, channel):
+        self.logger.log("Parting channel: ".format(channel))
         self.send_raw("PART :{}".format(channel))
 
     def quit(self, message=None):
         if not message:
             message = "{} shutting down.".format(self.currentnick)
 
+        self.logger.log("Quitting IRC: {}".format(message))
         self.send_raw("QUIT :{}".format(message))
         self.currentnick = None
         self.connected = False
@@ -130,6 +140,7 @@ class IrcConnection:
             print("Invalid nickname: {}".format(newnick))
             return False
 
+        self.logger.log("Assuming new nickname '{}' (changing from {})".format(newnick, self.currentnick))
         self.send_raw("NICK :{}".format(newnick))
         self.currentnick = newnick
         return True
@@ -140,8 +151,10 @@ class IrcConnection:
                             .format(self.server, self.currentnick))
 
         if self.ssl:
+            self.logger.log("Attempting to connect to server with SSL.")
             self._connect_ssl()
         else:
+            self.logger.log("Attempting to connect to server.")
             self._connect()
 
     def reconnect(self, message=None):
@@ -167,16 +180,20 @@ class IrcConnection:
                 self.on_action(nick, target, message.strip("\x01").strip("ACTION"))
             else:
                 self.on_ctcp(nick, target, message.strip("\x01"))
+        else:
+            self.logger.event("PRIVMSG", "{}/{}: {}".format(nick, target, message))
+            self.ModuleHandler.sendPrivmsg(target, nick, message)
 
         if message.startswith(self.command_prefix) or message.startswith(self.currentnick):
             self.on_command(nick, target, message, uinfo)
 
-        self.ModuleHandler.sendPrivmsg(target, nick, message)
-
     def on_action(self, nick, target, message):
+        self.logger.event("ACTION", "{}: * {} {}".format(nick, target, message))
         self.ModuleHandler.sendAction(target, nick, message)
 
     def on_ctcp(self, nick, target, ctcp):
+        self.logger.event("CTCP", "{}/{}: {}".format(nick, target, ctcp))
+
         if ctcp == "VERSION":
             self.ctcp_reply(nick, ctcp, "{} by {} v{} - {} - written in python".format(self.currentnick,
                             self.config.getMaintainer(), self.config.getVersion(), self.config.getGithubURL()))
@@ -191,34 +208,43 @@ class IrcConnection:
             self.ctcp_reply(nick, ctcp, "PONG - {}".format(time.ctime()))
 
     def on_notice(self, nick, target, message):
-        pass
+        self.logger.event("NOTICE", "{}/{}: {}".format(nick, target, message))
 
     def on_mode(self, nick, target, modes):
-        pass
+        self.logger.event("MODE", "{}/{} sets mode: {}".format(nick, target, modes))
 
     def on_join(self, nick, channel):
+        self.logger.event("JOIN", "{} joined {}".format(nick, channel))
+
         if nick == self.currentnick:
             self.channelmanager.addForNetwork(self.network_name, channel)
             if channel not in self.channels:
                 self.channels.append(channel)
 
     def on_part(self, nick, channel):
+        self.logger.event("PART", "{} parted {}".format(nick, channel))
+
         if nick == self.currentnick:
             self.channelmanager.delForNetwork(self.network_name, channel)
             if channel in self.channels:
                 self.channels.remove(channel)
 
     def on_kick(self, nick, channel, knick, reason):
+        self.logger.event("KICK", "{} was kicked from {} by {}: {}".format(knick, channel, nick, reason))
+
         if knick == self.currentnick:
             self.channelmanager.delForNetwork(self.network_name, channel)
             if channel in self.channels:
                 self.channels.remove(channel)
 
     def on_invite(self, nick, channel):
+        self.logger.event("INVITE", "{} invited me to join {}".format(nick, channel))
+
         if self.invite_join:
             self.join(channel)
 
     def on_quit(self, nick, message=None):
+        self.logger.event("INVITE", "{} has quit IRC: {}".format(nick, "Quit" if not message else message))
         pass
 
     def on_command(self, nick, target, message, uinfo):
@@ -249,7 +275,9 @@ class IrcConnection:
 
         mod = self.ModuleHandler.sendCommand(target, nick, command, params, info["mod"], info["admin"])
 
-        return cmd.getSuccess() or mod
+        self.logger.event("COMMAND", "{}/{} sent command '{}' with result: {}"
+                                     .format(nick, target, command, "Success" if mod else "Command did not exist"))
+        return mod
 
     def register_command(self, command, help, priv, aliases=None):
         pass
@@ -284,8 +312,9 @@ class IrcConnection:
 
         self.currentnick = None
 
+        self.logger = logger.Logger(self.network_name, self.config.getVerbose())
         self.validator = validator.Validator()
-        self.channelmanager = channel.ChannelManager(self.config.getDatabaseDir(), self.validator)
+        self.channelmanager = channel.ChannelManager(self.config.getDatabaseDir(), self.logger, self.validator)
 
     def _connect_ssl(self):
         raise NotImplementedError("Connecting to SSL has not yet been implemented.")
@@ -349,8 +378,6 @@ class IrcConnection:
             self.on_kick(nick, channel, target, params)
         elif event == "QUIT":
             self.on_quit(nick, params)
-
-        # TODO: handle modules ..
 
     def _loadModules(self):
         self.ModuleHandler = module.ModuleHandler(self)

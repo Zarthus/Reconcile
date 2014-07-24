@@ -12,6 +12,7 @@ class ModuleHandler:
 
     def __init__(self, conn):
         self._conn = conn
+        self.logger = self._conn.logger
 
         self.modules = {}
         self.module_dir = "modules"
@@ -32,7 +33,7 @@ class ModuleHandler:
     def loadAll(self):
         for module in self.getAvailableModulesList():
             if module in self.modules:
-                # TODO: Log
+                self.logger.notice("Attempted to load module '{}', but it was already loaded.".format(module))
                 continue
 
             self.load(module)
@@ -47,7 +48,7 @@ class ModuleHandler:
 
     def load(self, module):
         if module in self.modules:
-            # TODO: Log
+            self.logger.notice("Attempted to load module '{}', but it was already loaded.".format(module))
             return False
 
         success = True
@@ -56,13 +57,17 @@ class ModuleHandler:
             mod = importlib.import_module("{}.{}".format(self.module_dir, module[:-3]))
 
             for modulename, moduleclass in inspect.getmembers(mod, inspect.isclass):
-                self.modules[module] = moduleclass(self._conn, module)
+                self.modules[module] = moduleclass(self._conn, self.logger, module)
                 self.modules[module].on_module_load()
         except Exception as e:
-            print("Failed to load module {}: {}".format(module, str(e)))
-            # TODO: Log
+            self.logger.error("Failed to load module {}: {}".format(module, str(e)))
             success = False
             self.unload(module)
+
+        if success:
+            self.logger.log("Successfully loaded module {}".format(module))
+        else:
+            self.logger.notice("Failed to load module {}".format(module))
 
         return success
 
@@ -73,6 +78,7 @@ class ModuleHandler:
         self.modules[module].on_module_unload()
         self.modules[module]._unregister_commands()
         self.modules = self.modules.pop(module)
+        self.logger.log("Unloaded module {}".format(module))
 
         return True
 

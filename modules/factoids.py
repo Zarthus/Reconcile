@@ -176,8 +176,8 @@ class Factoids(moduletemplate.BotModule):
 
             conn.close()
         except sqlite3.Error as e:
-            # TODO: Log
             response = "factoid_getresponse({}) error: {}".format(factoid, str(e))
+            self.logger.error(response)
 
         return response
 
@@ -199,8 +199,8 @@ class Factoids(moduletemplate.BotModule):
 
             conn.close()
         except sqlite3.Error as e:
-            # TODO: Log
-            response = "An error has occured: {}".format(str(e))
+            response = "factoid_getinfo({}): {}".format(factoid, str(e))
+            self.logger.error(response)
 
         return response
 
@@ -218,8 +218,7 @@ class Factoids(moduletemplate.BotModule):
 
             conn.close()
         except sqlite3.Error as e:
-            # TODO: log
-            print("factoid_exists({}) error: {}".format(factoid, str(e)))
+            self.logger.error("factoid_exists({}) error: {}".format(factoid, str(e)))
 
         return exists
 
@@ -232,12 +231,11 @@ class Factoids(moduletemplate.BotModule):
         try:
             conn = sqlite3.connect(self.db_file)
             c = conn.cursor()
-            rows = c.execute("SELECT count(factoid) FROM factoids").rowcount
+            rows = len(c.execute("SELECT count(factoid) FROM factoids").fetchall())
 
             conn.close()
         except sqlite3.Error as e:
-            # TODO: Log
-            print("factoid_count() error: {}".format(str(e)))
+            self.logger.error("factoid_count() error: {}".format(str(e)))
 
         return rows
 
@@ -251,8 +249,7 @@ class Factoids(moduletemplate.BotModule):
             conn.commit()
             conn.close()
         except sqlite3.Error as e:
-            # TODO: log
-            print("factoid_del({}) error: {}".format(factoid_trigger, str(e)))
+            self.logger.error("factoid_del({}) error: {}".format(factoid_trigger, str(e)))
 
     def factoid_add(self, adder, factoid_trigger, factoid_response):
         factoid_trigger = factoid_trigger.lower()
@@ -267,8 +264,8 @@ class Factoids(moduletemplate.BotModule):
             conn.commit()
             conn.close()
         except sqlite3.Error as e:
-            # TODO: log
-            print("factoid_add({}, {}, {}) error: {}".format(adder, factoid_trigger, factoid_response, str(e)))
+            self.logger.error("factoid_add({}, {}, {}) error: {}"
+                              .format(adder, factoid_trigger, factoid_response, str(e)))
 
     def factoid_isrequest(self, line):
         """What to check for to validate user is requesting a bot factoid"""
@@ -294,5 +291,4 @@ class Factoids(moduletemplate.BotModule):
             conn.commit()
             conn.close()
         except sqlite3.Error as e:
-            # TODO: Log
-            print("factoid_make_db() error: Failed to create database factoids.db: {}".format(str(e)))
+            self.logger.error("factoid_make_db() error: Failed to create database factoids.db: {}".format(str(e)))

@@ -30,10 +30,12 @@ def check_module(module_name):
         "imports_template": False,
         "extends_template": False,
         "utilises_callback": False,
+        "utilises_logger": False,  # Check against use of print() instead of self.logger.log
     }
 
     optional = {
         "requires_api_key": False,
+        "registers_commands": False,
     }
 
     error_count = 0
@@ -54,8 +56,14 @@ def check_module(module_name):
         if line.startswith("def on_"):
             requirements["utilises_callback"] = True
 
+        if line.startswith("print("):
+            requirements["utilises_logger"] = True
+
         if line.startswith("requireapikey"):
             optional["requires_api_key"] = True
+
+        if line.startswith("self.register_command("):
+            optional["registers_commands"] = True
 
     for requirement in requirements.items():
         if requirement[1]:

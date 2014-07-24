@@ -9,6 +9,7 @@ import sys
 
 from core import channel
 from tools import hostmask
+from tools import logger
 
 
 class Config:
@@ -22,6 +23,7 @@ class Config:
     metadata = {}
 
     def __init__(self):
+        self.logger = logger.Logger("Configuration")
         self.load()
 
     def load(self):
@@ -29,7 +31,6 @@ class Config:
         file = "config.json"
 
         if os.path.isfile(file):
-            print("config.json found! Attempting to load configuration..")
             try:
                 config = json.load(open(file))
 
@@ -38,12 +39,13 @@ class Config:
                 self.metadata = config["metadata"]
 
                 val = self._validate()
-                print("Configuration successfully loaded. Networks: {}, Warnings: {}.".format(val[0], val[1]))
+                self.logger.log("Configuration successfully loaded. Networks: {}, Warnings: {}.\n"
+                                .format(val[0], val[1]))
             except Exception as e:
-                print("An error occured while loading config.json:\n{}".format(str(e)))
+                self.logger.error("An error occured while loading config.json:\n{}".format(str(e)))
                 sys.exit(1)
         else:
-            print("Could not find configuration file config.json, did you configure the bot?")
+            self.logger.error("Could not find configuration file config.json, did you configure the bot?")
             sys.exit(1)
 
     def getNetworks(self):
@@ -117,10 +119,10 @@ class Config:
     def _validate(self, verbose=None):
         count = 0
         warnings = 0
-        cm = channel.ChannelManager(self.getDatabaseDir())
+        cm = channel.ChannelManager(self.getDatabaseDir(), self.logger)
 
         if not verbose:
-            verbose = self.getVerbose()
+            verbose = self.logger.setVerbose(self.getVerbose())
 
         for network in self.networks:
             network_name = list(self.networks.keys())[count]
@@ -169,6 +171,9 @@ class Config:
                     print("'account' was not configured in {} - 'nick' assumed".format(network_name))
                 warnings += 1
 
+            if "password" not in self.networks[network_name]:
+                self.networks[network_name]["password"] = ""
+
             if "command_prefix" not in self.networks[network_name]:
                 self.networks[network_name]["command_prefix"] = "!"
                 if verbose:
@@ -180,6 +185,12 @@ class Config:
                 if verbose:
                     print("'invite_join' was not configured in {} - False assumed".format(network_name))
                 warnings += 1
+
+            if "moderators" not in self.networks[network_name]:
+                self.networks[network_name]["administrators"] = []
+
+            if "moderators" not in self.networks[network_name]:
+                self.networks[network_name]["moderators"] = []
 
             count += 1
 

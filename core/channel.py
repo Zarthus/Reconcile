@@ -7,15 +7,17 @@ import sqlite3
 
 
 class ChannelManager:
-    def __init__(self, db_dir, validator=None):
+    def __init__(self, db_dir, logger, validator=None):
+        self.logger = logger
+
         if not validator:
             try:
                 from tools import validator
                 self.validator = validator.Validator()
             except ImportError as e:
-                print("Failed to import Validator class: {}".format(str(e)))
+                self.logger.error("Failed to import Validator class: {}".format(str(e)))
             except Exception as e:
-                print("Failed to create Validator class: {}".format(str(e)))
+                self.logger.error("Failed to create Validator class: {}".format(str(e)))
         else:
             self.validator = validator
 
@@ -35,7 +37,7 @@ class ChannelManager:
 
             conn.close()
         except sqlite3.Error as e:
-            print("Failed to retrieve channels for {}:\n{}".format(network_name, str(e)))
+            self.logger.error("Failed to retrieve channels for {}:\n{}".format(network_name, str(e)))
 
         return channels
 
@@ -48,13 +50,14 @@ class ChannelManager:
             conn = sqlite3.connect(self.formatDBFileName(network_name))
             c = conn.cursor()
             c.execute("CREATE TABLE IF NOT EXISTS channels (channel TEXT UNIQUE PRIMARY KEY)")
-            c.execute("INSERT OR REPLACE INTO channels (channel) VALUES (?)", [channel])
+            rc = c.execute("INSERT OR REPLACE INTO channels (channel) VALUES (?)", [channel]).rowcount
             conn.commit()
             conn.close()
 
-            print("Added channel {} to {}.db".format(channel, network_name))
+            if rc:
+                self.logger.log("Added channel {} to {}.db".format(channel, network_name))
         except sqlite3.Error as e:
-            print("Failed to insert channel '{}' to {}.db: {}".format(channel, network_name, str(e)))
+            self.logger.error("Failed to insert channel '{}' to {}.db: {}".format(channel, network_name, str(e)))
 
     def delForNetwork(self, network_name, channel):
         if not self.validator.channel(channel):
@@ -65,12 +68,14 @@ class ChannelManager:
             conn = sqlite3.connect(self.formatDBFileName(network_name))
             c = conn.cursor()
             c.execute("CREATE TABLE IF NOT EXISTS channels (channel TEXT UNIQUE PRIMARY KEY)")
-            c.execute("DELETE FROM channels WHERE channel = ?", [channel])
+            rc = c.execute("DELETE FROM channels WHERE channel = ?", [channel]).rowcount
             conn.commit()
             conn.close()
-            print("Deleted channel {} from {}.db".format(channel, network_name))
+
+            if rc:
+                self.logger.log("Deleted channel {} from {}.db".format(channel, network_name))
         except sqlite3.Error as e:
-            print("Failed to delete channel '{}' from {}.db: {}".format(channel, network_name, str(e)))
+            self.logger.error("Failed to delete channel '{}' from {}.db: {}".format(channel, network_name, str(e)))
 
     def formatDBFileName(self, db_name):
         return self.db_dir + db_name + ".db"

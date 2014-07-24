@@ -8,9 +8,7 @@ from core import irc
 
 import time
 import traceback
-import sys
 
-print("Reconcile Python Bot -- Running Python {}.{}".format(sys.version_info[0], sys.version_info[1]))
 
 conf = config.Config()
 irc_connections = {}

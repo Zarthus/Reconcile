@@ -6,8 +6,9 @@ class BotModule:
     PRIV_ADMIN = "admin"
     PRIV_ADMINISTRATOR = "admin"
 
-    def __init__(self, conn, module_name):
+    def __init__(self, conn, logger, module_name):
         self._conn = conn
+        self.logger = logger
         self.module_name = module_name
         self.db_dir = self._conn.config.getDatabaseDir()
 

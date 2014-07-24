@@ -16,6 +16,7 @@ class BasicCommands(moduletemplate.BotModule):
         self.register_command("ping", "Make the bot reply with a message to see if it is still there.", self.PRIV_NONE)
         self.register_command("join", "Join a comma separated list of channels.", self.PRIV_MOD)
         self.register_command("part", "Leave a comma separated list of channels.", self.PRIV_MOD)
+        self.register_command("modules", "Display a list of loaded modules.", self.PRIV_MOD)
         self.register_command("shutdown", "Shut the entire bot down. This includes connections to different networks",
                               self.PRIV_ADMIN)
 
@@ -36,6 +37,10 @@ class BasicCommands(moduletemplate.BotModule):
             if command == "part":
                 self._conn.part(commandtext)
                 return self.reply_notice(nick, "Attempting to part: {}".format(commandtext.replace(",", ", ")))
+
+            if command == "modules":
+                self.reply_notice(nick, "The following modules are loaded: {}"
+                                        .format(str(self._conn.ModuleHandler.getLoadedModulesList())))
 
             if admin:
                 if command == "shutdown":
