@@ -58,7 +58,7 @@ class ModuleHandler:
             mod = importlib.import_module("{}.{}".format(self.module_dir, module[:-3]))
 
             for modulename, moduleclass in inspect.getmembers(mod, inspect.isclass):
-                self.modules[module] = moduleclass(self._conn, self.logger, module)
+                self.modules[module] = moduleclass(self._conn, self.logger, modulename)
                 self.modules[module].on_module_load()
         except Exception as e:
             self.logger.error("Failed to load module {}: {}".format(module, str(e)))

@@ -13,6 +13,7 @@ from ssl import SSLError
 
 from core import channel
 from core import module
+from core import commandhelp
 from tools import validator
 from tools import formatter
 from tools import logger
@@ -22,6 +23,12 @@ class IrcConnection:
     def __init__(self, network, config, modules=None):
         self.config = config
         self.loadNetworkVariables(network)
+
+        self.logger = logger.Logger(self.network_name, self.config.getVerbose())
+        self.validator = validator.Validator()
+        self.channelmanager = channel.ChannelManager(self.config.getDatabaseDir(), self.logger, self.validator)
+        self.commandhelp = commandhelp.CommandHelp(self.logger, self.config.getCommandPrefix(self.network_name))
+
         self._loadModules()
 
         self.numeric_regex = re.compile(":.* [0-9]{3}")
@@ -279,11 +286,11 @@ class IrcConnection:
                                      .format(nick, target, command, "Success" if mod else "Command did not exist"))
         return mod
 
-    def register_command(self, command, help, priv, aliases=None):
-        pass
+    def register_command(self, command, help, priv, aliases=None, module=None):
+        self.commandhelp.register(command, help, priv, aliases, module)
 
     def unregister_command(self, command):
-        pass
+        self.commandhelp.unregister(command)
 
     def loadNetworkVariables(self, network):
         self.connected = False
@@ -311,10 +318,6 @@ class IrcConnection:
         self.moderators = network["moderators"]
 
         self.currentnick = None
-
-        self.logger = logger.Logger(self.network_name, self.config.getVerbose())
-        self.validator = validator.Validator()
-        self.channelmanager = channel.ChannelManager(self.config.getDatabaseDir(), self.logger, self.validator)
 
     def _connect_ssl(self):
         raise NotImplementedError("Connecting to SSL has not yet been implemented.")

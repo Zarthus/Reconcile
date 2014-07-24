@@ -86,11 +86,11 @@ class BotModule:
 
         command: string, name of the command
         help: string, help description
-        priv: string, privilege required to perform commands (either none, mod, moderator, admin, or administrator)
+        priv: string, either self.PRIV_NONE, self.PRIV_MOD, or self.PRIV_ADMIN
         aliases: list, list of strings containing aliases of this command.
         """
 
-        self._conn.register_command(command, help, priv, aliases)
+        self._conn.register_command(command, help, priv, aliases, self.module_name)
         self._registered_commands.append(command)
 
     def unregister_command(self, command):
