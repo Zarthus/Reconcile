@@ -46,7 +46,7 @@ class BasicCommands(moduletemplate.BotModule):
 
             if command == "modules":
                 return self.reply_notice(nick, "The following modules are loaded: {}"
-                                        .format(str(self._conn.ModuleHandler.getLoadedModulesList())))
+                                               .format(str(self._conn.ModuleHandler.getLoadedModulesList())))
 
             if admin:
                 if command == "shutdown":
