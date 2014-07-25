@@ -38,8 +38,10 @@ class Ratelimit(threading.Thread):
         The burst limitation ends after 5 seconds of not sending any messages.
         """
 
+        itters = 0
+        burstlimit = 0
         while self.running:
-            burstlimit = 0
+            itters += 1
             self.getQueues()
 
             if self.queue_privmsg:
@@ -48,7 +50,7 @@ class Ratelimit(threading.Thread):
                     self.queue_privmsg.remove(message)
                     burstlimit += 1
 
-                    if burstlimit > self.burstlimit or self.lastburst > time.time() + 5:
+                    if burstlimit >= self.burstlimit or self.lastburst > time.time() + 5:
                         self.lastburst = time.time()
                         break
 
@@ -58,11 +60,16 @@ class Ratelimit(threading.Thread):
                     self.queue_notice.remove(message)
                     burstlimit += 1
 
-                    if burstlimit > self.burstlimit or self.lastburst > time.time() + 5:
+                    if burstlimit >= self.burstlimit or self.lastburst > time.time() + 5:
                         self.lastburst = time.time()
                         break
 
-            time.sleep(1)
+            time.sleep(2)
+
+            if itters % 3 == 0 and burstlimit != 0:
+                # Resets the burst limit every 6 seconds.
+                itters = 0
+                burstlimit = 0
 
     def stop(self):
         self._conn.logger.log("Stopping ratelimiter thread.")
