@@ -15,9 +15,9 @@ class BasicCommands(moduletemplate.BotModule):
         self.register_command("permissions", None, "Show if you are a bot administrator or moderator", self.PRIV_NONE)
         self.register_command("ping", None, "Make the bot reply with a message to see if it is still there.",
                               self.PRIV_NONE)
-        self.register_command("commands", None, "[module]", "List all commands or from those from [module]",
+        self.register_command("commands", "[module]", "List all commands or from those from [module]",
                               self.PRIV_NONE)
-        self.register_command("commandinfo", None, "<command>", "Display information about <command>", self.PRIV_NONE)
+        self.register_command("commandinfo", "<command>", "Display information about <command>", self.PRIV_NONE)
         self.register_command("help", "[command]", "Display help information about [command] or list all commands",
                               self.PRIV_NONE)
         self.register_command("join", "<channel[,channel]>", "Join a comma separated list of channels.",
@@ -85,7 +85,7 @@ class BasicCommands(moduletemplate.BotModule):
         if module:
             self.reply_notice(nick, "Listing commands from the module '{}'".format(module))
         else:
-            self.reply_notice(nick, "Listing all available commands.")
+            self.reply_notice(nick, "Listing all available commands:")
 
         max_cmds = 15
         cmdlist = ""

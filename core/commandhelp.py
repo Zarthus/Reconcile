@@ -22,7 +22,6 @@ class CommandHelp:
                               .format(command, module if module else "unknown"))
         self.commands[command] = {"name": command, "params": params, "help": help, "priv": priv, "aliases": aliases,
                                   "module": module}
-        print(str(self.commands[command]))
 
     def unregister(self, command):
         command = command.lower()
@@ -68,7 +67,7 @@ class CommandHelp:
         cmdparams = ""
 
         if self.commands[command]["params"]:
-            self.commands[command]["params"] + " "
+            cmdparams = self.commands[command]["params"] + " "
 
         if self.commands[command]["priv"] == self.PRIV_MOD:
             privstring = " - moderator command"
@@ -79,7 +78,7 @@ class CommandHelp:
             for alias in self.commands[command]["aliases"]:
                 aliasstring += ", {}".format(alias)
             aliasstring = " - aliases: {}".format(aliasstring[2:])
-        print(self.commands[command]["help"])
+
         return "{}{} {}- {}{}{}".format(self.command_prefix, command, cmdparams, self.commands[command]["help"],
                                         aliasstring, privstring)
 
