@@ -78,7 +78,7 @@ class Title(moduletemplate.BotModule):
             title = html.find(".//title").text
         except Exception:
             pass
-            
+
         if not len(title):
             return "Cannot find title for '{}'".format(url) if not ret_false else False
         return "'{}' at {}".format(title, urllib.parse.urlparse(url).netloc)
