@@ -73,8 +73,12 @@ class Title(moduletemplate.BotModule):
         if not html:
             return "Failed to parse '{}'".format(url) if not ret_false else False
 
-        title = html.find(".//title").text
-
+        title = ""
+        try:
+            title = html.find(".//title").text
+        except Exception:
+            pass
+            
         if not len(title):
             return "Cannot find title for '{}'".format(url) if not ret_false else False
         return "'{}' at {}".format(title, urllib.parse.urlparse(url).netloc)
