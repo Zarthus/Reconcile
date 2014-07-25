@@ -286,8 +286,8 @@ class IrcConnection:
                                      .format(nick, target, command, "Success" if mod else "Command did not exist"))
         return mod
 
-    def register_command(self, command, help, priv, aliases=None, module=None):
-        self.commandhelp.register(command, help, priv, aliases, module)
+    def register_command(self, command, params, help, priv, aliases=None, module=None):
+        self.commandhelp.register(command, params, help, priv, aliases, module)
 
     def unregister_command(self, command):
         self.commandhelp.unregister(command)

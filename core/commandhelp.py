@@ -14,13 +14,15 @@ class CommandHelp:
         self.command_prefix = command_prefix
         self.commands = {}
 
-    def register(self, command, help, priv, aliases=None, module=None):
+    def register(self, command, params, help, priv, aliases=None, module=None):
         command = command.lower()
 
         if command in self.commands:
             self.logger.error("Attempted to register command '{}' from {}, but it was already registered."
                               .format(command, module if module else "unknown"))
-        self.commands[command] = {"name": command, "help": help, "priv": priv, "aliases": aliases, "module": module}
+        self.commands[command] = {"name": command, "params": params, "help": help, "priv": priv, "aliases": aliases,
+                                  "module": module}
+        print(str(self.commands[command]))
 
     def unregister(self, command):
         command = command.lower()
@@ -47,7 +49,7 @@ class CommandHelp:
             if (command["priv"] == self.PRIV_NONE or
                     list_mod and command["priv"] == self.PRIV_MOD or
                     list_admin and command["priv"] == self.PRIV_ADMIN or
-                    module and command["module"].lower() == module.lower()):
+                    module and command["module"] and command["module"].lower() == module.lower()):
                 cmds.append(command["name"])
 
         if sort:
@@ -63,6 +65,11 @@ class CommandHelp:
 
         privstring = ""
         aliasstring = ""
+        cmdparams = ""
+
+        if self.commands[command]["params"]:
+            self.commands[command]["params"] + " "
+
         if self.commands[command]["priv"] == self.PRIV_MOD:
             privstring = " - moderator command"
         elif self.commands[command]["priv"] == self.PRIV_ADMIN:
@@ -72,9 +79,9 @@ class CommandHelp:
             for alias in self.commands[command]["aliases"]:
                 aliasstring += ", {}".format(alias)
             aliasstring = " - aliases: {}".format(aliasstring[2:])
-
-        return "{}{} - {}{}{}".format(self.command_prefix, command, self.commands[command]["help"],
-                                      privstring, aliasstring)
+        print(self.commands[command]["help"])
+        return "{}{} {}- {}{}{}".format(self.command_prefix, command, cmdparams, self.commands[command]["help"],
+                                        aliasstring, privstring)
 
     def getCommandInfo(self, command):
         command = command.lower()

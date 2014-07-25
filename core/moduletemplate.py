@@ -80,7 +80,7 @@ class BotModule:
 
         return True
 
-    def register_command(self, command, help, priv, aliases=None):
+    def register_command(self, command, params, help, priv, aliases=None):
         """
         Register a command to the bots core help module.
 
@@ -90,7 +90,7 @@ class BotModule:
         aliases: list, list of strings containing aliases of this command.
         """
 
-        self._conn.register_command(command, help, priv, aliases, self.module_name)
+        self._conn.register_command(command, params, help, priv, aliases, self.module_name)
         self._registered_commands.append(command)
 
     def unregister_command(self, command):

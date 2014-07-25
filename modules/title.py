@@ -14,7 +14,7 @@ import urllib.parse
 class Title(moduletemplate.BotModule):
 
     def on_module_load(self):
-        self.register_command("title", "Get the title from <website>", self.PRIV_NONE, ["gettitle"])
+        self.register_command("title", "<website>", "Get the title from <website>", self.PRIV_NONE, ["gettitle"])
 
     def on_privmsg(self, channel, nick, message):
         for word in message.split():
