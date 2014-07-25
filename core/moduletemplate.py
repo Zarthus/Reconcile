@@ -54,7 +54,7 @@ class BotModule:
 
         return False
 
-    def reply_channel(self, channel, nick, message):
+    def reply_channel(self, channel, nick, message, parse=False):
         """
         Reply to the user by sending a message to the channel,
         Use this for comamnds that contain non-sensitive data that completed successfully.
@@ -66,17 +66,17 @@ class BotModule:
         if nick:
             message = "{}: {}".format(nick, message)
 
-        self._conn.say(channel, message)
+        self._conn.say(channel, message, parse)
 
         return True
 
-    def reply_notice(self, nick, message):
+    def reply_notice(self, nick, message, parse=False):
         """
         Reply to the user with a notice,
         Use this for errors, syntax information or sending private data.
         """
 
-        self._conn.notice(nick, message)
+        self._conn.notice(nick, message, parse)
 
         return True
 

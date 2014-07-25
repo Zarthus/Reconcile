@@ -14,6 +14,7 @@ from ssl import SSLError
 from core import channel
 from core import module
 from core import commandhelp
+from core import ratelimit
 from tools import validator
 from tools import formatter
 from tools import logger
@@ -28,6 +29,7 @@ class IrcConnection:
         self.validator = validator.Validator()
         self.channelmanager = channel.ChannelManager(self.config.getDatabaseDir(), self.logger, self.validator)
         self.commandhelp = commandhelp.CommandHelp(self.logger, self.config.getCommandPrefix(self.network_name))
+        self.ratelimiter = ratelimit.Ratelimit(self, self.logger)
 
         self._loadModules()
 
@@ -76,18 +78,12 @@ class IrcConnection:
         self.socket.send(bytes(data + "\r\n", "utf-8"))
 
     def say(self, target, message, format=False):
-        """
-        Sends a message to target
-        With formatting enabled, we will attempt to parse the contents through the IrcFormatter class.
-        """
+        """Queue a PRIVMG to the ratelimiter."""
+        self.queue_privmsg.append([target, message, format])
 
-        if not format:
-            self.logger.log("Sending PRIVMSG '{}' to {}.".format(message, target))
-            self.send_raw("PRIVMSG {} :{}".format(target, message))
-        else:
-            parser = formatter.IrcFormatter()
-            self.logger.log("Sending parsed PRIVMSG '{}' to {}.".format(message, target))
-            self.send_raw("PRIVMSG {} :{}".format(target, parser.parse(message)))
+    def notice(self, target, notice, format=False):
+        """Queue a NOTICE to the ratelimiter."""
+        self.queue_notice.append([target, notice, format])
 
     def action(self, target, action, format=False):
         """
@@ -102,20 +98,6 @@ class IrcConnection:
             parser = formatter.IrcFormatter()
             self.logger.log("Sending parsed ACTION '{}' to {}.".format(action, target))
             self.send_raw("PRIVMSG {} :\x01ACTION {}\x01".format(target, parser.parse(action)))
-
-    def notice(self, target, notice, format=False):
-        """
-        Sends a NOTICE to target
-        With formatting enabled, we will attempt to parse the contents through the IrcFormatter class.
-        """
-
-        if not format:
-            self.logger.log("Sending NOTICE '{}' to {}.".format(notice, target))
-            self.send_raw("NOTICE {} :{}".format(target, notice))
-        else:
-            parser = formatter.IrcFormatter()
-            self.logger.log("Sending parsed NOTICE '{}' to {}.".format(action, target))
-            self.send_raw("NOTICE {} :{}".format(target, parser.parse(notice)))
 
     def ctcp(self, target, ctcp):
         self.logger.log("Sending CTCP '{}' to {}.".format(ctcp, target))
@@ -139,6 +121,7 @@ class IrcConnection:
 
         self.logger.log("Quitting IRC: {}".format(message))
         self.send_raw("QUIT :{}".format(message))
+        self.ratelimiter.stop()
         self.currentnick = None
         self.connected = False
 
@@ -163,6 +146,7 @@ class IrcConnection:
         else:
             self.logger.log("Attempting to connect to server.")
             self._connect()
+        self.ratelimiter.start()
 
     def reconnect(self, message=None):
         if not self.connected:
@@ -319,6 +303,9 @@ class IrcConnection:
 
         self.currentnick = None
 
+        self.queue_privmsg = []
+        self.queue_notice = []
+
     def _connect_ssl(self):
         raise NotImplementedError("Connecting to SSL has not yet been implemented.")
 
@@ -385,3 +372,14 @@ class IrcConnection:
     def _loadModules(self):
         self.ModuleHandler = module.ModuleHandler(self)
         self.ModuleHandler.loadAll()
+
+    def _getPrivmsgQueue(self):
+        """Gets the message queue from the ratelimiter thread."""
+        queue = self.queue_privmsg
+        self.queue_privmsg = []
+        return queue
+
+    def _getNoticeQueue(self):
+        queue = self.queue_notice
+        self.queue_notice = []
+        return queue

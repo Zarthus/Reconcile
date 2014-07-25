@@ -142,7 +142,6 @@ class Factoids(moduletemplate.BotModule):
                 return True
 
             if command == "delfactoid":
-
                 if not commandtext:
                     self.reply_notice(nick, "Please select a factoid trigger to delete")
                 if not self.factoid_isvalid(commandtext):
