@@ -48,7 +48,10 @@ class Substitutions(moduletemplate.BotModule):
             return False
 
         pattern = re.compile(search)
-        for msg in self.previous_messages[channel]:
+
+        msglist = self.previous_messages[channel]
+        msglist.reverse()
+        for msg in msglist:
             if pattern.search(msg):
                 sub = ""
 
