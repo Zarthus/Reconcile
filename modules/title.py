@@ -15,19 +15,22 @@ class Title(moduletemplate.BotModule):
 
     def on_module_load(self):
         self.register_command("title", "<website>", "Get the title from <website>", self.PRIV_NONE, ["gettitle"])
+        self.last_title = None
 
     def on_privmsg(self, channel, nick, message):
         for word in message.split():
             if self.is_url(word):
                 title = self.get_title(word, True, True)
-                if title:
+                if title and title != self.last_title:
+                    self.last_title = title
                     self.reply_channel(channel, None, "({}) {}".format(nick, title))
 
     def on_action(self, channel, nick, action):
         for word in action.split():
             if self.is_url(word):
                 title = self.get_title(word, True, True)
-                if title:
+                if title and title != self.last_title:
+                    self.last_title = title
                     self.reply_channel(channel, None, "({}) {}".format(nick, title))
 
     def on_command(self, channel, nick, command, commandtext, mod=False, admin=False):

@@ -2,7 +2,7 @@
 Substitutions by Zarthus
 Licensed under MIT
 
-Perform regex substitutions on recent messages in order to correct or improve them!/
+Perform regex substitutions on recent messages in order to correct or improve them!
 """
 
 from core import moduletemplate
