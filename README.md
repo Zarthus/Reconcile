@@ -78,7 +78,9 @@ Here is a copy of a configuration with comments -- but do not copy it directly, 
     "github_url": "https:\/\/github.com\/zarthus\/reconcile", // a link to the github repository where the source code can be found
     "verbose": true, // verbosity; some things will not be logged if this is set to false. Can be useful for debugging.
     
-    "db_dir": "db/" // In which folder do we store database files?
+    "db_dir": "db/", // In which folder do we store database files?
+    
+    "timestamp": "%H:%M" // strftime format of how a timestamp should look, https://docs.python.org/3/library/time.html#time.strftime
   }
 }
 

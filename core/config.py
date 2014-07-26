@@ -38,6 +38,7 @@ class Config:
                 self.api_keys = config["api_keys"]
                 self.metadata = config["metadata"]
 
+                self.logger.setTimestamp(self.getTimestampFormat())
                 val = self._validate()
                 self.logger.log("Configuration successfully loaded. Networks: {}, Warnings: {}.\n"
                                 .format(val[0], val[1]))
@@ -100,6 +101,9 @@ class Config:
 
     def getVerbose(self):
         return True if "verbose" in self.metadata and self.metadata["verbose"] else False
+
+    def getTimestampFormat(self):
+        return self.metadata["timestamp"] if "timestamp" in self.metadata else "%H:%M"
 
     def getDatabaseDir(self):
         if "db_dir" in self.metadata:
