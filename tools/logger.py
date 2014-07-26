@@ -4,6 +4,7 @@ Logger class for the bot
 
 import time
 
+
 class Logger:
     def __init__(self, network_name, verbose=False, timestamp="%H:%M"):
         self.network_name = network_name
