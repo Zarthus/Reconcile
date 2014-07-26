@@ -22,15 +22,12 @@ class Substitutions(moduletemplate.BotModule):
             if len(msg) > 2 and len(msg) < 5:
                 sub = self.substitute(channel, msg[1], msg[2])
                 if sub:
-                    # [0] = username whom is being corrected, [1:] = message.
-                    submsg = sub.split(" ")
-
-                    if submsg[0] == nick:
+                    if sub[0] == nick:
                         self.reply_channel(channel, None, "What {} meant to say: {}"
-                                                          .format(nick, " ".join(submsg[1:])))
+                                                          .format(nick, sub[1]))
                     else:
                         self.reply_channel(channel, None, "What {} thinks {} meant to say: {}"
-                                                          .format(nick, submsg[0], " ".join(submsg[1:])))
+                                                          .format(nick, sub[0], sub[1]))
 
         self.store(channel, "{} {}".format(nick, message))
 
@@ -53,6 +50,9 @@ class Substitutions(moduletemplate.BotModule):
         msglist.reverse()
         for msg in msglist:
             if pattern.search(msg):
+                msg = msg.split(" ")
+                nick = msg[0]
+                msg = " ".join(msg[1:])
                 sub = ""
 
                 try:
@@ -61,6 +61,6 @@ class Substitutions(moduletemplate.BotModule):
                     pass
 
                 if sub:
-                    return sub
+                    return [nick, sub]
                 break
         return False
