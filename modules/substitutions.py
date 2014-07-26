@@ -47,9 +47,9 @@ class Substitutions(moduletemplate.BotModule):
         if channel not in self.previous_messages:
             return False
 
-        pattern = re.compile("(.* )?" + re.escape(search) + "( .*)?")
+        pattern = re.compile(search)
         for msg in self.previous_messages[channel]:
-            if pattern.match(msg):
+            if pattern.search(msg):
                 sub = ""
 
                 try:
