@@ -13,6 +13,7 @@ class BotModule:
         self.db_dir = self._conn.config.getDatabaseDir()
 
         self._registered_commands = []
+        self.api_key = {}
 
     def on_module_load(self):
         """Module constructor"""

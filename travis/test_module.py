@@ -59,7 +59,7 @@ def check_module(module_name):
         if line.startswith("print("):
             requirements["utilises_logger"] = False
 
-        if line.startswith("requireapikey"):
+        if line.startswith("self.requireapikey"):
             optional["requires_api_key"] = True
 
         if line.startswith("self.register_command("):
