@@ -104,5 +104,5 @@ class Ratelimit(threading.Thread):
             self._conn.send_raw("NOTICE {} :{}".format(target, notice))
         else:
             parser = formatter.IrcFormatter()
-            self.logger.log("Sending parsed NOTICE '{}' to {}.".format(action, target))
+            self.logger.log("Sending parsed NOTICE '{}' to {}.".format(notice, target))
             self._conn.send_raw("NOTICE {} :{}".format(target, parser.parse(notice)))
