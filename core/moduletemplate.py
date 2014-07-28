@@ -87,7 +87,7 @@ class BotModule:
         """
         Reply to the user or channel with an ACTION,
         Useful for general fun commands or when the bot needs to 'do' something.
-        
+
         ACTIONs are not rate limited, and should be used with care.
         """
 

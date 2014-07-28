@@ -155,7 +155,7 @@ class Factoids(moduletemplate.BotModule):
 
             if command == "countfactoid" or command == "countfactoids":
                 return self.reply_target(target, nick, "There are currently {} responses registered in my database."
-                                                         .format(self.factoid_count()))
+                                                       .format(self.factoid_count()))
 
         return False
 

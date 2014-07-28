@@ -108,7 +108,7 @@ class Google(moduletemplate.BotModule):
             except Exception:
                 if gurl:
                     return ("The Google Image Search request failed because no results were found. (Search: {})"
-                           .format(gurl))
+                            .format(gurl))
                 else:
                     return "The Google Image Search request failed because no results were found."
 
