@@ -49,13 +49,13 @@ class Factoids(moduletemplate.BotModule):
             else:
                 if len(words) < 3:
                     return self.reply_notice(nick, "Syntax error, usage: $? <nick> <factoid>")
-                target = words[1]
+                ftarget = words[1]
                 factoid = words[2]
 
                 if not self.factoid_isvalid(factoid):
                     self.reply_notice(nick, "Factoid request '{}' is an invalid factoid trigger name.".format(factoid))
                 elif self.factoid_exists(factoid):
-                    self.reply_target(target, target, self.colformat.parse(self.factoid_getresponse(factoid)))
+                    self.reply_target(target, ftarget, self.colformat.parse(self.factoid_getresponse(factoid)))
                 else:
                     self.reply_notice(nick, "Could not find factoid '{}' in my database.".format(factoid))
 
@@ -65,22 +65,22 @@ class Factoids(moduletemplate.BotModule):
                 if self.factoid_isaltrequest(word):
                     # Slice off [[ ]]
                     factoid = word[2:-2]
-                    target = None
+                    ftarget = None
 
                     # check if it was targeting a name [[name:factoid]]
                     if ":" in factoid:
                         split = factoid.split(":")
-                        target = split[0]
+                        ftarget = split[0]
 
                         if len(split) > 1:
                             factoid = split[1]
 
-                        if not self.validator.nickname(target):
-                            target = None
+                        if not self.validator.nickname(ftarget):
+                            ftarget = None
                             factoid = split[0]
 
                     if self.factoid_exists(factoid):
-                        self.reply_target(target, target, self.colformat.parse(self.factoid_getresponse(factoid)))
+                        self.reply_target(target, ftarget, self.colformat.parse(self.factoid_getresponse(factoid)))
                     else:
                         self.reply_notice(nick, "Could not find factoid '{}' in my database.".format(factoid))
 
