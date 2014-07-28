@@ -194,7 +194,10 @@ class IrcConnection:
             self.ctcp_reply(nick, ctcp, "PONG - {}".format(time.ctime()))
 
     def on_notice(self, nick, target, message):
-        self.logger.event("NOTICE", "{}/{}: {}".format(nick, target, message))
+        if target == "*":
+            self.logger.log(message)
+        else:
+            self.logger.event("NOTICE", "{}/{}: {}".format(nick, target, message))
 
     def on_mode(self, nick, target, modes):
         self.logger.event("MODE", "{}/{} sets mode: {}".format(nick, target, modes))
