@@ -2,7 +2,7 @@
 factoids.py by Zarthus
 Licensed under MIT
 
-factoid responses.
+Factoids: brief answers to frequently asked questions and other responses.
 """
 
 from core import moduletemplate
@@ -15,7 +15,6 @@ import sqlite3
 
 
 class Factoids(moduletemplate.BotModule):
-    """Factoids: brief answers to frequently asked questions and other responses."""
 
     def on_module_load(self):
         self.colformat = formatter.IrcFormatter()

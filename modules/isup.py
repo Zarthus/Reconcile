@@ -12,7 +12,6 @@ import requests
 
 
 class Isup(moduletemplate.BotModule):
-    """checks if a website is up or not"""
 
     def on_module_load(self):
         self.colformat = formatter.IrcFormatter()

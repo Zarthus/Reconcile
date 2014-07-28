@@ -34,7 +34,6 @@ from core import moduletemplate
 
 
 class Example(moduletemplate.BotModule):
-    """Example Module class"""
 
     def on_module_load(self):
         # Any exceptions raised within on_module_load will prevent the module from loading,
@@ -115,7 +114,6 @@ from core import moduletemplate
 
 
 class MyModule(moduletemplate.BotModule):
-    """My Module Description"""
 
     def on_module_load(self):
         pass

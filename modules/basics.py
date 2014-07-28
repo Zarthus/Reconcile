@@ -9,7 +9,6 @@ from core import moduletemplate
 
 
 class BasicCommands(moduletemplate.BotModule):
-    """A series of basic commands any bot should have"""
 
     def on_module_load(self):
         self.register_command("permissions", None, "Show if you are a bot administrator or moderator", self.PRIV_NONE)
