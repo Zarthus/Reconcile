@@ -102,7 +102,7 @@ class BotModule:
             return True
         return False
 
-    def getConfigMetadata(metadata):
+    def getConfigMetadata(self, metadata):
         return self._conn.config.getMetadata(metadata)
 
     def requireApiKey(self, api_name):

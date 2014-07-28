@@ -5,7 +5,6 @@ Module handler -- handles the loading, unloading, and sending instructions to mo
 import os
 import importlib
 import inspect
-import modules
 
 
 class ModuleHandler:

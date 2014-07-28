@@ -59,7 +59,6 @@ class WolframAlpha(moduletemplate.BotModule):
         if root.attrib["success"] == "false":
             return "WolframAlpha did not find any data. See the URL for alternative interpretations."
 
-        result = ""
         title = ""
 
         for pod in root:

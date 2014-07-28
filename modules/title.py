@@ -57,7 +57,7 @@ class Title(moduletemplate.BotModule):
 
         try:
             html = lxml.html.parse(url)
-        except IOError as e:
+        except IOError:
             if not url.startswith("http"):
                 fail_retry = True
         except Exception:
@@ -68,8 +68,6 @@ class Title(moduletemplate.BotModule):
 
             try:
                 html = lxml.html.parse(url)
-            except IOError as e:
-                pass
             except Exception:
                 pass
 

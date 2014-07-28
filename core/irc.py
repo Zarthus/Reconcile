@@ -6,11 +6,6 @@ import socket
 import time
 import re
 
-from ssl import wrap_socket
-from ssl import CERT_NONE
-from ssl import CERT_REQUIRED
-from ssl import SSLError
-
 from core import channel
 from core import module
 from core import commandhelp

@@ -71,7 +71,6 @@ Here is a copy of a configuration with comments -- but do not copy it directly, 
     "something": "", // Api key for some application
     "somethingelse": "" // Api key for another application.
   },
-
   
   // bot metadata, generally data that is used in certain modules.
   "metadata": {

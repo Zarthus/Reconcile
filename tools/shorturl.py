@@ -4,7 +4,6 @@ Licensed under MIT
 """
 
 import requests
-import json
 
 
 class ShortUrl:
