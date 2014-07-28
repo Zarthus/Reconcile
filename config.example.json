@@ -29,7 +29,8 @@
 
   "api_keys": {
     "lastfm": "",
-    "wolframalpha": ""
+    "wolframalpha": "",
+    "scenesat": ""
   },
 
   "metadata": {
