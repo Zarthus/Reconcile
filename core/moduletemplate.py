@@ -23,20 +23,20 @@ class BotModule:
         """Module destructor"""
         pass
 
-    def on_privmsg(self, channel, nick, message):
+    def on_privmsg(self, target, nick, message):
         """
-        On privmsg gets sent to the module whenever someone says something to a channel.
+        On privmsg gets sent to the module whenever someone says something to a target.
 
         You can handle things like regexes in here, but for general commands you should
         use on_command.
         """
         pass
 
-    def on_action(self, channel, nick, action):
+    def on_action(self, target, nick, action):
         """See on_privmsg"""
         pass
 
-    def on_command(self, channel, nick, command, commandtext, mod=False, admin=False):
+    def on_command(self, target, nick, command, commandtext, mod=False, admin=False):
         """
         On command is triggered when someone prefixes the bot by its name, or
         When the command_prefix is sent as first character in a message.
@@ -45,7 +45,7 @@ class BotModule:
         In here you could define something like:
 
         if command == "hello":
-            return self.reply_channel(channel, nick, "Hello!")
+            return self.reply_target(target, nick, "Hello!")
 
         The returning of True is important! This means no other modules
         will receive an on_command call, because one has already been processed.
@@ -55,19 +55,21 @@ class BotModule:
 
         return False
 
-    def reply_channel(self, channel, nick, message, parse=False):
+    def reply_target(self, target, nick, message, parse=False):
         """
-        Reply to the user by sending a message to the channel,
+        Reply to the user by sending a message to the channel or user,
         Use this for comamnds that contain non-sensitive data that completed successfully.
 
         Not specifying 'nick' means the command will be sent without addressing the user,
         it may be useful in some situations, but generally is not recommended.
+
+        You should always use a channel as target unless the command was performed in a private message.
         """
 
-        if nick:
+        if nick and not target.startswith("#"):
             message = "{}: {}".format(nick, message)
 
-        self._conn.say(channel, message, parse)
+        self._conn.say(target, message, parse)
 
         return True
 
@@ -78,6 +80,18 @@ class BotModule:
         """
 
         self._conn.notice(nick, message, parse)
+
+        return True
+
+    def reply_action(self, target, action, parse=False):
+        """
+        Reply to the user or channel with an ACTION,
+        Useful for general fun commands or when the bot needs to 'do' something.
+        
+        ACTIONs are not rate limited, and should be used with care.
+        """
+
+        self._conn.action(target, action, parse)
 
         return True
 

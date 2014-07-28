@@ -24,7 +24,7 @@ class WolframAlpha(moduletemplate.BotModule):
 
         self.last_request = int(time.time())
 
-    def on_command(self, channel, nick, command, commandtext, mod=False, admin=False):
+    def on_command(self, target, nick, command, commandtext, mod=False, admin=False):
         if command == "wolframalpha" or command == "wa" or command == "wolfram":
             if "wolframalpha" not in self.api_key:
                 # The module would initially not be loaded if there is no API Key, but safety checks never hurt anyone.
@@ -42,7 +42,7 @@ class WolframAlpha(moduletemplate.BotModule):
 
             query_url = "http://www.wolframalpha.com/input/?i={}".format(urllib.parse.quote(commandtext))
             query_response = self.compute(commandtext)
-            return self.reply_channel(channel, nick, "{} - {}".format(query_response, query_url))
+            return self.reply_target(target, nick, "{} - {}".format(query_response, query_url))
         return False
 
     def compute(self, query):

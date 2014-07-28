@@ -21,18 +21,18 @@ class Google(moduletemplate.BotModule):
                               "Query google image search for <search> and return the first result.",
                               self.PRIV_NONE, ["gis", "imagesearch"])
 
-    def on_command(self, channel, nick, command, commandtext, mod=False, admin=False):
+    def on_command(self, target, nick, command, commandtext, mod=False, admin=False):
         if command == "google" or command == "search":
             if not commandtext:
                 return self.reply_notice(nick, "Usage: google <search>")
 
-            return self.reply_channel(channel, nick, self.google_search(commandtext))
+            return self.reply_target(target, nick, self.google_search(commandtext))
 
         if command == "image" or command == "gis" or command == "imagesearch":
             if not commandtext:
                 return self.reply_notice(nick, "Usage: image <search>")
 
-            return self.reply_channel(channel, nick, self.google_image_search(commandtext))
+            return self.reply_target(target, nick, self.google_image_search(commandtext))
 
         return False
 

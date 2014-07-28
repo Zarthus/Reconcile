@@ -28,14 +28,14 @@ class BasicCommands(moduletemplate.BotModule):
                               "Shut the entire bot down. This includes connections to different networks",
                               self.PRIV_ADMIN)
 
-    def on_command(self, channel, nick, command, commandtext, mod=False, admin=False):
+    def on_command(self, target, nick, command, commandtext, mod=False, admin=False):
 
         if command == "permissions":
             return self.reply_notice(nick, "Permissions for {}: Administrator: {} - Moderator: {}"
                                            .format(nick, "yes" if admin else "no", "yes" if mod else "no"))
 
         if command == "ping":
-            return self.reply_channel(channel, nick, "Yes, yes. I am here")
+            return self.reply_target(target, nick, "Yes, yes. I am here")
 
         if command == "commands":
             if not commandtext:
@@ -56,14 +56,14 @@ class BasicCommands(moduletemplate.BotModule):
         if mod:
             if command == "join":
                 if not commandtext:
-                    return self.reply_notice(nick, "Usage: join <channels to psart>")
+                    return self.reply_notice(nick, "Usage: join <channels to part>")
 
                 self._conn.join(commandtext)
                 return self.reply_notice(nick, "Attempting to join: {}".format(commandtext.replace(",", ", ")))
 
             if command == "part":
                 if not commandtext:
-                    return self.reply_notice(nick, "Usage: part <channels to psart>")
+                    return self.reply_notice(nick, "Usage: part <channels to part>")
 
                 self._conn.part(commandtext)
                 return self.reply_notice(nick, "Attempting to part: {}".format(commandtext.replace(",", ", ")))

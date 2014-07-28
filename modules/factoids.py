@@ -33,7 +33,7 @@ class Factoids(moduletemplate.BotModule):
         self.register_command("countfactoid", None, "Returns the number of factoids in the database.",
                               self.PRIV_MOD, ["countfactoids"])
 
-    def on_privmsg(self, channel, nick, message):
+    def on_privmsg(self, target, nick, message):
         words = message.split()
 
         if self.factoid_isrequest(message):
@@ -43,7 +43,7 @@ class Factoids(moduletemplate.BotModule):
                 if not self.factoid_isvalid(factoid):
                     self.reply_notice(nick, "Factoid request '{}' is an invalid factoid trigger name.".format(factoid))
                 elif self.factoid_exists(factoid):
-                    self.reply_channel(channel, None, self.colformat.parse(self.factoid_getresponse(factoid)))
+                    self.reply_target(target, None, self.colformat.parse(self.factoid_getresponse(factoid)))
                 else:
                     self.reply_notice(nick, "Could not find factoid '{}' in my database.".format(factoid))
             else:
@@ -55,7 +55,7 @@ class Factoids(moduletemplate.BotModule):
                 if not self.factoid_isvalid(factoid):
                     self.reply_notice(nick, "Factoid request '{}' is an invalid factoid trigger name.".format(factoid))
                 elif self.factoid_exists(factoid):
-                    self.reply_channel(channel, target, self.colformat.parse(self.factoid_getresponse(factoid)))
+                    self.reply_target(target, target, self.colformat.parse(self.factoid_getresponse(factoid)))
                 else:
                     self.reply_notice(nick, "Could not find factoid '{}' in my database.".format(factoid))
 
@@ -80,17 +80,17 @@ class Factoids(moduletemplate.BotModule):
                             factoid = split[0]
 
                     if self.factoid_exists(factoid):
-                        self.reply_channel(channel, target, self.colformat.parse(self.factoid_getresponse(factoid)))
+                        self.reply_target(target, target, self.colformat.parse(self.factoid_getresponse(factoid)))
                     else:
                         self.reply_notice(nick, "Could not find factoid '{}' in my database.".format(factoid))
 
-    def on_command(self, channel, nick, command, commandtext, mod=False, admin=False):
+    def on_command(self, target, nick, command, commandtext, mod=False, admin=False):
 
         if command == "isfactoid" or command == "factoid":
             if not self.factoid_isvalid(commandtext):
                 self.reply_notice(nick, "Factoid triggers may only contain A-Z and /")
             elif self.factoid_exists(commandtext):
-                self.reply_channel(channel, nick, self.factoid_getinfo(commandtext))
+                self.reply_target(target, nick, self.factoid_getinfo(commandtext))
             else:
                 self.reply_notice(nick, "Factoid '{}' does not exist in the database.".format(commandtext))
 
@@ -114,7 +114,7 @@ class Factoids(moduletemplate.BotModule):
                                             .format(factoid_trigger))
                 else:
                     self.factoid_add(nick, factoid_trigger, factoid_response)
-                    self.reply_channel(channel, nick, "Response was added under '{}'".format(factoid_trigger))
+                    self.reply_target(target, nick, "Response was added under '{}'".format(factoid_trigger))
 
                 return True
 
@@ -136,7 +136,7 @@ class Factoids(moduletemplate.BotModule):
                 else:
                     self.factoid_del(factoid_trigger)
                     self.factoid_add(nick, factoid_trigger, factoid_response)
-                    self.reply_channel(channel, nick, "Response was edited under '{}'".format(factoid_trigger))
+                    self.reply_target(target, nick, "Response was edited under '{}'".format(factoid_trigger))
 
                 return True
 
@@ -147,14 +147,14 @@ class Factoids(moduletemplate.BotModule):
                     self.reply_notice(nick, "Factoid triggers may only contain A-Z and /")
                 elif self.factoid_exists(commandtext):
                     self.factoid_del(commandtext)
-                    self.reply_channel(channel, nick, "Factoid with trigger '{}' was deleted.".format(commandtext))
+                    self.reply_target(target, nick, "Factoid with trigger '{}' was deleted.".format(commandtext))
                 else:
                     self.reply_notice(nick, "Factoid '{}' does not exist.".format(commandtext))
 
                 return True
 
             if command == "countfactoid" or command == "countfactoids":
-                return self.reply_channel(channel, nick, "There are currently {} responses registered in my database."
+                return self.reply_target(target, nick, "There are currently {} responses registered in my database."
                                                          .format(self.factoid_count()))
 
         return False

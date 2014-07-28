@@ -16,37 +16,37 @@ class Substitutions(moduletemplate.BotModule):
         self.issubpattern = re.compile(r"[sS]/[^/]{1,64}/[^/]{1,64}[^ ]")
         self.previous_messages = {}
 
-    def on_privmsg(self, channel, nick, message):
+    def on_privmsg(self, target, nick, message):
         if message.lower().startswith("s/") and self.issubpattern.match(message):
             msg = message.split("/")
             if len(msg) > 2 and len(msg) < 5:
-                sub = self.substitute(channel, msg[1], msg[2])
+                sub = self.substitute(target, msg[1], msg[2])
                 if sub:
                     if sub[0] == nick:
-                        self.reply_channel(channel, None, "What {} meant to say: {}"
+                        self.reply_target(target, None, "What {} meant to say: {}"
                                                           .format(nick, sub[1]))
                     else:
-                        self.reply_channel(channel, None, "What {} thinks {} meant to say: {}"
+                        self.reply_target(target, None, "What {} thinks {} meant to say: {}"
                                                           .format(nick, sub[0], sub[1]))
 
-        self.store(channel, "{} {}".format(nick, message))
+        self.store(target, "{} {}".format(nick, message))
 
-    def store(self, channel, message):
-        if channel in self.previous_messages:
-            if len(self.previous_messages[channel]) > 10:
-                self.previous_messages[channel].pop(0)
+    def store(self, target, message):
+        if target in self.previous_messages:
+            if len(self.previous_messages[target]) > 10:
+                self.previous_messages[target].pop(0)
         else:
-            self.previous_messages[channel] = []
+            self.previous_messages[target] = []
 
-        self.previous_messages[channel].append(message)
+        self.previous_messages[target].append(message)
 
-    def substitute(self, channel, search, replacement):
-        if channel not in self.previous_messages:
+    def substitute(self, target, search, replacement):
+        if target not in self.previous_messages:
             return False
 
         pattern = re.compile(search)
 
-        msglist = self.previous_messages[channel]
+        msglist = self.previous_messages[target]
         msglist.reverse()
         for msg in msglist:
             if pattern.search(msg):
