@@ -28,7 +28,7 @@ class BasicCommands(moduletemplate.BotModule):
                               "Shut the entire bot down. This includes connections to different networks",
                               self.PRIV_ADMIN)
 
-    def on_command(self, target, nick, command, commandtext, mod=False, admin=False):
+    def on_command(self, target, nick, command, commandtext, mod, admin):
 
         if command == "permissions":
             return self.reply_notice(nick, "Permissions for {}: Administrator: {} - Moderator: {}"

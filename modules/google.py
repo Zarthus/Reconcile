@@ -21,7 +21,7 @@ class Google(moduletemplate.BotModule):
                               "Query google image search for <search> and return the first result.",
                               self.PRIV_NONE, ["gis", "imagesearch"])
 
-    def on_command(self, target, nick, command, commandtext, mod=False, admin=False):
+    def on_command(self, target, nick, command, commandtext, mod, admin):
         if command == "google" or command == "search":
             if not commandtext:
                 return self.reply_notice(nick, "Usage: google <search>")

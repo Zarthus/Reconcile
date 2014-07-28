@@ -24,7 +24,7 @@ class WolframAlpha(moduletemplate.BotModule):
 
         self.last_request = int(time.time())
 
-    def on_command(self, target, nick, command, commandtext, mod=False, admin=False):
+    def on_command(self, target, nick, command, commandtext, mod, admin):
         if command == "wolframalpha" or command == "wa" or command == "wolfram":
             if "wolframalpha" not in self.api_key:
                 # The module would initially not be loaded if there is no API Key, but safety checks never hurt anyone.

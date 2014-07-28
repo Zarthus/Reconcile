@@ -30,6 +30,10 @@ class ModuleHandler:
         for module in self.modules:
             self.modules[module].on_action(target, nick, message)
 
+    def sendNumeric(self, numeric, data):
+        for module in self.modules:
+            self.modules[module].on_numeric(numeric, data)
+
     def loadAll(self):
         for module in self.getAvailableModulesList():
             if module in self.modules:

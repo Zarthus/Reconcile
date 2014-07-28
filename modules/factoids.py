@@ -84,7 +84,7 @@ class Factoids(moduletemplate.BotModule):
                     else:
                         self.reply_notice(nick, "Could not find factoid '{}' in my database.".format(factoid))
 
-    def on_command(self, target, nick, command, commandtext, mod=False, admin=False):
+    def on_command(self, target, nick, command, commandtext, mod, admin):
 
         if command == "isfactoid" or command == "factoid":
             if not self.factoid_isvalid(commandtext):

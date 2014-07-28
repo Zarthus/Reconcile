@@ -63,7 +63,7 @@ class Example(moduletemplate.BotModule):
         pass
 
 
-    def on_command(self, channel, nick, command, commandtext, mod=False, admin=False):
+    def on_command(self, channel, nick, command, commandtext, mod, admin):
         """
         On command is triggered when someone prefixes the bot by its name, or
         When the command_prefix is sent as first character in a message.
@@ -94,6 +94,15 @@ class Example(moduletemplate.BotModule):
             return self.reply_notice(nick, "Your API key is: {}".format(self.api_key["example"]))
 
         return False
+        
+    def on_numeric(self, numeric, data):
+        """
+        Whenever the server sends a numeric reply thos callback gets called.
+        
+        numeric: integer, numeric sent by the server.
+        data: string, anything after the numeric. What varies per numeric.
+        """
+        pass
 
 ```
 
@@ -127,8 +136,11 @@ class MyModule(moduletemplate.BotModule):
     def on_action(self, channel, nick, action):
         pass
 
-    def on_command(self, channel, nick, command, commandtext, mod=False, admin=False):
+    def on_command(self, channel, nick, command, commandtext, mod, admin):
         return False
+
+    def on_numeric(self, numeric, data):
+        pass
 
 ```
 

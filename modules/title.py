@@ -33,7 +33,7 @@ class Title(moduletemplate.BotModule):
                     self.last_title = title
                     self.reply_target(target, None, "({}) {}".format(nick, title))
 
-    def on_command(self, target, nick, command, commandtext, mod=False, admin=False):
+    def on_command(self, target, nick, command, commandtext, mod, admin):
         if command == "title" or command == "gettitle":
             if not commandtext:
                 return self.reply_notice(nick, "Usage: title <website>")

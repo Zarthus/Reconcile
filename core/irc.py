@@ -54,7 +54,7 @@ class IrcConnection:
 
                 if self.numeric_regex.match(" ".join(words[:2])):
                     # Check if a server numeric is sent, and handle it appropriately.
-                    if self._processIrcNumeric(words[1], data):
+                    if self._processIrcNumeric(int(words[1]), data):
                         # _processIrcNumeric returns true if we need to continue, false if we don't
                         continue
 
@@ -322,19 +322,20 @@ class IrcConnection:
         This method will interact with a few of them
         """
 
-        if numeric == "433":
+        if numeric == 433:
             # Nick is already taken.
             self.send_raw("NICK " + self.altnick)
             self.currentnick = self.altnick
             return True
 
-        if numeric == "422" or numeric == "376":
+        if numeric == 422 or numeric == 376:
             # No MOTD found or End of MOTD
             if self.password and self.account:
                 self.send_raw("PRIVMSG NickServ :IDENTIFY {} {}".format(self.account, self.password))
 
             self.send_raw("JOIN :" + ",".join(self.channels))
-
+        
+        self.ModuleHandler.sendNumeric(numeric, data)
         return False
 
     def _processEvent(self, uinfo, event, target, params_list):

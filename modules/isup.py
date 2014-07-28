@@ -19,7 +19,7 @@ class Isup(moduletemplate.BotModule):
         self.register_command("isup", "<website>", "Checks if <website> is up using isup.me", self.PRIV_NONE,
                               ["isdown"])
 
-    def on_command(self, target, nick, command, commandtext, mod=False, admin=False):
+    def on_command(self, target, nick, command, commandtext, mod, admin):
         if command == "isup" or command == "isdown":
             if commandtext and " " not in commandtext:
                 self.check_if_up(commandtext, target, nick)

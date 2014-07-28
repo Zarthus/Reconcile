@@ -36,7 +36,7 @@ class BotModule:
         """See on_privmsg"""
         pass
 
-    def on_command(self, target, nick, command, commandtext, mod=False, admin=False):
+    def on_command(self, target, nick, command, commandtext, mod, admin):
         """
         On command is triggered when someone prefixes the bot by its name, or
         When the command_prefix is sent as first character in a message.
@@ -52,9 +52,17 @@ class BotModule:
 
         Return False if no command was processed.
         """
-
         return False
 
+    def on_numeric(self, numeric, data):
+        """
+        Whenever the server sends a numeric reply thos callback gets called.
+        
+        numeric: integer, numeric sent by the server.
+        data: string, anything after the numeric. What varies per numeric.
+        """
+        pass
+        
     def reply_target(self, target, nick, message, parse=False):
         """
         Reply to the user by sending a message to the channel or user,
