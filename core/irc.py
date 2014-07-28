@@ -190,8 +190,8 @@ class IrcConnection:
         elif ctcp == "TIME":
             self.ctcp_reply(nick, ctcp, "Current time: {}".format(time.strftime("%H:%M:%S - %A %d %B, %Y")))
 
-        elif ctcp == "PING":
-            self.ctcp_reply(nick, ctcp, "PONG - {}".format(time.ctime()))
+        elif ctcp.startswith("PING"):
+            self.ctcp_reply(nick, "PING", int(time.time()))
 
     def on_notice(self, nick, target, message):
         if target == "*":
