@@ -9,11 +9,11 @@ install:
   - "pip install -r travis/requirements.txt"
 
 before_script:
-  - "pep8 --version"
+  - "flake8 --version"
   - "cp config.example.json config.json"
 
 script:
-  - "pep8 --max-line-length=119 ."
+  - "flake8 ."
   - "python travis/test_config.py"
   - "python travis/test_module.py"
 
