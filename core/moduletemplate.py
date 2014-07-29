@@ -103,6 +103,16 @@ class BotModule:
 
         return True
 
+    def send_raw(self, raw_message):
+        """
+        Send a raw message to the network.
+
+        Please use this sparingly, and make sure it complies with the RFC.
+        """
+
+        self.logger.log("Module '{}' sending raw message: '{}'".format(self.module_name, raw_message))
+        self._conn.send_raw(raw_message)
+
     def register_command(self, command, params, help, priv, aliases=None):
         """
         Register a command to the bots core help module.
