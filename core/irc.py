@@ -334,7 +334,7 @@ class IrcConnection:
                 self.send_raw("PRIVMSG NickServ :IDENTIFY {} {}".format(self.account, self.password))
 
             self.send_raw("JOIN :" + ",".join(self.channels))
-        
+
         self.ModuleHandler.sendNumeric(numeric, data)
         return False
 

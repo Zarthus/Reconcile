@@ -57,12 +57,12 @@ class BotModule:
     def on_numeric(self, numeric, data):
         """
         Whenever the server sends a numeric reply thos callback gets called.
-        
+
         numeric: integer, numeric sent by the server.
         data: string, anything after the numeric. What varies per numeric.
         """
         pass
-        
+
     def reply_target(self, target, nick, message, parse=False):
         """
         Reply to the user by sending a message to the channel or user,
