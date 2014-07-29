@@ -82,4 +82,4 @@ class Title(moduletemplate.BotModule):
 
         if not len(title):
             return "Cannot find title for '{}'".format(url) if not ret_false else False
-        return "'{}' at {}".format(title, urllib.parse.urlparse(url).netloc)
+        return "'{}' at {}".format(title.strip(), urllib.parse.urlparse(url).netloc)
