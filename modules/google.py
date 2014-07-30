@@ -119,12 +119,15 @@ class Google(moduletemplate.BotModule):
 
     def html_decode(self, string):
         entities = {
+            "&amp;": "&",
             "&lt;": "<",
             "&gt;": ">",
-            "&amp;": "&",
             "&quot;": "\"", "&#34;": "\"",
-            "&#39;": "'"
+            "&apos;": "'", "&#39;": "'"
         }
+
+        # A nasty workaround because some sites have &amp;quot; - you'll need to at least replace &amp; twice.
+        string = string.replace("&amp;", "&")
 
         for entity in entities.items():
             string = string.replace(entity[0], entity[1])
