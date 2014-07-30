@@ -72,6 +72,19 @@ Here is a copy of a configuration with comments -- but do not copy it directly, 
     "somethingelse": "" // Api key for another application.
   },
   
+  // modules: Any data a certain module needs.
+  "modules": {
+    "ClassNameOfModule": {
+        // any data can be in here, in whichever format you wish to handle it. As long as it is logical.
+    },
+    
+    // Example - a flood control module.
+    "FloodControl": {
+      "channels": ["#test", "#test2"],
+      "ban_on_flood": true
+    }
+  },
+  
   // bot metadata, generally data that is used in certain modules.
   "metadata": {
     "bot_version": "0.2", // the bot version

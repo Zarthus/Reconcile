@@ -14,6 +14,7 @@ class BotModule:
 
         self._registered_commands = []
         self.api_key = {}
+        self.module_data = self._getModuleData()
 
     def on_module_load(self):
         """Module constructor"""
@@ -156,3 +157,7 @@ class BotModule:
     def _unregister_commands(self):
         for cmd in self._registered_commands:
             self._conn.unregister_command(cmd)
+
+    def _getModuleData(self):
+        """Read the config's module block for an entry matching the class name of the module."""
+        return self._conn.config.getModuleData(self.module_name)

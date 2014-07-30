@@ -4,14 +4,16 @@ This is an example module class to be put in the modules/ folder.
 
 By default it has it's module name as `self.module_name` and `self.db_dir` accessable and the following public callbacks:
 `on_module_load(self)`, `on_module_unload(self)`, `on_privmsg(self, channel, nick, message)`, `on_action(self, channel, nick, action)`,
-`on_command(self, channel, nick, command, commandtext, mod=False, admin=False)`
+`on_command(self, channel, nick, command, commandtext, mod=False, admin=False)`, `on_numeric(self, numeric, data)`  
 
-To respond to users, you can use the methods `reply_channel(channel, nick, message)`, where nick may be None, and it will not preceed the message with the users nickname. 
-Be careful your bot does not trigger fantasy commands accidentally if you choose to not use it.  
+To respond to users, you can use the method `reply_target(target, nick, message)`, where nick may be None, and it will not preceed the message with the users nickname. 
+Be careful your bot does not trigger fantasy commands accidentally if you choose to not use a `nick` parameter, prefixing your message with something at all times is recommended.  
 
 For a more personal message, you can use `reply_notice(nick, message)` -- sending a notice to the user.  
 
-To get a metadata entry from the config, use `getMetadata("metadata")`
+Last method of communicating is `reply_action(target, action)`, sending a CTCP ACTION to the target. Sparing use of this is recommended, as it is not rate limited.  
+
+To get a metadata entry from the config, use `getMetadata("metadata")`, and by default any configuration that matches your class name from the config is loaded in `self.module_data`.  
 
 Last is the `requireApiKey("apiname")` to be placed in the on_module_load callback, for a proper example of this please see the class below.  
 
@@ -42,9 +44,9 @@ class Example(moduletemplate.BotModule):
         # If it does not fail, self.api_key["example"] is set to the API key.
         self.requireApiKey("example")
         
-        self.register_command("example", "Reply to the user saying this is an example command.", self.PRIV_NONE)
-        self.register_command("nexample", "Notice the user saying this is an example command.", self.PRIV_NONE)
-        self.register_command("api", "Notice the user with the API key of 'example'", self.PRIV_MOD, ["getapi"])
+        self.register_command("example", None, "Reply to the user saying this is an example command.", self.PRIV_NONE)
+        self.register_command("nexample", None, "Notice the user saying this is an example command.", self.PRIV_NONE)
+        self.register_command("api", None, "Notice the user with the API key of 'example'", self.PRIV_MOD, ["getapi"])
         
     def on_module_unload(self):
         pass

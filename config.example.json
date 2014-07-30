@@ -32,7 +32,11 @@
     "wolframalpha": "",
     "scenesat": ""
   },
-
+  
+  "modules": {
+    
+  },
+  
   "metadata": {
     "bot_version": "0.2",
     "bot_maintainer": "Zarthus",

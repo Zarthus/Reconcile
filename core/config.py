@@ -21,6 +21,7 @@ class Config:
     networks = {}
     api_keys = {}
     metadata = {}
+    modules = {}
 
     def __init__(self):
         self.logger = logger.Logger("Configuration")
@@ -37,6 +38,7 @@ class Config:
                 self.networks = config["irc"]
                 self.api_keys = config["api_keys"]
                 self.metadata = config["metadata"]
+                self.modules = config["modules"]
 
                 self.logger.setTimestamp(self.getTimestampFormat())
                 val = self._validate()
@@ -119,6 +121,9 @@ class Config:
                 os.mkdir("db/")
 
             return "db/"
+
+    def getModuleData(self, module_name):
+        return self.modules[module_name] if module_name in self.modules else None
 
     def _validate(self, verbose=None):
         count = 0
