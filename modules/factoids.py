@@ -55,8 +55,8 @@ class Factoids(moduletemplate.BotModule):
                 if not self.factoid_isvalid(factoid):
                     self.reply_notice(nick, "Factoid request '{}' is an invalid factoid trigger name.".format(factoid))
                 elif self.factoid_exists(factoid):
-                    self.reply_target(target, None, "{}: {}".format(ftarget, 
-                                                             self.colformat.parse(self.factoid_getresponse(factoid))))
+                    parsed = self.colformat.parse(self.factoid_getresponse(factoid))
+                    self.reply_target(target, None, "{}: {}".format(ftarget, parsed))
                 else:
                     self.reply_notice(nick, "Could not find factoid '{}' in my database.".format(factoid))
 
