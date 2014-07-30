@@ -35,6 +35,27 @@ class IrcConnection:
     def tick(self):
         self.readBuffer()
 
+    def rehash(self, reconnect=False):
+        self.config.rehash()
+
+        self.loadNetworkVariables(self.config.getNetwork(self.network_name), self.currentnick)
+
+        self.logger = logger.Logger(self.network_name, self.config.getVerbose(), self.config.getTimestampFormat())
+        self.channelmanager = channel.ChannelManager(self.config.getDatabaseDir(), self.logger, self.validator)
+        self.commandhelp = commandhelp.CommandHelp(self.logger, self.config.getCommandPrefix(self.network_name))
+        self.ratelimiter = ratelimit.Ratelimit(self, self.logger)
+
+        self.ModuleHandler.unloadAll()
+        self._loadModules()
+
+        if reconnect:
+            self.reconnect()
+        else:
+            if self.currentnick != self.nick:
+                self.nick(self.nick)
+
+        self.logger.log("Rehash completed.")
+
     def readBuffer(self):
         buff = self.socket.recv(4096)
         lines = buff.decode("utf-8").split("\n")
@@ -152,7 +173,7 @@ class IrcConnection:
         else:
             self.quit("Reconnecting.")
 
-        # TODO: Sleep Thread (1s) once implemented
+        time.sleep(2)
         self.connect()
 
     def isEvent(self, event):
@@ -274,7 +295,7 @@ class IrcConnection:
     def unregister_command(self, command):
         self.commandhelp.unregister(command)
 
-    def loadNetworkVariables(self, network):
+    def loadNetworkVariables(self, network, curnick=None):
         self.connected = False
 
         self.id = network["id"]
@@ -299,7 +320,7 @@ class IrcConnection:
         self.administrators = network["administrators"]
         self.moderators = network["moderators"]
 
-        self.currentnick = None
+        self.currentnick = curnick
 
         self.queue_privmsg = []
         self.queue_notice = []

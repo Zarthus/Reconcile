@@ -27,6 +27,10 @@ class Config:
         self.logger = logger.Logger("Configuration")
         self.load()
 
+    def rehash(self):
+        self.logger.log("Rehashing configuration.")
+        self.load()
+
     def load(self):
         """Load the configuration -- called upon creation of the class"""
         file = "config.json"

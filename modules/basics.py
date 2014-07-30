@@ -23,9 +23,17 @@ class BasicCommands(moduletemplate.BotModule):
                               self.PRIV_MOD)
         self.register_command("part", "<channel[,channel]>", "Leave a comma separated list of channels.",
                               self.PRIV_MOD)
+        self.register_command("nick", "<new nick>", "Change name to <new nick> if available.",
+                              self.PRIV_MOD)
         self.register_command("modules", None, "Display a list of loaded modules.", self.PRIV_MOD)
         self.register_command("shutdown", None,
                               "Shut the entire bot down. This includes connections to different networks",
+                              self.PRIV_ADMIN)
+        self.register_command("rehash", "[reconnect]",
+                              "Rehash the bots configuration, use 'rehash reconnect' if you want the bot to reconnect.",
+                              self.PRIV_ADMIN)
+       self.register_command("reconnect", None,
+                              "Tell the bot to reconnect to the network.",
                               self.PRIV_ADMIN)
 
     def on_command(self, target, nick, command, commandtext, mod, admin):
@@ -68,6 +76,13 @@ class BasicCommands(moduletemplate.BotModule):
                 self._conn.part(commandtext)
                 return self.reply_notice(nick, "Attempting to part: {}".format(commandtext.replace(",", ", ")))
 
+            if command == "nick":
+                if not commandtext:
+                    return self.reply_notice(nick, "Usage: nick <new nick>")
+
+                self._conn.nick(commandtext)
+                return self.reply_notice(nick, "Attempting to change name to: {}".format(commandtext))
+
             if command == "modules":
                 return self.reply_notice(nick, "The following modules are loaded: {}"
                                                .format(str(self._conn.ModuleHandler.getLoadedModulesList())))
@@ -76,6 +91,21 @@ class BasicCommands(moduletemplate.BotModule):
                 if command == "shutdown":
                     self._conn.quit("Shutdown requested by {}".format(nick))
                     raise KeyboardInterrupt  # TODO: Make a better way to shut the bot down.
+
+                if command == "rehash":
+                    self.reply_target(target, nick, "Rehashing my configuration right now.")
+
+                    # optional syntax parameter: "rehash reconnect"
+                    if not commandtext or commandtext and commandtext.strip().lower() != "reconnect":
+                        self._conn.rehash()
+                    else:
+                        self._conn.rehash(True)
+                    return True
+
+                if command == "reconnect":
+                    self.reply_target(target, nick, "Reconnecting to the network right now.")
+                    self._conn.reconnect()
+                    return True
 
         return False
 
