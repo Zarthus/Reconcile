@@ -82,4 +82,18 @@ class Title(moduletemplate.BotModule):
 
         if not len(title):
             return "Cannot find title for '{}'".format(url) if not ret_false else False
-        return "'{}' at {}".format(title.strip(), urllib.parse.urlparse(url).netloc)
+        return "'{}' at {}".format(self.html_decode(title.strip()), urllib.parse.urlparse(url).netloc)
+
+    def html_decode(self, string):
+        entities = {
+            "&lt;": "<",
+            "&gt;": ">",
+            "&amp;": "&",
+            "&quot;": "\"", "&#34;": "\"",
+            "&#39;": "'"
+        }
+
+        for entity in entities.items():
+            string = string.replace(entity[0], entity[1])
+
+        return string
