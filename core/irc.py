@@ -333,7 +333,10 @@ class IrcConnection:
             if self.password and self.account:
                 self.send_raw("PRIVMSG NickServ :IDENTIFY {} {}".format(self.account, self.password))
 
-            self.send_raw("JOIN :" + ",".join(self.channels))
+            if len(self.channels):
+                self.send_raw("JOIN :" + ",".join(self.channels))
+            else:
+                self.logger.log_verbose("Not configured to join any channels.")
 
         self.ModuleHandler.sendNumeric(numeric, data)
         return False
