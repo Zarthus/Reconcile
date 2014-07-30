@@ -103,8 +103,9 @@ class Google(moduletemplate.BotModule):
                 gurl = "https://google.com/#q={}".format(urllib.parse.quote(search))
 
             try:
-                result = "'{}' at {} (Search: {})".format(json["responseData"]["results"][0]["titleNoFormatting"],
-                                                          json["responseData"]["results"][0]["url"], gurl)
+                title = self.html_decode(json["responseData"]["results"][0]["titleNoFormatting"])
+
+                result = "'{}' at {} (Search: {})".format(title, json["responseData"]["results"][0]["url"], gurl)
             except Exception:
                 if gurl:
                     return ("The Google Image Search request failed because no results were found. (Search: {})"
@@ -115,3 +116,17 @@ class Google(moduletemplate.BotModule):
             if result:
                 return result
         return "Google Image Search failed"
+
+    def html_decode(self, string):
+        entities = {
+            "&lt;": "<",
+            "&gt;": ">",
+            "&amp;": "&",
+            "&quot;": "\"", "&#34;": "\"",
+            "&#39;": "'"
+        }
+
+        for entity in entities.items():
+            string = string.replace(entity[0], entity[1])
+
+        return string
