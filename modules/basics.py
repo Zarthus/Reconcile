@@ -25,6 +25,7 @@ class BasicCommands(moduletemplate.BotModule):
                               self.PRIV_MOD)
         self.register_command("nick", "<new nick>", "Change name to <new nick> if available.",
                               self.PRIV_MOD)
+        self.register_command("message", "<target> <message>", "Message <target> with <message>.", self.PRIV_MOD)
         self.register_command("modules", None, "Display a list of loaded modules.", self.PRIV_MOD)
         self.register_command("shutdown", None,
                               "Shut the entire bot down. This includes connections to different networks",
@@ -80,6 +81,18 @@ class BasicCommands(moduletemplate.BotModule):
 
                 self._conn.nick(commandtext)
                 return self.reply_notice(nick, "Attempting to change name to: {}".format(commandtext))
+
+            if command == "message":
+                m = commandtext.split()
+
+                if not commandtext or len(m) < 2:
+                    return self.reply_target(target, "Usage: message <target> <message>")
+
+                mess = " ".join(m[1:])
+                targ = m[0]
+
+                self.reply_target(targ, None, mess)
+                return self.reply_target(target, nick, "Sent message '{}' to '{}'.".format(mess, targ))
 
             if command == "modules":
                 return self.reply_notice(nick, "The following modules are loaded: {}"
