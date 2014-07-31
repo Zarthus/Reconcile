@@ -51,8 +51,8 @@ class IrcConnection:
         if reconnect:
             self.reconnect()
         else:
-            if self.currentnick != self.nick:
-                self.nick(self.nick)
+            if self.currentnick != self.mnick:
+                self.nick(self.mnick)
 
         self.logger.log("Rehash completed.")
 
@@ -142,8 +142,8 @@ class IrcConnection:
         self.connected = False
 
     def nick(self, newnick):
-        if self.validator.nickname(newnick):
-            print("Invalid nickname: {}".format(newnick))
+        if not self.validator.nickname(newnick):
+            self.logger.notice("Invalid nickname: {}".format(newnick))
             return False
 
         self.logger.log("Assuming new nickname '{}' (changing from {})".format(newnick, self.currentnick))
@@ -166,12 +166,12 @@ class IrcConnection:
 
     def reconnect(self, message=None):
         if not self.connected:
-            raise Exception("Cannot reconnect to {} - no connection has been established".format(self.server))
-
-        if message:
-            self.quit("Reconnecting: {}".format(message))
+            self.logger.notice("Cannot reconnect to {} - no connection has been established".format(self.server))
         else:
-            self.quit("Reconnecting.")
+            if message:
+                self.quit("Reconnecting: {}".format(message))
+            else:
+                self.quit("Reconnecting.")
 
         time.sleep(2)
         self.connect()
@@ -304,7 +304,7 @@ class IrcConnection:
         self.port = network["port"]
         self.ssl = network["ssl"]
 
-        self.nick = network["nick"]
+        self.mnick = network["nick"]
         self.altnick = network["altnick"]
         self.ident = network["ident"]
         self.realname = network["realname"]
@@ -331,8 +331,8 @@ class IrcConnection:
     def _connect(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((self.server, self.port))
-        self.send_raw("NICK {}".format(self.nick))
-        self.currentnick = self.nick
+        self.send_raw("NICK {}".format(self.mnick))
+        self.currentnick = self.mnick
         # <username> <hostname> <servername> :<realname> - servername/hostname will be ignored by the ircd.
         self.send_raw("USER {} 0 0 :{}".format(self.ident, self.realname))
         self.connected = True

@@ -44,7 +44,8 @@ class ModuleHandler:
 
     def unloadAll(self):
         for module in self.modules:
-            self.unload(module)
+            self.unload(module, False)
+        self.modules = {}
 
     def reloadAll(self):
         for module in self.modules:
@@ -75,13 +76,14 @@ class ModuleHandler:
 
         return success
 
-    def unload(self, module):
+    def unload(self, module, pop=True):
         if module not in self.modules:
             return False
 
         self.modules[module].on_module_unload()
         self.modules[module]._unregister_commands()
-        self.modules = self.modules.pop(module)
+        if pop:
+            self.modules = self.modules.pop(module)
         self.logger.log("Unloaded module {}".format(module))
 
         return True

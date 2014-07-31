@@ -13,6 +13,7 @@ class CommandHelp:
     def __init__(self, logger, command_prefix):
         self.command_prefix = command_prefix
         self.commands = {}
+        self.logger = logger
 
     def register(self, command, params, help, priv, aliases=None, module=None):
         command = command.lower()

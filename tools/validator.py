@@ -9,7 +9,7 @@ import re
 class Validator:
     def __init__(self):
         self.valid_username = re.compile(r"~?[\w]{1,16}@")
-        self.valid_nickname = re.compile(r"[^ \|\`\[\]\\-\_\w\d]{1,32}!")
+        self.valid_nickname = re.compile(r"[\|\`\[\]\\-\_\w\d]{1,32}!")
 
     def hostmask(self, hostmask, require_nickname=False):
         """Check if hostmask is a valid hostmask"""
@@ -30,8 +30,8 @@ class Validator:
     def nickname(self, nick):
         """Check if nick is a valid IRC nickname"""
         if self.valid_nickname.match(nick + "!"):
-            return False
-        return True
+            return True
+        return False
 
     def channel(self, channel):
         """Check if channel is a valid channelname"""

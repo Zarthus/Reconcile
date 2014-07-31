@@ -30,11 +30,9 @@ class BasicCommands(moduletemplate.BotModule):
                               "Shut the entire bot down. This includes connections to different networks",
                               self.PRIV_ADMIN)
         self.register_command("rehash", "[reconnect]",
-                              "Rehash the bots configuration, use 'rehash reconnect' if you want the bot to reconnect.",
+                              "Rehash the bots configuration, use 'rehash reconnect' if you want the bot to reconnect",
                               self.PRIV_ADMIN)
-       self.register_command("reconnect", None,
-                              "Tell the bot to reconnect to the network.",
-                              self.PRIV_ADMIN)
+        self.register_command("reconnect", None, "Tell the bot to reconnect to the network.", self.PRIV_ADMIN)
 
     def on_command(self, target, nick, command, commandtext, mod, admin):
 
