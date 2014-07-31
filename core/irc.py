@@ -191,7 +191,13 @@ class IrcConnection:
             self.logger.event("PRIVMSG", "{}/{}: {}".format(nick, target, message))
             self.ModuleHandler.sendPrivmsg(target, nick, message)
 
-        if message.startswith(self.command_prefix) or message.startswith(self.currentnick):
+        # Message looks like one of: nick: <cmd> | nick, <cmd> | nick <cmd>
+        # or uses the command prefix.
+        # or sent as query.
+        if (target == self.currentnick or
+           message.startswith(self.command_prefix) or
+           (message.startswith(self.currentnick) and
+           (message.endswith(":") or message.endswith(",") or message.endswith(self.currentnick[-1:])))):
             self.on_command(nick, target, message, uinfo)
 
     def on_action(self, nick, target, message):
@@ -258,9 +264,11 @@ class IrcConnection:
         pass
 
     def on_command(self, nick, target, message, uinfo):
+        print(nick, target, message)
         split = message.split()
         command = ""
         params = ""
+        ttarget = target
 
         if message.startswith(self.command_prefix):
             command = split[0][1:]
@@ -268,26 +276,25 @@ class IrcConnection:
         elif message.startswith(self.currentnick):
             command = split[1]
             params = " ".join(split[2:])
+        elif target == self.currentnick:  # Query
+            command = split[0]
+            params = " ".join(split[1:])
+            ttarget = nick
         else:
             # This cannot be a valid command.
             return False
 
-        info = {
-            "nick": nick,
-            "target": target,
+        admin = self.config.isAdministrator(self.network_name, uinfo[3])
+        mod = self.config.isModerator(self.network_name, uinfo[3])
 
-            "admin": self.config.isAdministrator(self.network_name, uinfo[3]),
-            "mod": self.config.isModerator(self.network_name, uinfo[3]),
-
-            "IrcConnection": self,
-            "command_prefix": self.command_prefix
-        }
-
-        mod = self.ModuleHandler.sendCommand(target, nick, command, params, info["mod"], info["admin"])
+        success = self.ModuleHandler.sendCommand(ttarget, nick, command, params, mod, admin)
 
         self.logger.event("COMMAND", "{}/{} sent command '{}' with result: {}"
-                                     .format(nick, target, command, "Success" if mod else "Command did not exist"))
-        return mod
+                                     .format(nick, target, command, "Success" if success else "Command did not exist"))
+
+        if not success and target == self.currentnick and nick != self.currentnick:
+            self.say(nick, "I'm sorry, but I did not understand the command '{}'.".format(command))
+        return success
 
     def register_command(self, command, params, help, priv, aliases=None, module=None):
         self.commandhelp.register(command, params, help, priv, aliases, module)
