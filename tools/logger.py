@@ -45,7 +45,6 @@ class Logger:
         return time.strftime(self.timestamp)
 
     def setColours(self, useColours=True):
-        print("using colors:" + str(useColours))
         if useColours:
             if os.name == "posix":
                 self.col_notice_prefix = "\033[93m"
