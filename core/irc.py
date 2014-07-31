@@ -187,7 +187,9 @@ class IrcConnection:
             if message.lstrip("\x01").startswith("ACTION"):
                 self.on_action(nick, target, message.strip("\x01").strip("ACTION"))
             else:
-                self.on_ctcp(nick, target, message.strip("\x01"))
+                success = self.on_ctcp(nick, target, message.strip("\x01"))
+                if success:
+                    return True
         else:
             self.logger.event("PRIVMSG", "{}/{}: {}".format(nick, target, message))
             self.ModuleHandler.sendPrivmsg(target, nick, message)
@@ -220,6 +222,10 @@ class IrcConnection:
 
         elif ctcp.startswith("PING"):
             self.ctcp_reply(nick, "PING", int(time.time()))
+
+        else:
+            return False
+        return True
 
     def on_notice(self, nick, target, message):
         if target == "*":
