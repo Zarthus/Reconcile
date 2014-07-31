@@ -91,10 +91,9 @@ Here is a copy of a configuration with comments -- but do not copy it directly, 
     "bot_maintainer": "Zarthus", // the bot maintainer, change this to your own name
     "github_url": "https:\/\/github.com\/zarthus\/reconcile", // a link to the github repository where the source code can be found
     "verbose": true, // verbosity; some things will not be logged if this is set to false. Can be useful for debugging.
-    
     "db_dir": "db/", // In which folder do we store database files?
-    
-    "timestamp": "%H:%M" // strftime format of how a timestamp should look, https://docs.python.org/3/library/time.html#time.strftime
+    "timestamp": "%H:%M", // strftime format of how a timestamp should look, https://docs.python.org/3/library/time.html#time.strftime
+    "logger_terminal_colours": false // Should we log terminal colours, or keep it all the same default colour? May cause issues depending on OS.
   }
 }
 

@@ -42,9 +42,8 @@
     "bot_maintainer": "Zarthus",
     "github_url": "https:\/\/github.com\/zarthus\/reconcile",
     "verbose": false,
-    
     "db_dir": "db/",
-    
-    "timestamp": "%H:%M:%S"
+    "timestamp": "%H:%M:%S",
+    "logger_terminal_colours": false 
   }
 }

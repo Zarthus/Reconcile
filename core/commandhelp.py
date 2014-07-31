@@ -24,14 +24,15 @@ class CommandHelp:
         self.commands[command] = {"name": command, "params": params, "help": help, "priv": priv, "aliases": aliases,
                                   "module": module}
 
-    def unregister(self, command):
+    def unregister(self, command, silent=False):
         command = command.lower()
 
         if command in self.commands:
             self.logger.log("Unregistering command '{}'".format(command))
             self.commands = self.commands.pop(command)
         else:
-            self.logger.notice("Attempted to unregister command '{}' but it was not registered.".format(command))
+            self.logger.notice_verbose("Attempted to unregister command '{}' but it was not registered.".
+                                       format(command))
 
     def isCommand(self, command):
         command = command.lower()
