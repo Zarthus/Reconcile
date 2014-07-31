@@ -24,7 +24,7 @@ class CommandHelp:
         self.commands[command] = {"name": command, "params": params, "help": help, "priv": priv, "aliases": aliases,
                                   "module": module}
 
-    def unregister(self, command, silent=False):
+    def unregister(self, command):
         command = command.lower()
 
         if command in self.commands:
