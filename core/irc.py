@@ -195,7 +195,7 @@ class IrcConnection:
             self.on_command(nick, target, message, uinfo)
 
     def on_action(self, nick, target, message):
-        self.logger.event("ACTION", "{}: * {} {}".format(nick, target, message))
+        self.logger.event("ACTION", "{}/{}: * {}".format(nick, target, message))
         self.ModuleHandler.sendAction(target, nick, message)
 
     def on_ctcp(self, nick, target, ctcp):
