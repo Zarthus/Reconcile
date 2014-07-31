@@ -40,6 +40,7 @@ class Ratelimit(threading.Thread):
 
         itters = 0
         burstlimit = 0
+        msg_sent = False  # Whenever we don't send a message, we don't need to get into a long sleep.
         while self.running:
             itters += 1
             self.getQueues()
@@ -48,6 +49,7 @@ class Ratelimit(threading.Thread):
                 for message in self.queue_privmsg:
                     self.say(message[0], message[1], message[2])
                     self.queue_privmsg.remove(message)
+                    msg_sent = True
                     burstlimit += 1
 
                     if burstlimit >= self.burstlimit or self.lastburst > time.time() + 5:
@@ -58,13 +60,18 @@ class Ratelimit(threading.Thread):
                 for message in self.queue_notice:
                     self.notice(message[0], message[1], message[2])
                     self.queue_notice.remove(message)
+                    msg_sent = True
                     burstlimit += 1
 
                     if burstlimit >= self.burstlimit or self.lastburst > time.time() + 5:
                         self.lastburst = time.time()
                         break
 
-            time.sleep(2)
+            if msg_sent:
+                time.sleep(2)
+                msg_sent = False
+            else:
+                time.sleep(.25)
 
             if itters % 3 == 0 and burstlimit != 0:
                 # Resets the burst limit every 6 seconds.
