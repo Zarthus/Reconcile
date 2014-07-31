@@ -197,7 +197,7 @@ class IrcConnection:
         if (target == self.currentnick or
            message.startswith(self.command_prefix) or
            (message.startswith(self.currentnick) and
-           (message.endswith(":") or message.endswith(",") or message.endswith(self.currentnick[-1:])))):
+               (message.endswith(":") or message.endswith(",") or message.endswith(self.currentnick[-1:])))):
             self.on_command(nick, target, message, uinfo)
 
     def on_action(self, nick, target, message):

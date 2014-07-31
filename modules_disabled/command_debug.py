@@ -2,7 +2,7 @@
 CmdDebug by Zarthus
 Licensed under MIT
 
-This plugin will notice all params sent by on_command to the user. 
+This plugin will notice all params sent by on_command to the user.
 Do not run this module if you're in spammy channels, use a test instance of the bot instead.
 """
 
