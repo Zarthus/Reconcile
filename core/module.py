@@ -83,14 +83,15 @@ class ModuleHandler:
         self.modules[module].on_module_unload()
         self.modules[module]._unregister_commands()
         if pop:
-            self.modules = self.modules.pop(module)
+            del self.modules[module]
         self.logger.log("Unloaded module {}".format(module))
 
         return True
 
     def reload(self, module):
-        self.unload(module)
-        self.load(module)
+        unloaded_fine = self.unload(module)
+        loaded_fine = self.load(module)
+        return unloaded_fine and loaded_fine
 
     def getLoadedModulesList(self):
         loaded_modules = []
