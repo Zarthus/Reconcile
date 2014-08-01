@@ -26,7 +26,10 @@ class BasicCommands(moduletemplate.BotModule):
         self.register_command("nick", "<new nick>", "Change name to <new nick> if available.",
                               self.PRIV_MOD)
         self.register_command("message", "<target> <message>", "Message <target> with <message>.", self.PRIV_MOD)
-        self.register_command("modules", None, "Display a list of loaded modules.", self.PRIV_MOD)
+        self.register_command("loadedmodules", None, "Display a list of loaded modules.", self.PRIV_MOD,
+                              ["mod", "modules"])
+        self.register_command("availablemodules", None, "Display a list of available modules.", self.PRIV_MOD,
+                              ["amod"])
         self.register_command("shutdown", None,
                               "Shut the entire bot down. This includes connections to different networks",
                               self.PRIV_ADMIN)
@@ -34,6 +37,9 @@ class BasicCommands(moduletemplate.BotModule):
                               "Rehash the bots configuration, use 'rehash reconnect' if you want the bot to reconnect",
                               self.PRIV_ADMIN)
         self.register_command("reconnect", None, "Tell the bot to reconnect to the network.", self.PRIV_ADMIN)
+        self.register_command("loadmodule", "<module>", "Loads a <module>", self.PRIV_ADMIN, ["lmod"])
+        self.register_command("unloadmodule", "<module>", "Unloads a <module>", self.PRIV_ADMIN, ["umod"])
+        self.register_command("reloadmodule", "<module>", "Reloads a <module>", self.PRIV_ADMIN, ["rmod"])
 
     def on_command(self, target, nick, command, commandtext, mod, admin):
 
@@ -94,9 +100,13 @@ class BasicCommands(moduletemplate.BotModule):
                 self.reply_target(targ, None, mess)
                 return self.reply_target(target, nick, "Sent message '{}' to '{}'.".format(mess, targ))
 
-            if command == "modules":
+            if command == "loadedmodules" or command == "modules" or command == "mod":
                 return self.reply_notice(nick, "The following modules are loaded: {}"
                                                .format(str(self._conn.ModuleHandler.getLoadedModulesList())))
+
+            if command == "availablemodules" or command == "amod":
+                return self.reply_notice(nick, "The following modules are available: {}"
+                                               .format(str(self._conn.ModuleHandler.getAvailableModulesList())))
 
             if admin:
                 if command == "shutdown":
@@ -112,6 +122,62 @@ class BasicCommands(moduletemplate.BotModule):
                     else:
                         self._conn.rehash(True)
                     return True
+
+                if command == "loadmodule" or command == "lmod":
+                    if not commandtext:
+                        return self.reply_notice(nick, "Usage: loadmodule <modulename>")
+
+                    module = commandtext
+                    if not module.endswith(".py"):
+                        module = "{}.py".format(module)
+
+                    success = self._conn.ModuleHandler.load(module)
+
+                    if success:
+                        return self.reply_target(target, nick, "Successfully loaded module '{}'".format(module))
+
+                    if module not in self._conn.ModuleHandler.getAvailableModulesList():
+                        return self.reply_target(target, nick, "Failed to load module '{}', are you sure it exists?"
+                                                               .format(module))
+                    return self.reply_target(target, nick, "Failed to load module '{}'.".format(module))
+
+                if command == "unloadmodule" or command == "umod":
+                    if not commandtext:
+                        return self.reply_notice(nick, "Usage: unloadmodule <modulename>")
+
+                    module = commandtext
+                    if not module.endswith(".py"):
+                        module = "{}.py".format(module)
+
+                    success = self._conn.ModuleHandler.unload(module)
+
+                    if success:
+                        return self.reply_target(target, nick, "Successfully unloaded module '{}'".format(module))
+
+                    if module not in self._conn.ModuleHandler.getLoadedModulesList():
+                        return self.reply_target(target, nick,
+                                                 "Failed to unload module '{}', are you sure it is loaded?"
+                                                 .format(module))
+                    return self.reply_target(target, nick, "Failed to unload module '{}'.".format(module))
+
+                if command == "reloadmodule" or command == "rmod":
+                    if not commandtext:
+                        return self.reply_notice(nick, "Usage: reloadmodule <modulename>")
+
+                    module = commandtext
+                    if not module.endswith(".py"):
+                        module = "{}.py".format(module)
+
+                    success = self._conn.ModuleHandler.reload(module)
+
+                    if success:
+                        return self.reply_target(target, nick, "Successfully reloaded module '{}'".format(module))
+
+                    if module not in self._conn.ModuleHandler.getAvailableModulesList():
+                        return self.reply_target(target, nick,
+                                                 "Failed to reload module '{}', are you sure it exists and is loaded?"
+                                                 .format(module))
+                    return self.reply_target(target, nick, "Failed to reload module '{}'.".format(module))
 
                 if command == "reconnect":
                     self.reply_target(target, nick, "Reconnecting to the network right now.")
