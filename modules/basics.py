@@ -69,7 +69,7 @@ class BasicCommands(moduletemplate.BotModule):
         if mod:
             if command == "join":
                 if not commandtext:
-                    return self.reply_notice(nick, "Usage: join <channels to part>")
+                    return self.reply_notice(nick, "Usage: join <channels to join>")
 
                 self._conn.join(commandtext)
                 return self.reply_notice(nick, "Attempting to join: {}".format(commandtext.replace(",", ", ")))
