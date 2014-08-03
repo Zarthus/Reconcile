@@ -5,6 +5,7 @@ IRC class for irc connections
 import socket
 import time
 import re
+import traceback
 
 from core import channel
 from core import module
@@ -13,6 +14,7 @@ from core import ratelimit
 from tools import validator
 from tools import formatter
 from tools import logger
+from tools import paste
 
 
 class IrcConnection:
@@ -26,6 +28,7 @@ class IrcConnection:
         self.channelmanager = channel.ChannelManager(self.config.getDatabaseDir(), self.logger, self.validator)
         self.commandhelp = commandhelp.CommandHelp(self.logger, self.config.getCommandPrefix(self.network_name))
         self.ratelimiter = ratelimit.Ratelimit(self, self.logger)
+        self.force_quit = False  # Tell the main loop in bot.py that we wish to exit the entire bot.
 
         self._loadModules()
 
@@ -34,7 +37,22 @@ class IrcConnection:
         self.connect()
 
     def tick(self):
-        self.readBuffer()
+        try:
+            self.readBuffer()
+        except Exception:
+            traceback.print_exc()
+            tb = traceback.format_exc()
+
+            if self.debug_chan:
+                gist = paste.Paste.gist("Traceback for {} on {} at {}".format(self.currentnick, self.network_name,
+                                        time.strftime(self.config.getMetadata("timestamp"))),
+                                        tb, "traceback.py", False, self.logger)
+                self.say(self.debug_chan, "An exception has occured and has been logged: {}".format(gist))
+
+        except KeyboardInterrupt:
+            self.force_quit = True
+
+        return self.force_quit
 
     def rehash(self, reconnect=False):
         self.config.rehash()
@@ -333,6 +351,7 @@ class IrcConnection:
         self.invite_join = network["invite_join"]
 
         self.channels = network["channels"]
+        self.debug_chan = network["debug_chan"]
 
         self.administrators = network["administrators"]
         self.moderators = network["moderators"]

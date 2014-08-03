@@ -176,6 +176,20 @@ class Config:
                                         .format(len(self.networks[network_name]["channels"]),
                                                 network_name, self.networks[network_name]["channels"]))
 
+            if "debug_chan" not in self.networks[network_name]:
+                # Debug chan may be nothing at all, but we should still fill it in.
+                self.networks[network_name]["debug_chan"] = False
+            elif not self.networks[network_name]["debug_chan"].startswith("#"):
+                self.networks[network_name]["debug_chan"] = False
+                self.logger.log_verbose("'debug_chan' was set but wasn't a channel in {}.".format(network_name))
+                warnings += 1
+            else:
+                dbgchan = self.networks[network_name]["debug_chan"]
+                if dbgchan not in self.networks[network_name]["channels"]:
+                    self.networks[network_name]["channels"].append(dbgchan)
+                    self.logger.log_verbose("'debug_chan' was not in the channels to join list - added, in {}."
+                                            .format(network_name))
+
             if "account" not in self.networks[network_name]:
                 self.networks[network_name]["account"] = self.networks[network_name]["nick"]
                 self.logger.log_verbose("'account' was not configured in {} - 'nick' assumed".format(network_name))

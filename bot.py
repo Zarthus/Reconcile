@@ -7,7 +7,6 @@ from core import config
 from core import irc
 
 import time
-import traceback
 
 
 conf = config.Config()
@@ -20,14 +19,11 @@ for network in conf.getNetworks().items():
 while running:
     time.sleep(0.1)
 
-    try:
-        for connection in irc_connections.items():
-            connection[1].tick()
-    except KeyboardInterrupt:
-        print("KeyboardInterrupt caught, bot exiting")
+    for connection in irc_connections.items():
+        force_quit = connection[1].tick()
+        if force_quit:
+            print("Quit requested, bot exiting")
 
-        for c in irc_connections.items():
-            c[1].quit("Shutdown requested by Console")
-        running = False
-    except Exception as e:
-        traceback.print_exc()
+            for c in irc_connections.items():
+                c[1].quit("Shutdown requested.")
+            running = False
