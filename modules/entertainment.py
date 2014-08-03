@@ -85,7 +85,7 @@ class Entertainment(moduletemplate.BotModule):
     def ratelimit(self, command):  # Limit the use of commands - false is recently used, true is can use..
         if ((command not in self.last_command) or
            (command in self.last_command and int(time.time()) > self.last_command[command])):
-            self.last_command[command] = int(time.time()) + 10
+            self.last_command[command] = int(time.time()) + self.module_data["rate_limit_delay"]
             return True
 
         return False
