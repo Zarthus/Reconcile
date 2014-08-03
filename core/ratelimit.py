@@ -79,6 +79,10 @@ class Ratelimit(threading.Thread):
                 burstlimit = 0
 
     def stop(self):
+        if not self.running:
+            self.logger.notice("Cannot stop ratelimiter thread: Not running.")
+            return False
+
         self._conn.logger.log("Stopping ratelimiter thread.")
         self.running = False
 

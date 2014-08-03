@@ -165,6 +165,9 @@ class IrcConnection:
             self._connect()
         if not reconnecting:
             self.ratelimiter.start()
+        else:
+            self.ratelimiter = ratelimit.Ratelimit(self, self.logger)
+            self.ratelimiter.start()
 
     def reconnect(self, message=None):
         if not self.connected:
