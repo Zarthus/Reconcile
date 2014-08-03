@@ -110,8 +110,9 @@ class BasicCommands(moduletemplate.BotModule):
 
             if admin:
                 if command == "shutdown":
+                    self._conn.force_quit = True
                     self._conn.quit("Shutdown requested by {}".format(nick))
-                    raise KeyboardInterrupt  # TODO: Make a better way to shut the bot down.
+                    return True
 
                 if command == "rehash":
                     self.reply_target(target, nick, "Rehashing my configuration right now.")
