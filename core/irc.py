@@ -289,7 +289,7 @@ class IrcConnection:
             self.join(channel)
 
     def on_quit(self, nick, message=None):
-        self.logger.event("INVITE", "{} has quit IRC: {}".format(nick, "Quit" if not message else message))
+        self.logger.event("QUIT", "{} has quit IRC: {}".format(nick, "Quit" if not message else message))
         pass
 
     def on_command(self, nick, target, message, uinfo):
