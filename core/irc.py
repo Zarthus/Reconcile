@@ -271,7 +271,6 @@ class IrcConnection:
         pass
 
     def on_command(self, nick, target, message, uinfo):
-        print(nick, target, message)
         split = message.split()
         command = ""
         params = ""
