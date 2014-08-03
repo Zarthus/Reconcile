@@ -36,7 +36,10 @@ def check_module(module_name):
     optional = {
         "requires_api_key": False,
         "registers_commands": False,
+        "has_configuration_block": False,
     }
+
+    confblock_func = []
 
     error_count = 0
 
@@ -65,6 +68,13 @@ def check_module(module_name):
         if line.startswith("self.register_command("):
             optional["registers_commands"] = True
 
+        if "self.module_data" in line:
+            optional["has_configuration_block"] = True
+            for word in line.split():
+                if word.startswith("self.module_data["):
+                    funcname = word.split("\"")[1]
+                    confblock_func.append(funcname)
+
     for requirement in requirements.items():
         if requirement[1]:
             print("  [x] Requirement satisfied: {}".format(requirement[0].replace("_", " ")))
@@ -75,6 +85,9 @@ def check_module(module_name):
     for opt in optional.items():
         if opt[1]:
             print("  [x] Optional checks: This module: {}".format(opt[0].replace("_", " ")))
+
+    for func in confblock_func:
+        print("  Introduces module block configuration: {}".format(func))
 
     print("check_module('{}') ran with {} errors.\n"
           .format(module_name, error_count))
