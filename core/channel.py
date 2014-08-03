@@ -50,14 +50,13 @@ class ChannelManager:
             conn = sqlite3.connect(self.formatDBFileName(network_name))
             c = conn.cursor()
             c.execute("CREATE TABLE IF NOT EXISTS channels (channel TEXT UNIQUE PRIMARY KEY)")
-            rc = c.execute("INSERT OR REPLACE INTO channels (channel) VALUES (?)", [channel]).rowcount
+            c.execute("INSERT INTO channels (channel) VALUES (?)", [channel]).rowcount
             conn.commit()
             conn.close()
 
-            if rc:
-                self.logger.log("Added channel {} to {}.db".format(channel, network_name))
         except sqlite3.Error as e:
             self.logger.error("Failed to insert channel '{}' to {}.db: {}".format(channel, network_name, str(e)))
+        self.logger.log_verbose("Added channel {} to {}.db".format(channel, network_name))
 
     def delForNetwork(self, network_name, channel):
         if not self.validator.channel(channel):
@@ -68,14 +67,13 @@ class ChannelManager:
             conn = sqlite3.connect(self.formatDBFileName(network_name))
             c = conn.cursor()
             c.execute("CREATE TABLE IF NOT EXISTS channels (channel TEXT UNIQUE PRIMARY KEY)")
-            rc = c.execute("DELETE FROM channels WHERE channel = ?", [channel]).rowcount
+            c.execute("DELETE FROM channels WHERE channel = ?", [channel]).rowcount
             conn.commit()
             conn.close()
 
-            if rc:
-                self.logger.log("Deleted channel {} from {}.db".format(channel, network_name))
         except sqlite3.Error as e:
             self.logger.error("Failed to delete channel '{}' from {}.db: {}".format(channel, network_name, str(e)))
+        self.logger.log_verbose("Deleted channel {} from {}.db".format(channel, network_name))
 
     def formatDBFileName(self, db_name):
         return self.db_dir + db_name + ".db"
