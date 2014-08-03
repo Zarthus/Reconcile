@@ -1,8 +1,8 @@
 """
-hyphen.py by Zarthus
+xkcd_hyphen.py by Zarthus
 Licensed under MIT
 
-This replaces sentences like "hey there ass man" with "hey there ass-man"
+This replaces sentences like "That's a sweet-ass car" with "That's a sweet ass-car"
 http://xkcd.com/37/
 """
 
