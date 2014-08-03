@@ -50,7 +50,7 @@ class ChannelManager:
             conn = sqlite3.connect(self.formatDBFileName(network_name))
             c = conn.cursor()
             c.execute("CREATE TABLE IF NOT EXISTS channels (channel TEXT UNIQUE PRIMARY KEY)")
-            c.execute("INSERT INTO channels (channel) VALUES (?)", [channel]).rowcount
+            c.execute("INSERT OR REPLACE INTO channels (channel) VALUES (?)", [channel]).rowcount
             conn.commit()
             conn.close()
 
