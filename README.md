@@ -23,81 +23,8 @@ To make use of Reconcile, ensure the following requirements are met:
 
 Once the installation requirements are satified, copy or rename `config.example.json` to `config.json` and configure it to your liking.  
 
-Here is a copy of a configuration with comments -- but do not copy it directly, use `config.example.json` for that.   
-
-```
-{
-  "irc": { // irc block
-    "espernet": { // name of the block.
-      "server": "irc.esper.net", // server to connect to.
-      "port": 6667, // port to connect to - do not use a plus sign.
-      "ssl": false, // connecting with ssl or not 
-
-      "nick": "Reconcile", // the primary nickname to try. 
-      "altnick": "Reconcile_", // if the primary nickname is taken, we connect with this instead. Leave blank for nick_
-
-      "ident": "reconcile", // the ident (also known as username) of the bot 
-      "realname": "Zarthus his bot", // the real name of the bot, if left blank it will contain a link to the github repository
-
-      "account": "zarthus-bots", // the account to identify to.
-      "password": "irc-password", // the password the bot should use to identify to the account specified.
-
-      "command_prefix": "!", // The prefix all commands will have.
-      "invite_join": true, // join channels when invited by anyone
-      
-      // This is an OPTIONAL setting. Not specifying means you will make use of storing and deleting channels dynamically.
-      // If you only want your bot to be in a specific set of channels and nowhere else. As such, it is not shown in the default config.
-      "channels": [
-          "#channel1", "#channel2"
-      ],
-
-      // A list of administrators, supports wildcard *, nickname (anything before !) can be left out.
-      // administrators have access to everything, use this with caution.
-      "administrators": [
-        "Zarthus!Zarthus@zarth.us"
-      ],
-      
-      "moderators": [
-        "hej@hello.me",
-        "bye@goodbye.net",
-        "*@moderate.us"
-      ]
-    }
-  },
-
-  // a list of api keys some modules require, modules will automatically unload themselves if no api key was found.
-  // It is recommended to move modules which you don't have an api key of to modules_disabled.
-  "api_keys": {
-    "something": "", // Api key for some application
-    "somethingelse": "" // Api key for another application.
-  },
-  
-  // modules: Any data a certain module needs.
-  "modules": {
-    "ClassNameOfModule": {
-        // any data can be in here, in whichever format you wish to handle it. As long as it is logical.
-    },
-    
-    // Example - a flood control module.
-    "FloodControl": {
-      "channels": ["#test", "#test2"],
-      "ban_on_flood": true
-    }
-  },
-  
-  // bot metadata, generally data that is used in certain modules.
-  "metadata": {
-    "bot_version": "1.0", // the bot version
-    "bot_maintainer": "Zarthus", // the bot maintainer, change this to your own name
-    "github_url": "https:\/\/github.com\/zarthus\/reconcile", // a link to the github repository where the source code can be found
-    "verbose": true, // verbosity; some things will not be logged if this is set to false. Can be useful for debugging.
-    "db_dir": "db/", // In which folder do we store database files?
-    "timestamp": "%H:%M", // strftime format of how a timestamp should look, https://docs.python.org/3/library/time.html#time.strftime
-    "logger_terminal_colours": false // Should we log terminal colours, or keep it all the same default colour? May cause issues depending on OS.
-  }
-}
-
-```
+[Here](https://github.com/Zarthus/Reconcile/wiki/Configuring-Reconcile) is a copy of a configuration with comments -- describing what they do and which options are available.  
+But do not copy it directly, use `config.example.json` for that.  
 
 Once these requirements are met, go ahead and run `python bot.py` to start the bot.
 
