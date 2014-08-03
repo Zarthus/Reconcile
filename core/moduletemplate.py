@@ -75,7 +75,7 @@ class BotModule:
         You should always use a channel as target unless the command was performed in a private message.
         """
 
-        if nick and not target.startswith("#"):
+        if nick and target.startswith("#"):
             message = "{}: {}".format(nick, message)
 
         self._conn.say(target, message, parse)
