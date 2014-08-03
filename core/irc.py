@@ -143,11 +143,11 @@ class IrcConnection:
         self.send_raw("NOTICE {} :\x01{} {}\x01".format(target, ctcp, ctcpreply))
 
     def join(self, channel):
-        self.logger.log("Joining channel: ".format(channel))
+        self.logger.log("Joining channel: {}".format(channel))
         self.send_raw("JOIN :{}".format(channel))
 
     def part(self, channel):
-        self.logger.log("Parting channel: ".format(channel))
+        self.logger.log("Parting channel: {}".format(channel))
         self.send_raw("PART :{}".format(channel))
 
     def quit(self, message=None):
