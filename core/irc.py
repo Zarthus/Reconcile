@@ -424,7 +424,8 @@ class IrcConnection:
         elif event == "INVITE":
             self.on_invite(nick, params)
         elif event == "KICK":
-            self.on_kick(nick, channel, target, params)
+            kreason = " ".join(params_list[1:])[1:]
+            self.on_kick(nick, target, params_list[0], kreason if kreason else "No reason.")
         elif event == "QUIT":
             self.on_quit(nick, params)
 
