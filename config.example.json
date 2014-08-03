@@ -32,13 +32,17 @@
     "wolframalpha": "",
     "scenesat": ""
   },
-  
+
   "modules": {
     "Entertainment": {
       "rate_limit_delay": 10
-    }    
+    },
+
+    "XkcdHyphen": {
+      "full_sentence": false
+    }
   },
-  
+
   "metadata": {
     "bot_version": "0.3",
     "bot_maintainer": "Zarthus",
@@ -46,6 +50,6 @@
     "verbose": false,
     "db_dir": "db/",
     "timestamp": "%H:%M:%S",
-    "logger_terminal_colours": false 
+    "logger_terminal_colours": false
   }
 }

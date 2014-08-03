@@ -17,16 +17,36 @@ class XkcdHyphen(moduletemplate.BotModule):
 
     def on_privmsg(self, target, nick, message):
         if time.time() + 10 > self.ass_cooldown:
-            ass_next = False
+            if not self.module_data or self.module_data["full_sentence"]:
+                self.parse_full(target, nick, message)
+            else:
+                self.parse_partially(target, nick, message)
 
-            for word in message.split():
-                if ass_next:
-                    ass_next = False
-                    assword = "ass-{}".format(word)
-                    m = message.replace("-ass", "").replace(word, assword)
-                    self.reply_target(target, nick, m)
-                    self.ass_cooldown = time.time()
-                    break
+    def parse_full(self, target, nick, message):
+        """This returns the entire sentence, 'that's a sweet ass-car'."""
+        ass_next = False
 
-                if word.endswith("-ass"):
-                    ass_next = True
+        for word in message.split():
+            if ass_next:
+                assword = "ass-{}".format(word)
+                m = message.replace("-ass", "").replace(word, assword)
+                self.reply_target(target, nick, m)
+                self.ass_cooldown = time.time()
+                break
+
+            if word.endswith("-ass"):
+                ass_next = True
+
+    def parse_partially(self, target, nick, message):
+        """This returns only the 'sweet ass-car' part of the message."""
+        ass_next = False
+
+        for word in message.split():
+            if ass_next:
+                m = "{} ass-{}".format(ass_next, word)
+                self.reply_target(target, nick, m)
+                self.ass_cooldown = time.time()
+                break
+
+            if word.endswith("-ass"):
+                ass_next = word.replace("-ass", "")
