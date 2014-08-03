@@ -12,12 +12,12 @@ errorlist = []
 if len(sys.argv) == 1:
     print("No module specified, checking them all.")
 
-    for file in os.listdir("modules"):
+    for file in sorted(os.listdir("modules")):
         if file == "__init__.py" or file.endswith(".pyc") or os.path.isdir(os.path.join("modules", file)):
             continue
         check_modules.append(file)
 else:
-    for mod in sys.argv[1:]:
+    for mod in sorted(sys.argv[1:]):
         check_modules.append(mod)
 
 
