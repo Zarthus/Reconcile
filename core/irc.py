@@ -152,7 +152,7 @@ class IrcConnection:
         self.currentnick = newnick
         return True
 
-    def connect(self):
+    def connect(self, reconnecting=False):
         if self.connected:
             raise Exception("Attempting to connect to {} when already connected as {}"
                             .format(self.server, self.currentnick))
@@ -163,7 +163,8 @@ class IrcConnection:
         else:
             self.logger.log("Attempting to connect to server.")
             self._connect()
-        self.ratelimiter.start()
+        if not reconnecting:
+            self.ratelimiter.start()
 
     def reconnect(self, message=None):
         if not self.connected:
@@ -175,7 +176,7 @@ class IrcConnection:
                 self.quit("Reconnecting.")
 
         time.sleep(2)
-        self.connect()
+        self.connect(True)
 
     def isEvent(self, event):
         if event in ["PRIVMSG", "NOTICE", "MODE", "JOIN", "PART", "INVITE", "KICK", "QUIT"]:
