@@ -187,6 +187,6 @@ class Title(moduletemplate.BotModule):
                     return False if ret_boolean else "Information returned was not informative."
 
                 return "Wikipedia article for $(bold) {} $+ $(bold) : {}".format(data[pageid]["title"],
-                                                                                   extract)
+                                                                                 extract)
             return False if ret_boolean else "Wikipedia returned no information."
         return False if ret_boolean else "Failed to retrieve wikipedia article '{}'.".format(article)

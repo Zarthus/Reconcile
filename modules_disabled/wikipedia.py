@@ -74,4 +74,3 @@ class Wikipedia(moduletemplate.BotModule):
                                                                                    extract)
             return False if ret_boolean else "Wikipedia returned no information."
         return False if ret_boolean else "Failed to retrieve wikipedia article '{}'.".format(article)
-
