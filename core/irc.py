@@ -299,7 +299,6 @@ class IrcConnection:
         params = ""
         ttarget = target
 
-        print(split, len(split))
         if message.startswith(self.command_prefix):
             command = split[0][1:]
             params = " ".join(split[1:])
