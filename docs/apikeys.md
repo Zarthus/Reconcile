@@ -26,6 +26,20 @@ API Limitations (if any): Restricted to 1.000 calls per month
 
 -----
 
+### Open Exchange Rates
+
+This is the API Key for the `Open Exchange Rates` service  
+
+The OpenExchangeRates service provides details on the value of a currency in real-time.  
+
+Name in config.json: `open_exchange_rates`  
+This API key is used in the following module(s): `currency.py`  
+Website: https://openexchangerates.org/  
+Get your own API key here: https://openexchangerates.org/signup/free  
+Registration Required: Yes  
+Free: Yes  
+API Limitations: hourly updates, 1000 requests/month - no HTTPS, email support or advanced features  
+
 ### scenes.at
 
 This is the API Key for the `scenes.at` service.
