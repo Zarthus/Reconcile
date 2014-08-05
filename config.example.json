@@ -30,7 +30,8 @@
   "api_keys": {
     "lastfm": "",
     "wolframalpha": "",
-    "scenesat": ""
+    "scenesat": "",
+    "open_exchange_rates": ""
   },
 
   "modules": {
