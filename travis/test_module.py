@@ -12,8 +12,14 @@ errorlist = []
 if len(sys.argv) == 1:
     print("No module specified, checking them all.")
 
-    for file in sorted(os.listdir("modules")):
-        if file == "__init__.py" or file.endswith(".pyc") or os.path.isdir(os.path.join("modules", file)):
+    dmods = os.listdir("modules_disabled")
+    dismods = []
+    for dismod in dmods:
+        if os.stat(os.path.join("modules_disabled", dismod)).st_size:
+            dismods.append(dismod)
+
+    for file in sorted(os.listdir("modules") + dismods):
+        if (file == "__init__.py" or file.endswith(".pyc") or os.path.isdir(os.path.join("modules", file))):
             continue
         check_modules.append(file)
 else:
@@ -22,8 +28,9 @@ else:
 
 
 def check_module(module_name):
-    if not os.path.exists(os.path.join("modules", module_name)):
-        print("{} -- file does not exist.".format(module_name))
+    if (not os.path.exists(os.path.join("modules", module_name)) and
+            not os.path.exists(os.path.join("modules_disabled", module_name))):
+        print("Module {} does not exist.".format(module_name))
         return 1
 
     requirements = {
@@ -43,7 +50,14 @@ def check_module(module_name):
 
     error_count = 0
 
-    f = open(os.path.join("modules", module_name)).read().split("\n")
+    f = None
+    if os.path.exists(os.path.join("modules", module_name)):
+        f = open(os.path.join("modules", module_name)).read().split("\n")
+    elif os.path.exists(os.path.join("modules_disabled", module_name)):
+        f = open(os.path.join("modules_disabled", module_name)).read().split("\n")
+    else:
+        print("Module {} does not exist".format(module_name))
+        return 1
 
     print("\nChecking module {} for any errors".format(module_name))
 
