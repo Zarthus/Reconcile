@@ -61,7 +61,10 @@ class CommandHelp:
     def getCommandHelp(self, command):
         command = command.lower()
 
-        if command not in self.commands:
+        if self.isAlias(command):
+            command = self.isAliasOf(command).lower()
+
+        if command not in self.commands and not self.isAlias(command):
             return "The command '{}' is not in my help file.".format(command)
 
         privstring = ""
@@ -87,8 +90,12 @@ class CommandHelp:
     def getCommandInfo(self, command):
         command = command.lower()
 
+        if self.isAlias(command):
+            command = self.isAliasOf(command).lower()
+
         if command not in self.commands:
             return "The command '{}' is not in my help file.".format(command)
+
 
         privstring = ""
         aliasstring = ""
@@ -111,3 +118,18 @@ class CommandHelp:
 
         return ("The command '{}' originates from the module '{}', {} and requires {} to use."
                 .format(command, self.commands[command]["module"], aliasstring, privstring))
+
+    def isAlias(self, command):
+        if command in self.commands:
+            return False
+
+        for cmd, cmdinfo in self.commands.items():
+            if cmdinfo["aliases"] and command in cmdinfo["aliases"]:
+                return True
+        return False
+
+    def isAliasOf(self, command):
+        for cmd, cmdinfo in self.commands.items():
+            if cmdinfo["aliases"] and command in cmdinfo["aliases"]:
+                return cmdinfo["name"]
+        return None
