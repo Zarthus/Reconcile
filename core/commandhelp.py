@@ -96,7 +96,6 @@ class CommandHelp:
         if command not in self.commands:
             return "The command '{}' is not in my help file.".format(command)
 
-
         privstring = ""
         aliasstring = ""
         if self.commands[command]["priv"] == self.PRIV_MOD:
