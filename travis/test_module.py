@@ -12,6 +12,7 @@ errorlist = []
 if len(sys.argv) == 1:
     print("No module specified, checking them all.")
 
+    # Check against disabled modules, those that are not empty are appended to a list.
     dmods = os.listdir("modules_disabled")
     dismods = []
     for dismod in dmods:

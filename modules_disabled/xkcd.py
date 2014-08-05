@@ -25,7 +25,7 @@ class Xkcd(moduletemplate.BotModule):
                     if info:
                         self.reply_target(target, None, "({}) {}".format(nick, info), True)
 
-    def get_xkcd_info(self, url):
+    def get_xkcd_info(self, url, ret_boolean=False):
         if not url.endswith("/"):
             url = url + "/"
 
@@ -37,7 +37,7 @@ class Xkcd(moduletemplate.BotModule):
             json = r.json
         except Exception as e:
             self.logger.notice("Failed to get xkcd '{}': {}".format(url, str(e)))
-            return False
+            return False if ret_boolean else "Failed to get xkcd '{}': {}".format(url, str(e))
 
         months = {
             1: 'January', 2: 'February', 3: 'March', 4: 'April',
@@ -51,4 +51,4 @@ class Xkcd(moduletemplate.BotModule):
             return ("xkcd $(bold) {} $+ $(bold) : $(bold) {} $(bold) ({} {} {}) - Explained: {}"
                     .format(json["num"], json["safe_title"], json["day"], months[int(json["month"])], json["year"],
                             explainurl))
-        return False
+        return False if ret_boolean else "Failed to get xkcd '{}'.".format(url)
