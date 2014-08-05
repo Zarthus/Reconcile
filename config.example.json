@@ -29,9 +29,10 @@
 
   "api_keys": {
     "lastfm": "",
-    "wolframalpha": "",
+    "open_exchange_rates": "",
     "scenesat": "",
-    "open_exchange_rates": ""
+    "googl": "",
+    "wolframalpha": ""
   },
 
   "modules": {

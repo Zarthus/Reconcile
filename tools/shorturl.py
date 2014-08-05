@@ -4,6 +4,7 @@ Licensed under MIT
 """
 
 import requests
+import json
 
 
 class ShortUrl:
@@ -13,6 +14,44 @@ class ShortUrl:
     All methods in this class are 'static' and support the 'logger' parameter,
     Whenever possible, passing this parameter ensures errors will be logged to console, so it is recommended you do.
     """
+
+    def googl(longurl, api_key=None, logger=None):
+        """
+        Shorten an URL with http://goo.gl - googles own url shortener.
+
+        longurl: string, url to shorten
+        api_key: api key
+
+        returns shortened url, or False on failure
+        Information: https://developers.google.com/url-shortener/v1/getting_started
+        """
+
+        url = "https://www.googleapis.com/urlshortener/v1/url"
+        payload = {
+            "longUrl": longurl
+        }
+        if api_key:
+            payload["key"] = api_key
+
+        header = {
+            "Content-Type": "application/json"
+        }
+
+        shorturl = ""
+        try:
+            r = requests.post(url, data=json.dumps(payload), headers=header)
+
+            if r.ok and "id" in r.json:
+                shorturl = r.json["id"]
+            else:
+                r.raise_for_status()
+        except Exception as e:
+            if logger:
+                logger.error("goo.gl: Failed to shorten '{}': {}".format(url, str(e)))
+
+        if shorturl:
+            return shorturl
+        return False
 
     def isgd(url, logger=None):
         """
@@ -41,7 +80,7 @@ class ShortUrl:
                 r.raise_for_status()
         except Exception as e:
             if logger:
-                logger.error("Failed to shorten '{}': {}".format(url, str(e)))
+                logger.error("is.gd: Failed to shorten '{}': {}".format(url, str(e)))
 
         if shorturl:
             return shorturl
@@ -83,7 +122,7 @@ class ShortUrl:
                 r.raise_for_status()
         except Exception as e:
             if logger:
-                logger.error("Failed to shorten '{}': {}".format(url, str(e)))
+                logger.error("scenes.at: Failed to shorten '{}': {}".format(url, str(e)))
 
         if shorturl:
             return shorturl
