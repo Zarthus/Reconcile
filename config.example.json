@@ -49,7 +49,7 @@
     "github_url": "https:\/\/github.com\/zarthus\/reconcile",
     "verbose": false,
     "db_dir": "db/",
-    "timestamp": "%H:%M:%S",
+    "timestamp": "%Y-%m-%d %H:%M:%S",
     "logger_terminal_colours": false
   }
 }
