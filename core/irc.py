@@ -222,7 +222,8 @@ class IrcConnection:
         if (target == self.currentnick or
            message.startswith(self.command_prefix) or
            (message.startswith(self.currentnick) and
-               (message.endswith(":") or message.endswith(",") or message.endswith(self.currentnick[-1:])))):
+               (message.startswith(self.currentnick + ":") or message.startswith(self.currentnick + ",") or
+                message.startswith(self.currentnick + " ")))):
             self.on_command(nick, target, message, uinfo)
 
     def on_action(self, nick, target, message):
@@ -298,10 +299,14 @@ class IrcConnection:
         params = ""
         ttarget = target
 
+        print(split, len(split))
         if message.startswith(self.command_prefix):
             command = split[0][1:]
             params = " ".join(split[1:])
         elif message.startswith(self.currentnick):
+            if len(split) == 1:
+                return False  # command too short.
+
             command = split[1]
             params = " ".join(split[2:])
         elif target == self.currentnick:  # Query
