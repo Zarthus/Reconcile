@@ -425,18 +425,17 @@ class IrcConnection:
             user = uinfo.split("@")[0][len(nick) + 1:]
             host = uinfo.split("@")[1]
 
-        if params_list and " ".join(params_list).startswith(":"):
-            params = " ".join(params_list)[1:]
+        if params_list:
+            params = " ".join(params_list)
+            if params.startswith(":"):
+                params = params[1:]
 
         if event == "PRIVMSG":
             self.on_privmsg(nick, target, params, [nick, user, host, uinfo])
         elif event == "NOTICE":
             self.on_notice(nick, target, params)
         elif event == "MODE":
-            modes = " ".join(params_list)
-            if modes.startswith(":"):  # Mode set on self.
-                modes = modes[1:]
-            self.on_mode(nick, target, modes)
+            self.on_mode(nick, target, params)
         elif event == "JOIN":
             self.on_join(nick, target)
         elif event == "PART":
