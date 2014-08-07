@@ -159,6 +159,7 @@ class IrcConnection:
         self.ratelimiter.stop()
         self.currentnick = None
         self.connected = False
+        self.server_name = None
 
     def nick(self, newnick):
         if not self.validator.nickname(newnick):
@@ -262,6 +263,7 @@ class IrcConnection:
     def on_notice(self, nick, target, message):
         if target == "*":
             self.logger.log(message)
+            self.server_name = nick  # TODO: This will be set four times, better ways? perhaps whois
         else:
             self.logger.event("NOTICE", "{}/{}: {}".format(nick, target, message))
 
@@ -348,6 +350,7 @@ class IrcConnection:
 
         self.id = network["id"]
         self.network_name = network["network_name"]
+        self.server_name = None  # Gets set upon connecting.
         self.server = network["server"]
         self.port = network["port"]
         self.ssl = network["ssl"]
@@ -411,6 +414,8 @@ class IrcConnection:
                 self.send_raw("JOIN :" + ",".join(self.channels))
             else:
                 self.logger.log_verbose("Not configured to join any channels.")
+
+            self.logger.log("A connection has been established with: {}".format(self.server_name))
 
         self.ModuleHandler.sendNumeric(numeric, data)
         return False
