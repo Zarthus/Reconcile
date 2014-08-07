@@ -258,7 +258,7 @@ class IrcConnection:
     def on_privmsg(self, nick, target, message, uinfo=None):
         if message.startswith("\x01") and message.endswith("\x01"):
             if message.lstrip("\x01").startswith("ACTION"):
-                self.on_action(nick, target, message.strip("\x01").strip("ACTION"))
+                self.on_action(nick, target, message.strip("\x01").strip("ACTION").strip())
             else:
                 success = self.on_ctcp(nick, target, message.strip("\x01"))
                 if success:
