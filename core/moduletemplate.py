@@ -16,6 +16,9 @@ class BotModule:
         self.api_key = {}
         self.module_data = self._getModuleData()
 
+        self.isBotAdmin = self.isBotAdministrator  # aliases for admin/moderator
+        self.isBotMod = self.isBotModerator
+
     def on_module_load(self):
         """Module constructor"""
         pass
@@ -113,6 +116,33 @@ class BotModule:
 
         self.logger.log("Module '{}' sending raw message: '{}'".format(self.module_name, raw_message))
         self._conn.send_raw(raw_message)
+
+    def isOp(self, nick, channel):
+        return self._conn.isOp(nick, channel)
+
+    def isVoice(self, nick, channel):
+        return self._conn.isVoice(nick, channel)
+
+    def isOn(self, nick, channel):
+        return self._conn.isOn(nick, channel)
+
+    def isIdentified(self, nick):
+        return self._conn.isIdentified(nick)
+
+    def isOper(self, nick):
+        return self._conn.isOper(nick)
+
+    def getUserData(self, nick):
+        return self._conn.getUserData(nick)
+
+    def getChannelData(self, channel):
+        return self._conn.getChannelData(channel)
+
+    def isBotAdministrator(self, nick):
+        return self._conn.isBotAdmin(nick)
+
+    def isBotModerator(self, nick):
+        return self._conn.isBotModerator(nick)
 
     def register_command(self, command, params, help, priv, aliases=None):
         """

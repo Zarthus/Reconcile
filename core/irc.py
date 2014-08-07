@@ -213,6 +213,43 @@ class IrcConnection:
         time.sleep(2)
         self.connect(True)
 
+    def send_who(self, nick):
+        """
+        Request /WHO data from server
+        This data is prepended with '000' so the bot can distinguish it from other WHO requests.
+        format: 000 user host nick status account realname
+        This should be used to identify a single (or array of) users.
+        """
+        if nick.startswith("#"):
+            self.logger.error("send_who({}) expects a nick, not a channel.".format(nick))
+            return False
+
+        self.logger.log_verbose("send_who(): WHO {}".format(nick))
+        self.send_raw("WHO {} %tuhnfar,000".format(nick))
+
+    def send_chanwho(self, channel):
+        """
+        Request /WHO data from server
+        This data is prepended with '001' so the bot can distinguish it from other WHO requests.
+        format: 001 channel user host nick status account realname
+        This should be used to identify a channel.
+        """
+        if not channel.startswith("#"):
+            self.logger.error("send_chanwho({}) expects a channel, not a nick.".format(channel))
+            return False
+        if self.last_chanwho:
+            if self.last_chanwho[0] == channel and int(time.time()) < self.last_chanwho[1] + 5:
+                # Let's not flood the server too much, one chanwho per channel per 5 seconds
+                self.logger.log_verbose("send_chanwho(): WHO {}: Blocked by rate-limitation.".format(channel))
+                return False
+
+        if channel.lower() in self.channel_data:
+            self.channel_data.pop(channel.lower())
+
+        self.logger.log_verbose("send_chanwho(): WHO {}".format(channel))
+        self.send_raw("WHO {} %tcuhnfar,001".format(channel))
+        self.last_chanwho = [channel, int(time.time())]
+
     def isEvent(self, event):
         if event in ["PRIVMSG", "NOTICE", "MODE", "JOIN", "PART", "INVITE", "KICK", "QUIT"]:
             return True
@@ -241,7 +278,7 @@ class IrcConnection:
             self.on_command(nick, target, message, uinfo)
 
     def on_action(self, nick, target, message):
-        self.logger.event("ACTION", "{}/{}: * {}".format(nick, target, message))
+        self.logger.event("ACTION", "{}/{}: * {} {}".format(nick, target, nick, message))
         self.ModuleHandler.sendAction(target, nick, message)
 
     def on_ctcp(self, nick, target, ctcp):
@@ -273,14 +310,23 @@ class IrcConnection:
 
     def on_mode(self, nick, target, modes):
         self.logger.event("MODE", "{}/{} sets mode: {}".format(nick, target, modes))
+        if target.startswith("#") and ("o" in modes or "v" in modes):
+            self.send_chanwho(target)
 
     def on_join(self, nick, channel):
         self.logger.event("JOIN", "{} joined {}".format(nick, channel))
 
-        if nick == self.currentnick:
-            self.channelmanager.addForNetwork(self.network_name, channel)
+        if nick != self.currentnick:
+            if channel.lower() in self.channel_data:
+                self.channel_data[channel.lower()]["regular"].append(nick)
+            else:
+                self.logger.notice_verbose("on_join({}, {}): channel was not in channel_data".format(nick, channel))
+                self.send_chanwho(channel)
+        else:
+            self.send_chanwho(channel)
             if channel not in self.channels:
                 self.channels.append(channel)
+                self.channelmanager.addForNetwork(self.network_name, channel)
 
     def on_part(self, nick, channel, message=None):
         if not message:
@@ -288,8 +334,13 @@ class IrcConnection:
         else:
             self.logger.event("PART", "{} parted {}: {}".format(nick, channel, message))
 
-        if nick == self.currentnick:
+        if nick != self.currentnick:
+            self.channeldata_remove_user(nick, channel)
+        else:
             self.channelmanager.delForNetwork(self.network_name, channel)
+            if channel.lower() in self.channel_data:
+                self.channel_data.pop(channel.lower())
+
             if channel in self.channels:
                 self.channels.remove(channel)
 
@@ -298,6 +349,8 @@ class IrcConnection:
 
         if knick == self.currentnick:
             self.channelmanager.delForNetwork(self.network_name, channel)
+            if channel.lower() in self.channel_data:
+                self.channel_data.pop(channel.lower())
             if channel in self.channels:
                 self.channels.remove(channel)
 
@@ -346,6 +399,139 @@ class IrcConnection:
             self.say(nick, "I'm sorry, but I did not understand the command '{}'.".format(command))
         return success
 
+    def on_whoreply(self, args):
+        """Handles custom WHO requests by the bot."""
+
+        if args[0] == "000" and len(args) >= 7:  # self.send_who() response
+            """format: 000 user host nick status account realname"""
+
+            iName = args[3].lower()
+            if iName in self.user_data:  # Refresh data with newer data.
+                self.user_data.pop(iName)
+
+            self.user_data[iName] = {
+                "identified":  True if args[5] != "0" else False,
+                "account": args[5],  # Will contain 0 if not identified.
+                "nick": args[3],
+                "user": args[1],
+                "host": args[2],
+                "away": "G" in args[4],
+                "oper": "*" in args[4],
+                "realname": " ".join(args[6:])[1:]
+            }
+        elif args[0] == "001" and len(args) >= 8:  # self.send_chanwho() response
+            """format: 001 channel user host nick status account realname"""
+
+            iName = args[4].lower()
+            if iName in self.user_data:  # Refresh data with newer data.
+                self.user_data.pop(iName)
+
+            self.user_data[iName] = {
+                "identified":  True if args[6] != "0" else False,
+                "account": args[6],  # Will contain 0 if not identified.
+                "nick": args[4],
+                "user": args[2],
+                "host": args[3],
+                "away": "G" in args[5],
+                "oper": "*" in args[5],
+                "realname": " ".join(args[7:])[1:]
+            }
+
+            iChan = args[1].lower()
+            iNick = args[4].lower()
+            if iChan not in self.channel_data:
+                self.channel_data[iChan] = {"op": [], "voice": [], "regular": []}
+
+            if "@" in args[5]:
+                self.channel_data[iChan]["op"].append(iNick)
+            elif "+" in args[5]:
+                self.channel_data[iChan]["voice"].append(iNick)
+            else:
+                self.channel_data[iChan]["regular"].append(iNick)
+
+    def channeldata_remove_user(self, nick, channel):
+        """Check if user is in channel data array, remove if they are"""
+        nick = nick.lower()
+        channel = channel.lower()
+
+        if channel in self.channel_data:
+            if self.isOp(nick, channel):
+                self.channel_data[channel]["op"].pop(nick)
+            elif self.isVoice(nick, channel):
+                self.channel_data[channel]["voice"].pop(nick)
+            elif self.isOn(nick, channel):
+                self.channel_data[channel]["regular"].pop(nick)
+
+    def isOp(self, nick, channel):
+        nick = nick.lower()
+        channel = channel.lower()
+
+        if channel in self.channel_data:
+            return nick in self.channel_data[channel]["op"]
+        return False
+
+    def isVoice(self, nick, channel):
+        nick = nick.lower()
+        channel = channel.lower()
+
+        if channel in self.channel_data:
+            return nick in self.channel_data[channel]["op"] or nick in self.channel_data[channel]["voice"]
+        return False
+
+    def isOn(self, nick, channel):
+        nick = nick.lower()
+        channel = channel.lower()
+
+        if channel in self.channel_data:
+            return (nick in self.channel_data[channel]["op"] or
+                    nick in self.channel_data[channel]["voice"] or
+                    nick in self.channel_data[channel]["regular"])
+        return False
+
+    def isOper(self, nick):
+        nick = nick.lower()
+
+        if nick in self.user_data:
+            return self.user_data[nick]["oper"]
+        return False
+
+    def isIdentified(self, nick):
+        nick = nick.lower()
+
+        if nick in self.user_data:
+            return self.user_data[nick]["identified"]
+        return False
+
+    def isBotAdmin(self, nick):
+        if nick in self.user_data:
+            usermask = "{}!{}@{}".format(self.user_data[nick]["nick"],
+                                         self.user_data[nick]["user"],
+                                         self.user_data[nick]["host"])
+            return self.config.isAdministrator(self.network_name, usermask)
+        return False
+
+    def isBotModerator(self, nick):
+        if nick in self.user_data:
+            usermask = "{}!{}@{}".format(self.user_data[nick]["nick"],
+                                         self.user_data[nick]["user"],
+                                         self.user_data[nick]["host"])
+            return self.config.isModerator(self.network_name, usermask)
+        return False
+
+    def getUserData(self, nick):
+        nick = nick.lower()
+
+        if nick in self.user_data:
+            return self.user_data[nick]
+        return False
+
+    def getChannelData(self, channel):
+        channel = channel.lower()
+
+        if channel in self.channel_data:
+            return self.channel_data[channel]
+        return False
+
     def register_command(self, command, params, help, priv, aliases=None, module=None):
         self.commandhelp.register(command, params, help, priv, aliases, module)
 
@@ -385,6 +571,10 @@ class IrcConnection:
         self.queue_privmsg = []
         self.queue_notice = []
 
+        self.user_data = {}  # Data gathered by /WHO
+        self.channel_data = {}
+        self.last_chanwho = None  # Last channel who (self.send_chanwho())
+
     def _connect_ssl(self):
         raise NotImplementedError("Connecting to SSL has not yet been implemented.")
 
@@ -402,6 +592,12 @@ class IrcConnection:
         The ircd sends numerics to indicate something is wrong (or right),
         This method will interact with a few of them
         """
+
+        if numeric == 354:
+            # RPL_WHOREPLY
+            whodata = data.split()[3:]
+            if len(whodata):
+                self.on_whoreply(data.split()[3:])
 
         if numeric == 433:
             # Nick is already taken.

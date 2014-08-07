@@ -29,6 +29,12 @@ class Config:
 
     def rehash(self):
         self.logger.log("Rehashing configuration.")
+
+        self.networks = {}
+        self.api_keys = {}
+        self.metadata = {}
+        self.modules = {}
+
         self.load()
 
     def load(self):
