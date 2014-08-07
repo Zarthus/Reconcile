@@ -420,7 +420,10 @@ class IrcConnection:
         elif event == "NOTICE":
             self.on_notice(nick, target, params)
         elif event == "MODE":
-            self.on_mode(nick, target, params)
+            modes = " ".join(params_list)
+            if modes.startswith(":"):  # Mode set on self.
+                modes = modes[1:]
+            self.on_mode(nick, target, modes)
         elif event == "JOIN":
             self.on_join(nick, target)
         elif event == "PART":
