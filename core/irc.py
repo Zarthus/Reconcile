@@ -318,7 +318,7 @@ class IrcConnection:
 
         if nick != self.currentnick:
             if channel.lower() in self.channel_data:
-                self.channel_data[channel.lower()]["regular"].append(nick)
+                self.channel_data[channel.lower()]["regular"].append(nick.lower())
             else:
                 self.logger.notice_verbose("on_join({}, {}): channel was not in channel_data".format(nick, channel))
                 self.send_chanwho(channel)
@@ -362,7 +362,10 @@ class IrcConnection:
 
     def on_quit(self, nick, message=None):
         self.logger.event("QUIT", "{} has quit IRC: {}".format(nick, "Quit" if not message else message))
-        pass
+
+        for chan in self.channel_data:
+            if self.isOn(nick, chan):
+                self.channeldata_remove_user(nick, chan)
 
     def on_command(self, nick, target, message, uinfo):
         split = message.split()
@@ -456,11 +459,11 @@ class IrcConnection:
 
         if channel in self.channel_data:
             if self.isOp(nick, channel):
-                self.channel_data[channel]["op"].pop(nick)
+                self.channel_data[channel]["op"].remove(nick)
             elif self.isVoice(nick, channel):
-                self.channel_data[channel]["voice"].pop(nick)
+                self.channel_data[channel]["voice"].remove(nick)
             elif self.isOn(nick, channel):
-                self.channel_data[channel]["regular"].pop(nick)
+                self.channel_data[channel]["regular"].remove(nick)
 
     def isOp(self, nick, channel):
         nick = nick.lower()
