@@ -41,7 +41,7 @@ class Isup(moduletemplate.BotModule):
         elif "It's not just you! " in r.text:
             isup = "$(red) down $+ $(clear)"
         elif "doesn't look like a site on the interwho" in r.text:
-            isup = "$(dgrey) not a valid website $+ $(clear)"
+            isup = "$(dgrey) an invalid website $+ $(clear)"
         else:
             isup = "$(dgrey) unknown $+ $(clear)"
 
