@@ -36,9 +36,13 @@ class Isup(moduletemplate.BotModule):
 
         isup = ""
 
-        if "looks down from here" not in r.text:
+        if "It's just you. " in r.text:
             isup = "$(green) up $+ $(clear)"
-        else:
+        elif "It's not just you! " in r.text:
             isup = "$(red) down $+ $(clear)"
+        elif "doesn't look like a site on the interwho" in r.text:
+            isup = "$(dgrey) not a valid website $+ $(clear)"
+        else:
+            isup = "$(dgrey) unknown $+ $(clear)"
 
         self.reply_target(target, nick, "{} appears to be {}.".format(url, self.colformat.parse(isup)))
