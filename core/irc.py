@@ -170,6 +170,15 @@ class IrcConnection:
         self.currentnick = newnick
         return True
 
+    def mode(self, target, modes):
+        if not modes.startswith("+") and not modes.startswith("-") or len(modes) < 2:
+            self.logger.notice("Trying to set invalid modes on {}: '{}'".format(target, modes))
+            return False
+
+        self.logger.log("Setting modes '{}' on {}".format(modes, target))
+        self.send_raw("MODE {} :{}".format(target, modes))
+        return True
+
     def connect(self, reconnecting=False):
         if self.connected:
             raise Exception("Attempting to connect to {} when already connected as {}"
@@ -353,6 +362,7 @@ class IrcConnection:
 
         self.command_prefix = network["command_prefix"]
         self.invite_join = network["invite_join"]
+        self.modes = network["modes"]
 
         self.channels = network["channels"]
         self.debug_chan = network["debug_chan"]
@@ -393,6 +403,9 @@ class IrcConnection:
             # No MOTD found or End of MOTD
             if self.password and self.account:
                 self.send_raw("PRIVMSG NickServ :IDENTIFY {} {}".format(self.account, self.password))
+
+            if self.modes:
+                self.mode(self.currentnick, self.modes)
 
             if len(self.channels):
                 self.send_raw("JOIN :" + ",".join(self.channels))

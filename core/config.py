@@ -208,6 +208,9 @@ class Config:
                 self.logger.log_verbose("'invite_join' was not configured in {} - False assumed".format(network_name))
                 warnings += 1
 
+            if "modes" not in self.networks[network_name]:
+                self.networks[network_name]["modes"] = None
+
             if "moderators" not in self.networks[network_name]:
                 self.networks[network_name]["administrators"] = []
 
