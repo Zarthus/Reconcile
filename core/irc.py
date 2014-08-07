@@ -146,9 +146,13 @@ class IrcConnection:
         self.logger.log("Joining channel: {}".format(channel))
         self.send_raw("JOIN :{}".format(channel))
 
-    def part(self, channel):
-        self.logger.log("Parting channel: {}".format(channel))
-        self.send_raw("PART :{}".format(channel))
+    def part(self, channel, reason=None):
+        if not reason:
+            self.logger.log("Parting channel '{}'".format(channel))
+            self.send_raw("PART :{}".format(channel))
+        else:
+            self.logger.log("Parting channel '{}' with reason: {}".format(channel, reason))
+            self.send_raw("PART :{} {}".format(channel, reason))
 
     def quit(self, message=None):
         if not message:
@@ -278,8 +282,11 @@ class IrcConnection:
             if channel not in self.channels:
                 self.channels.append(channel)
 
-    def on_part(self, nick, channel):
-        self.logger.event("PART", "{} parted {}".format(nick, channel))
+    def on_part(self, nick, channel, message=None):
+        if not message:
+            self.logger.event("PART", "{} parted {}".format(nick, channel))
+        else:
+            self.logger.event("PART", "{} parted {}: {}".format(nick, channel, message))
 
         if nick == self.currentnick:
             self.channelmanager.delForNetwork(self.network_name, channel)
@@ -444,7 +451,7 @@ class IrcConnection:
         elif event == "JOIN":
             self.on_join(nick, target)
         elif event == "PART":
-            self.on_part(nick, target)
+            self.on_part(nick, target, params)
         elif event == "INVITE":
             self.on_invite(nick, params)
         elif event == "KICK":
