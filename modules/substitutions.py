@@ -28,6 +28,7 @@ class Substitutions(moduletemplate.BotModule):
                     else:
                         self.reply_target(target, None, "What {} thinks {} meant to say: {}"
                                                         .format(nick, sub[0], sub[1]))
+                    return True
 
         self.store(target, "{} {}".format(nick, message))
 
