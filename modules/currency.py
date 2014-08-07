@@ -71,7 +71,7 @@ class CurrencyConverter(moduletemplate.BotModule):
                                                        .format(currency))
 
     def currency_convert(self, amount, currency, ocurrency):
-        if self.cache["convert"]["age"] + 3600 * 6 > time.time():
+        if time.time() > self.cache["convert"]["age"] + 3600 * 6:
             self.cache_currency_convert()
 
         if "rates" in self.cache["convert"]["json"]:
@@ -97,7 +97,7 @@ class CurrencyConverter(moduletemplate.BotModule):
         return False
 
     def currency_info(self, currency):
-        if self.cache["info"]["age"] + 3600 * 6 > time.time():
+        if time.time() > self.cache["info"]["age"] + 3600 * 6:
             self.cache_currency_info()
 
         if currency in self.cache["info"]["json"]:
