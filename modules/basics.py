@@ -47,8 +47,8 @@ class BasicCommands(moduletemplate.BotModule):
             return self.reply_notice(nick, "Permissions for {}: Administrator: {} - Moderator: {}"
                                            .format(nick, "yes" if admin else "no", "yes" if mod else "no"))
 
-        if command == "ping":
-            return self.reply_target(target, nick, "Yes, yes. I am here")
+        if command == "ping" and not commandtext:  # Don't reply with params, might interfere with some bots 'ping' cmd
+            return self.reply_target(target, nick, "Yes, yes. I am here.")
 
         if command == "commands":
             if not commandtext:
