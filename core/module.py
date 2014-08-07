@@ -71,9 +71,7 @@ class ModuleHandler:
 
         if success:
             self.logger.log("Successfully loaded module {}".format(module))
-        else:
-            self.logger.notice("Failed to load module {}".format(module))
-
+ 
         return success
 
     def unload(self, module, pop=True):
