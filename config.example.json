@@ -23,6 +23,10 @@
 
       "moderators": [
         "example!moderator@*.zarth.us"
+      ],
+      
+      "disallowed_channels": [
+        "#dragonweyr", "#help"
       ]
     }
   },

@@ -143,6 +143,12 @@ class IrcConnection:
         self.send_raw("NOTICE {} :\x01{} {}\x01".format(target, ctcp, ctcpreply))
 
     def join(self, channel):
+        if len(self.disallowed_channels):
+            for chan in self.disallowed_channels:
+                if chan.lower() == channel:
+                    self.logger.notice("Tried to join disallowed channel {}.".format(channel))
+                    return False
+
         self.logger.log("Joining channel: {}".format(channel))
         self.send_raw("JOIN :{}".format(channel))
 
@@ -568,6 +574,8 @@ class IrcConnection:
 
         self.administrators = network["administrators"]
         self.moderators = network["moderators"]
+
+        self.disallowed_channels = network["disallowed_channels"]
 
         self.currentnick = curnick
 

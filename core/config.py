@@ -223,6 +223,9 @@ class Config:
             if "moderators" not in self.networks[network_name]:
                 self.networks[network_name]["moderators"] = []
 
+            if "disallowed_channels" not in self.networks[network_name]:
+                self.networks[network_name]["disallowed_channels"] = []
+
             count += 1
 
         return [count, warnings]
