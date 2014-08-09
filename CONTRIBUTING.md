@@ -1,4 +1,4 @@
-Reconcile - contributing
+Frostbite - contributing
 ========================
 
 Should you be willing to contribute to any module, or make your own - it should meet the following guidelines:  
@@ -10,10 +10,10 @@ Your code is not longer than 119 characters (raised from the original 79 pep8 ch
 Travis compatible (see [`.travis.yml`](.travis.yml) to see what tests are being performed)  
 [RFC 1459 compatible](http://tools.ietf.org/html/rfc1459.html)  
 Should your module require an API key, please edit `config.example.json` and `docs/apikeys.md` accordingly.  
-Should your module require a configuration block, don't forget to edit the [wiki](https://github.com/Zarthus/Reconcile/wiki/Configuring-Reconcile)  
+Should your module require a configuration block, don't forget to edit the [wiki](https://github.com/Zarthus/Frostbite/wiki/Configuring-Frostbite)  
 
 ### Bugs / Suggestions
-Feel free to make an [issue](https://github.com/zarthus/reconcile/issues/new) if you think you've found a bug, or have a suggestion.
+Feel free to make an [issue](https://github.com/zarthus/Frostbite/issues/new) if you think you've found a bug, or have a suggestion.
 
 ### Support
 

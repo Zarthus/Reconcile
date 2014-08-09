@@ -20,4 +20,4 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-An exact copy of this license can be found at http://zarth.us/licenses/reconcile
+An exact copy of this license can be found at http://zarth.us/licenses/frostbite

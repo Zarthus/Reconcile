@@ -1,4 +1,4 @@
-Reconcile [![Build Status](https://travis-ci.org/Zarthus/Reconcile.svg)](https://travis-ci.org/Zarthus/Reconcile)
+Frostbite [![Build Status](https://travis-ci.org/Zarthus/Frostbite.svg)](https://travis-ci.org/Zarthus/Frostbite)
 =========
 
 A Python Utility bot for python3 and above.  
@@ -7,11 +7,11 @@ This bot was designed with Atheme services in mind, and may not work optimally o
 
 ### In development
 
-As of right now, Reconcile is under development and not yet ready for actual use.
+As of right now, Frostbite is under development and not yet ready for actual use.
 
 ## Installation
 
-To make use of Reconcile, ensure the following requirements are met:  
+To make use of Frostbite, ensure the following requirements are met:  
 
 * Running an installation of Windows or Linux (Windows 7, Debian, and Ubuntu are tested)  
 * Python 3 or higher is installed (http://python.org)  
@@ -23,7 +23,7 @@ To make use of Reconcile, ensure the following requirements are met:
 
 Once the installation requirements are satified, copy or rename `config.example.json` to `config.json` and configure it to your liking.  
 
-[Here](https://github.com/Zarthus/Reconcile/wiki/Configuring-Reconcile) is a copy of a configuration with comments -- describing what they do and which options are available.  
+[Here](https://github.com/Zarthus/Frostbite/wiki/Configuring-Frostbite) is a copy of a configuration with comments -- describing what they do and which options are available.  
 But do not copy it directly, use `config.example.json` for that.  
 
 Once these requirements are met, go ahead and run `python bot.py` to start the bot.
@@ -43,10 +43,10 @@ Your code is not longer than 119 characters (raised from the original 79 pep8 ch
 Travis compatible (see [`.travis.yml`](.travis.yml) to see what tests are being performed)  
 [RFC 1459 compatible](http://tools.ietf.org/html/rfc1459.html)
 Should your module require an API key, please edit `config.example.json` and `docs/apikeys.md` accordingly.  
-Should your module require a configuration block, don't forget to edit the [wiki](https://github.com/Zarthus/Reconcile/wiki/Configuring-Reconcile)
+Should your module require a configuration block, don't forget to edit the [wiki](https://github.com/Zarthus/Frostbite/wiki/Configuring-Frostbite)
 
 ### Bugs / Suggestions
-Feel free to make an [issue](https://github.com/zarthus/reconcile/issues/new) if you think you've found a bug, or have a suggestion.
+Feel free to make an [issue](https://github.com/zarthus/frostbite/issues/new) if you think you've found a bug, or have a suggestion.
 
 ### Support
 
