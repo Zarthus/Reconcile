@@ -30,7 +30,7 @@ class Conversions(moduletemplate.BotModule):
                               self.PRIV_NONE, ["kg", "lb"])
         self.register_command("distance", "<distance> <km/mi>",
                               "Convert <distance> to <km/mi>. Some aliases need no second parameter.",
-                              self.PRIV_NONE, ["dist", "km", "m", "miles"])
+                              self.PRIV_NONE, ["dist", "km", "m", "mi", "miles"])
 
         self.cache = {"convert": {}, "info": {}}
         self.cache_currency_convert()
@@ -187,7 +187,7 @@ class Conversions(moduletemplate.BotModule):
                             .format(weight, weightname, newweight, newweightname))
             return self.reply_target(target, nick, weightstring, True)
 
-        if command in ["km", "m"]:
+        if command in ["km", "m", "mi"]:
             commandtext = "{} {}".format(commandtext, command)
             command = "distance"
 
