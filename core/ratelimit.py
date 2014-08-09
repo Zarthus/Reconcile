@@ -52,7 +52,7 @@ class Ratelimit(threading.Thread):
                 msg_sent = True
                 burstlimit += 1
 
-                if burstlimit >= self.burstlimit or self.lastburst > int(time.time()) + 5:
+                if burstlimit >= self.burstlimit or int(time.time()) < self.lastburst:
                     self.lastburst = int(time.time())
                     break
 
@@ -63,7 +63,7 @@ class Ratelimit(threading.Thread):
                 msg_sent = True
                 burstlimit += 1
 
-                if burstlimit >= self.burstlimit or self.lastburst > int(time.time()) + 5:
+                if burstlimit >= self.burstlimit or int(time.time()) < self.lastburst + 5:
                     self.lastburst = int(time.time())
                     break
 
