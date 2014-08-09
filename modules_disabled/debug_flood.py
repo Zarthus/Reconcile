@@ -26,14 +26,20 @@ class FloodDebug(moduletemplate.BotModule):
                     for i in range(10):
                         self.reply_notice(nick, "flood_notice(): Message {}".format(i))
 
+                    return True
+
             if command == "flood_channel":
                 if int(time.time()) > self.last_flood + 5:
                     self.last_flood = int(time.time())
                     for i in range(10):
                         self.reply_target(target, nick, "flood_channel(): Message {}".format(i))
 
+                    return True
+
             if command == "flood_query":
                 if int(time.time()) > self.last_flood + 5:
                     self.last_flood = int(time.time())
                     for i in range(10):
                         self.reply_target(nick, None, "flood_query(): Message {}".format(i))
+
+                    return True

@@ -115,11 +115,11 @@ class IrcConnection:
 
     def say(self, target, message, format=False):
         """Queue a PRIVMG to the ratelimiter."""
-        self.queue_privmsg.put([target, message, format])
+        self.queue_privmsg.put([target, message, format], True)
 
     def notice(self, target, notice, format=False):
         """Queue a NOTICE to the ratelimiter."""
-        self.queue_notice.put([target, notice, format])
+        self.queue_notice.put([target, notice, format], True)
 
     def action(self, target, action, format=False):
         """
