@@ -16,7 +16,7 @@ class Entertainment(moduletemplate.BotModule):
         self.register_command("coin", None, "Flips a coin.", self.PRIV_NONE, ["coinflip"])
         self.register_command("slap", None, "Slap someone.", self.PRIV_NONE)
         self.register_command("pick", "<item1> <item2> [item3 ...]", "Randomly pick one item out of selection.",
-                              self.PRIV_NONE)
+                              self.PRIV_NONE, ["choose"])
         self.register_command("hug", None, "Show someone how much you love them!", self.PRIV_NONE)
 
         self.last_command = {}
@@ -37,7 +37,7 @@ class Entertainment(moduletemplate.BotModule):
             slapnick = nick if not commandtext else commandtext
             return self.slap(target, slapnick)
 
-        if command == "pick":
+        if command == "pick" or command == "choose":
             if not commandtext or len(commandtext.split()) < 2:
                 return self.reply_notice(nick, "Usage: pick <item1> <item2> [item3 ...]")
 
