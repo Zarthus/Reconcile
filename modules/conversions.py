@@ -10,7 +10,7 @@ from core import moduletemplate
 import requests
 import time
 
-# TODO: weight, distance, temperature.
+
 class Conversions(moduletemplate.BotModule):
 
     def on_module_load(self):
@@ -23,11 +23,14 @@ class Conversions(moduletemplate.BotModule):
                               self.PRIV_NONE, ["curinfo"])
         self.register_command("temperature", "<temperature> <c/f/k> <c/f/k>",
                               ("Convert degrees in <1> to degrees in <2> (c = celsius, f = fahrenheit, k = kelvin). "
-                              "Some aliases of this command need no second and third parameter."),
+                               "Some aliases of this command need no second and third parameter."),
                               self.PRIV_NONE, ["temp", "cf", "fc", "ck", "kc", "fk", "kf"])
         self.register_command("weight", "<weight> <kg/lb>",
                               "Convert <weight> to <kg/lb>. Aliases of this command need no second parameter.",
                               self.PRIV_NONE, ["kg", "lb"])
+        self.register_command("distance", "<distance> <km/mi>",
+                              "Convert <distance> to <km/mi>. Some aliases need no second parameter.",
+                              self.PRIV_NONE, ["dist", "km", "m", "miles"])
 
         self.cache = {"convert": {}, "info": {}}
         self.cache_currency_convert()
@@ -42,100 +45,11 @@ class Conversions(moduletemplate.BotModule):
         self.lb = ["lb", "lbs", "pound"]
         self.weight_list = self.kg + self.lb
 
+        self.km = ["km", "kilometers", "kilometres"]
+        self.mi = ["m", "mi", "miles"]
+        self.distance_list = self.km + self.mi
+
     def on_command(self, target, nick, command, commandtext, mod, admin):
-        if command in ["kg", "lb"]:  # Aliases for 'weight'
-            commandtext = "{} {}".format(commandtext, command)
-            command = "weight"
-
-        if command == "weight":
-            ct = commandtext.lower().split()
-
-            if not commandtext or len(ct) != 2 or ct[1] not in self.weight_list:
-                return self.reply_notice(nick, "Syntax: weight <weight> <kg/lb>")
-            if not ct[0].replace(".", "").isdigit():
-                return self.reply_notice(nick, "Weight has to be a digit")
-
-            weight = float(ct[0])
-            weightname = ""
-            newweight = 0
-            newweightname = ""
-
-            if ct[1] in self.kg:
-                newweight = weight / 2.2046
-
-                weightname = "lb" if int(weight) == 1 else "lbs"
-                newweightname = "kg"
-            elif ct[1] in self.lb:
-                newweight = weight * 2.2046
-
-                weightname = "kg"
-                newweightname = "lb" if int(newweight) == 1 else "lbs"
-            else:
-                self.logger.notice("Weight Conversion: Not found in lists: {}".format(commandtext))
-                return self.reply_notice(nick, "An error occured: Conversion type was not found.")
-
-            newweight = round(newweight, 2)
-            weightstring = ("$(bold) {} {} $(clear) equals $(bold) {} {}"
-                           .format(weight, weightname, newweight, newweightname))
-            return self.reply_target(target, nick, weightstring, True)
-
-        if command in ["cf", "fc", "ck", "kc", "fk", "kf"]:  # Aliases for 'temperature'
-            commandtext = "{} {} {}".format(commandtext, command[0], command[1])
-            command = "temperature"
-
-        if command == "temperature" or command == "temp":
-            ct = commandtext.lower().split()
-
-            if not commandtext or len(ct) != 3 or ct[1] not in self.temp_list or ct[2] not in self.temp_list:
-                return self.reply_notice(nick, "Syntax: temperature <temperature> <c/f/k> <c/f/k>")
-            if not ct[0].replace(".", "").isdigit():
-                return self.reply_notice(nick, "Temperature has to be a digit")
-            if ct[1] == ct[2]:
-                return self.reply_notice(nick, "You cannot convert two of the same temperatures.")
-
-            temp = float(ct[0])
-            tempname = ""
-            newtemp = 0
-            newtempname = ""
-
-            if ct[1] in self.celsius and ct[2] in self.fahrenheit:  # c -> f
-                newtemp = temp * 9 / 5 + 32
-
-                tempname = "°C"
-                newtempname = "°F"
-            elif ct[1] in self.celsius and ct[2] in self.kelvin:  # c -> k
-                newtemp = temp + 273.15
-
-                tempname = "°C"
-                newtempname = "K"
-            elif ct[1] in self.fahrenheit and ct[2] in self.celsius:  # f -> c
-                newtemp = (temp - 32) * 5 / 9
-
-                tempname = "°F"
-                newtempname = "°C"
-            elif ct[1] in self.fahrenheit and ct[2] in self.kelvin:  # f -> k
-                newtemp =  5 / 9 * (temp - 32) + 273.15
-
-                tempname = "°F"
-                newtempname = "K"
-            elif ct[1] in self.kelvin and ct[2] in self.celsius:  # k -> c
-                newtemp = temp - 273.15
-
-                tempname = "°C"
-                newtempname = "K"
-            elif ct[1] in self.kelvin and ct[2] in self.fahrenheit:  # k -> f
-                newtemp = 9 / 5 * (temp - 273.15) + 32
-
-                tempname = "K"
-                newtempname = "°F"
-            else:
-                self.logger.notice("Temperature Conversion: Not found in lists: {}".format(commandtext))
-                return self.reply_notice(nick, "An error occured: Conversion type was not found.")
-
-            newtemp = round(newtemp, 2)
-            tempstring = "$(bold) {} {} $(clear) equals $(bold) {} {}".format(temp, tempname, newtemp, newtempname)
-            return self.reply_target(target, nick, tempstring, True)
-
         if command == "currency" or command == "cur" or command == "convert":
             if not commandtext or len(commandtext.split()) != 3:
                 return self.reply_notice(nick, "Usage: currency <amount> <currency> <other currency>")
@@ -178,6 +92,136 @@ class Conversions(moduletemplate.BotModule):
             else:
                 return self.reply_target(target, nick, "Currency '{}' does not exist or is not known."
                                                        .format(currency))
+
+        if command in ["cf", "fc", "ck", "kc", "fk", "kf"]:  # Aliases for 'temperature'
+            commandtext = "{} {} {}".format(commandtext, command[0], command[1])
+            command = "temperature"
+
+        if command == "temperature" or command == "temp":
+            ct = commandtext.lower().split()
+
+            if not commandtext or len(ct) != 3 or ct[1] not in self.temp_list or ct[2] not in self.temp_list:
+                return self.reply_notice(nick, "Syntax: temperature <temperature> <c/f/k> <c/f/k>")
+            if not ct[0].replace(".", "").isdigit():
+                return self.reply_notice(nick, "Temperature has to be a digit")
+            if ct[1] == ct[2]:
+                return self.reply_notice(nick, "You cannot convert two of the same temperatures.")
+
+            temp = float(ct[0])
+            tempname = ""
+            newtemp = 0
+            newtempname = ""
+
+            if ct[1] in self.celsius and ct[2] in self.fahrenheit:  # c -> f
+                newtemp = temp * 9 / 5 + 32
+
+                tempname = "°C"
+                newtempname = "°F"
+            elif ct[1] in self.celsius and ct[2] in self.kelvin:  # c -> k
+                newtemp = temp + 273.15
+
+                tempname = "°C"
+                newtempname = "K"
+            elif ct[1] in self.fahrenheit and ct[2] in self.celsius:  # f -> c
+                newtemp = (temp - 32) * 5 / 9
+
+                tempname = "°F"
+                newtempname = "°C"
+            elif ct[1] in self.fahrenheit and ct[2] in self.kelvin:  # f -> k
+                newtemp = 5 / 9 * (temp - 32) + 273.15
+
+                tempname = "°F"
+                newtempname = "K"
+            elif ct[1] in self.kelvin and ct[2] in self.celsius:  # k -> c
+                newtemp = temp - 273.15
+
+                tempname = "°C"
+                newtempname = "K"
+            elif ct[1] in self.kelvin and ct[2] in self.fahrenheit:  # k -> f
+                newtemp = 9 / 5 * (temp - 273.15) + 32
+
+                tempname = "K"
+                newtempname = "°F"
+            else:
+                self.logger.notice("Temperature Conversion: Not found in lists: {}".format(commandtext))
+                return self.reply_notice(nick, "An error occured: Conversion type was not found.")
+
+            newtemp = round(newtemp, 2)
+            tempstring = ("$(bold) {} {} $(clear) is equal to $(bold) {} {}"
+                          .format(temp, tempname, newtemp, newtempname))
+            return self.reply_target(target, nick, tempstring, True)
+
+        if command in ["kg", "lb"]:  # Aliases for 'weight'
+            commandtext = "{} {}".format(commandtext, command)
+            command = "weight"
+
+        if command == "weight":
+            ct = commandtext.lower().split()
+
+            if not commandtext or len(ct) != 2 or ct[1] not in self.weight_list:
+                return self.reply_notice(nick, "Syntax: weight <weight> <kg/lb>")
+            if not ct[0].replace(".", "").isdigit():
+                return self.reply_notice(nick, "Weight has to be a digit")
+
+            weight = float(ct[0])
+            weightname = ""
+            newweight = 0
+            newweightname = ""
+
+            if ct[1] in self.kg:
+                newweight = weight / 2.2046
+
+                weightname = "lb" if int(weight) == 1 else "lbs"
+                newweightname = "kg"
+            elif ct[1] in self.lb:
+                newweight = weight * 2.2046
+
+                weightname = "kg"
+                newweightname = "lb" if int(newweight) == 1 else "lbs"
+            else:
+                self.logger.notice("Weight Conversion: Not found in lists: {}".format(commandtext))
+                return self.reply_notice(nick, "An error occured: Conversion type was not found.")
+
+            newweight = round(newweight, 2)
+            weightstring = ("$(bold) {} {} $(clear) is equal to $(bold) {} {}"
+                            .format(weight, weightname, newweight, newweightname))
+            return self.reply_target(target, nick, weightstring, True)
+
+        if command in ["km", "m"]:
+            commandtext = "{} {}".format(commandtext, command)
+            command = "distance"
+
+        if command == "distance" or command == "dist":
+            ct = commandtext.lower().split()
+
+            if not commandtext or len(ct) != 2 or ct[1] not in self.distance_list:
+                return self.reply_notice(nick, "Syntax: distance <distance> <km/mi>")
+            if not ct[0].replace(".", "").isdigit():
+                return self.reply_notice(nick, "Distance has to be a digit")
+
+            dist = float(ct[0])
+            distname = ""
+            newdist = 0
+            newdistname = ""
+
+            if ct[1] in self.km:
+                newdist = dist / 0.62137
+
+                distname = "mile" if int(dist) == 1 else "miles"
+                newdistname = "kilometer" if int(newdist) == 1 else "kilometers"
+            elif ct[1] in self.mi:
+                newdist = dist * 1.60934
+
+                distname = "kilometer" if int(dist) == 1 else "kilometers"
+                newdistname = "mile" if int(newdist) == 1 else "miles"
+            else:
+                self.logger.notice("Distance Conversion: Not found in lists: {}".format(commandtext))
+                return self.reply_notice(nick, "An error occured: Conversion type was not found.")
+
+            newdist = round(newdist, 2)
+            diststring = ("$(bold) {} {} $(clear) is equal to $(bold) {} {}"
+                          .format(dist, distname, newdist, newdistname))
+            return self.reply_target(target, nick, diststring, True)
 
     def currency_convert(self, amount, currency, ocurrency):
         if time.time() > self.cache["convert"]["age"] + 3600 * 6:
