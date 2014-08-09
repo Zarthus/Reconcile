@@ -6,6 +6,7 @@ import socket
 import time
 import re
 import traceback
+import queue
 
 from core import channel
 from core import module
@@ -114,11 +115,11 @@ class IrcConnection:
 
     def say(self, target, message, format=False):
         """Queue a PRIVMG to the ratelimiter."""
-        self.queue_privmsg.append([target, message, format])
+        self.queue_privmsg.put([target, message, format])
 
     def notice(self, target, notice, format=False):
         """Queue a NOTICE to the ratelimiter."""
-        self.queue_notice.append([target, notice, format])
+        self.queue_notice.put([target, notice, format])
 
     def action(self, target, action, format=False):
         """
@@ -579,8 +580,8 @@ class IrcConnection:
 
         self.currentnick = curnick
 
-        self.queue_privmsg = []
-        self.queue_notice = []
+        self.queue_privmsg = queue.Queue()
+        self.queue_notice = queue.Queue()
 
         self.user_data = {}  # Data gathered by /WHO
         self.channel_data = {}
@@ -673,11 +674,7 @@ class IrcConnection:
 
     def _getPrivmsgQueue(self):
         """Gets the message queue from the ratelimiter thread."""
-        queue = self.queue_privmsg
-        self.queue_privmsg = []
-        return queue
+        return self.queue_privmsg
 
     def _getNoticeQueue(self):
-        queue = self.queue_notice
-        self.queue_notice = []
-        return queue
+        return self.queue_notice

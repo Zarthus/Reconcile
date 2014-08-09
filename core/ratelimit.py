@@ -10,7 +10,7 @@ import time
 
 
 class Ratelimit(threading.Thread):
-    def __init__(self, conn, logger, burstlimit=4):
+    def __init__(self, conn, logger, burstlimit=5):
         """
         conn: IrcConnection object
         burstlimit: The amount of messages we can send in one go before entering we send our messages slower.
@@ -22,7 +22,7 @@ class Ratelimit(threading.Thread):
         self.queue_privmsg = []
         self.queue_notice = []
         self.burstlimit = burstlimit
-        self.lastburst = time.time()
+        self.lastburst = int(time.time())
 
         self.running = True
 
@@ -41,31 +41,31 @@ class Ratelimit(threading.Thread):
         itters = 0
         burstlimit = 0
         msg_sent = False  # Whenever we don't send a message, we don't need to get into a long sleep.
+        self.getQueues()
         while self.running:
             itters += 1
-            self.getQueues()
 
-            if self.queue_privmsg:
-                for message in self.queue_privmsg:
-                    self.say(message[0], message[1], message[2])
-                    self.queue_privmsg.remove(message)
-                    msg_sent = True
-                    burstlimit += 1
+            while not self.queue_privmsg.empty():
+                message = self.queue_privmsg.get()
 
-                    if burstlimit >= self.burstlimit or self.lastburst > time.time() + 5:
-                        self.lastburst = time.time()
-                        break
+                self.say(message[0], message[1], message[2])
+                msg_sent = True
+                burstlimit += 1
 
-            elif self.queue_notice:
-                for message in self.queue_notice:
-                    self.notice(message[0], message[1], message[2])
-                    self.queue_notice.remove(message)
-                    msg_sent = True
-                    burstlimit += 1
+                if burstlimit >= self.burstlimit or self.lastburst > int(time.time()) + 5:
+                    self.lastburst = int(time.time())
+                    break
 
-                    if burstlimit >= self.burstlimit or self.lastburst > time.time() + 5:
-                        self.lastburst = time.time()
-                        break
+            while not self.queue_notice.empty():
+                message = self.queue_notice.get()
+
+                self.notice(message[0], message[1], message[2])
+                msg_sent = True
+                burstlimit += 1
+
+                if burstlimit >= self.burstlimit or self.lastburst > int(time.time()) + 5:
+                    self.lastburst = int(time.time())
+                    break
 
             if msg_sent:
                 time.sleep(2)
@@ -87,8 +87,8 @@ class Ratelimit(threading.Thread):
         self.running = False
 
     def getQueues(self):
-        self.queue_privmsg = self.queue_privmsg + self._conn._getPrivmsgQueue()
-        self.queue_notice = self.queue_notice + self._conn._getNoticeQueue()
+        self.queue_privmsg = self._conn._getPrivmsgQueue()
+        self.queue_notice = self._conn._getNoticeQueue()
 
     def say(self, target, message, format):
         """
