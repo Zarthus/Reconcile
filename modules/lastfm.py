@@ -20,7 +20,7 @@ class LastFM(moduletemplate.BotModule):
         self.requireApiKey("lastfm")
 
         self.register_command("lastfm", "[username]", "Look up last.fm data of [username] or yourself if set.",
-                              self.PRIV_NONE, ["lfm"])
+                              self.PRIV_NONE, ["lfm", "np"])
         self.register_command("setlastfm", "[username]",
                               "Sets your last.fm username to [username]. No parameters means it will be unset",
                               self.PRIV_NONE)
@@ -32,7 +32,7 @@ class LastFM(moduletemplate.BotModule):
         self.lastfm_create_db()
 
     def on_command(self, target, nick, command, commandtext, mod, admin):
-        if command == "lastfm" or command == "lfm":
+        if command == "lastfm" or command == "lfm" or command == "np":
             if not commandtext:
                 lfmacct = None
 
@@ -174,7 +174,7 @@ class LastFM(moduletemplate.BotModule):
                 timeago = duration.timesincetimestamp(int(json["date"]["uts"]))
 
                 lfmstr = ("$(bold) {} $(bold) last listened to ' $+ $(bold) {} $+ $(bold) ' by "
-                          "' $+ $(bold) {} $+ $(bold) ' {} ({})"
+                          "' $+ $(bold) {} $+ $(bold) ' {} ({} ago)"
                           .format(acct, song, artist, album, timeago)).rstrip() + "."
             elif type(json) == list:  # Currently playing
                 json = json[0]
@@ -183,7 +183,7 @@ class LastFM(moduletemplate.BotModule):
                 song = json["name"]
 
                 album = json["album"]["#text"]
-                if album != song and album != artist:
+                if album and album != song and album != artist:
                     album = "from the album ' $+ $(bold) {} $+ $(bold) '".format(album)
                 else:
                     album = ""
