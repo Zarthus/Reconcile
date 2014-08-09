@@ -10,8 +10,8 @@ from core import moduletemplate
 import requests
 import time
 
-
-class CurrencyConverter(moduletemplate.BotModule):
+# TODO: weight, distance, temperature.
+class Conversions(moduletemplate.BotModule):
 
     def on_module_load(self):
         self.requireApiKey("open_exchange_rates")
@@ -21,12 +21,77 @@ class CurrencyConverter(moduletemplate.BotModule):
                               self.PRIV_NONE, ["cur", "convert"])
         self.register_command("currencyinfo", "<currency>", "Retrieve informaiton about <currency>.",
                               self.PRIV_NONE, ["curinfo"])
+        self.register_command("temperature", "<temperature> <c/f/k> <c/f/k>",
+                              ("Convert degrees in <1> to degrees in <2> (c = celsius, f = fahrenheit, k = kelvin). "
+                              "Some aliases of this command need no second and third parameter."),
+                              self.PRIV_NONE, ["temp", "cf", "fc", "ck", "kc", "fk", "kf"])
+
 
         self.cache = {"convert": {}, "info": {}}
         self.cache_currency_convert()
         self.cache_currency_info()
 
+        self.kelvin = ["k", "kelvin"]
+        self.fahrenheit = ["f", "fahrenheit"]
+        self.celsius = ["c", "celsius", "celcius"]
+        self.temp_list = self.kelvin + self.fahrenheit + self.celsius
+
     def on_command(self, target, nick, command, commandtext, mod, admin):
+        if command in ["cf", "fc", "ck", "kc", "fk", "kf"]:  # Aliases for 'temperature'
+            commandtext = "{} {} {}".format(commandtext, command[0], command[1])
+            command = "temperature"
+
+        if command == "temperature" or command == "temp":
+            ct = commandtext.lower().split()
+
+            if not commandtext or len(ct) != 3 or ct[1] not in self.temp_list or ct[2] not in self.temp_list:
+                return self.reply_notice(nick, "Syntax: temperature <temperature> <c/f/k> <c/f/k>")
+            if not ct[0].isdigit():
+                return self.reply_notice(nick, "Temperature has to be a digit")
+
+            temp = float(ct[0])
+            tempname = ""
+            newtemp = 0
+            newtempname = ""
+
+            if ct[1] in self.celsius and ct[2] in self.fahrenheit:  # c -> f
+                newtemp = temp * 9 / 5 + 32
+
+                tempname = "°C"
+                newtempname = "°F"
+            elif ct[1] in self.celsius and ct[2] in self.kelvin:  # c -> k
+                newtemp = temp + 273.15
+
+                tempname = "°C"
+                newtempname = "K"
+            elif ct[1] in self.fahrenheit and ct[2] in self.celsius:  # f -> c
+                newtemp = (temp - 32) * 5 / 9
+
+                tempname = "°F"
+                newtempname = "°C"
+            elif ct[1] in self.fahrenheit and ct[2] in self.kelvin:  # f -> k
+                newtemp =  5 / 9 * (temp - 32) + 273.15
+
+                tempname = "°F"
+                newtempname = "K"
+            elif ct[1] in self.kelvin and ct[2] in self.celsius:  # k -> c
+                newtemp = temp - 273.15
+
+                tempname = "°C"
+                newtempname = "K"
+            elif ct[1] in self.kelvin and ct[2] in self.fahrenheit:  # k -> f
+                newtemp = 9 / 5 * (temp - 273.15) + 32
+
+                tempname = "K"
+                newtempname = "°F"
+            else:
+                self.logger.notice("Temperature Conversion: Not found in lists: {}".format(commandtext))
+                return False
+
+            newtemp = round(newtemp, 2)
+            tempstring = "$(bold) {} {} $(clear) equals $(bold) {} {}".format(temp, tempname, newtemp, newtempname)
+            return self.reply_target(target, nick, tempstring, True)
+
         if command == "currency" or command == "cur" or command == "convert":
             if not commandtext or len(commandtext.split()) != 3:
                 return self.reply_notice(nick, "Usage: currency <amount> <currency> <other currency>")
