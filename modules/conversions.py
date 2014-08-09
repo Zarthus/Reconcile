@@ -25,7 +25,9 @@ class Conversions(moduletemplate.BotModule):
                               ("Convert degrees in <1> to degrees in <2> (c = celsius, f = fahrenheit, k = kelvin). "
                               "Some aliases of this command need no second and third parameter."),
                               self.PRIV_NONE, ["temp", "cf", "fc", "ck", "kc", "fk", "kf"])
-
+        self.register_command("weight", "<weight> <kg/lb>",
+                              "Convert <weight> to <kg/lb>. Aliases of this command need no second parameter.",
+                              self.PRIV_NONE, ["kg", "lb"])
 
         self.cache = {"convert": {}, "info": {}}
         self.cache_currency_convert()
@@ -36,7 +38,47 @@ class Conversions(moduletemplate.BotModule):
         self.celsius = ["c", "celsius", "celcius"]
         self.temp_list = self.kelvin + self.fahrenheit + self.celsius
 
+        self.kg = ["kg", "kilogram", "kilograms"]
+        self.lb = ["lb", "lbs", "pound"]
+        self.weight_list = self.kg + self.lb
+
     def on_command(self, target, nick, command, commandtext, mod, admin):
+        if command in ["kg", "lb"]:  # Aliases for 'weight'
+            commandtext = "{} {}".format(commandtext, command)
+            command = "weight"
+
+        if command == "weight":
+            ct = commandtext.lower().split()
+
+            if not commandtext or len(ct) != 2 or ct[1] not in self.weight_list:
+                return self.reply_notice(nick, "Syntax: weight <weight> <kg/lb>")
+            if not ct[0].replace(".", "").isdigit():
+                return self.reply_notice(nick, "Weight has to be a digit")
+
+            weight = float(ct[0])
+            weightname = ""
+            newweight = 0
+            newweightname = ""
+
+            if ct[1] in self.kg:
+                newweight = weight / 2.2046
+
+                weightname = "lb" if int(weight) == 1 else "lbs"
+                newweightname = "kg"
+            elif ct[1] in self.lb:
+                newweight = weight * 2.2046
+
+                weightname = "kg"
+                newweightname = "lb" if int(newweight) == 1 else "lbs"
+            else:
+                self.logger.notice("Weight Conversion: Not found in lists: {}".format(commandtext))
+                return self.reply_notice(nick, "An error occured: Conversion type was not found.")
+
+            newweight = round(newweight, 2)
+            weightstring = ("$(bold) {} {} $(clear) equals $(bold) {} {}"
+                           .format(weight, weightname, newweight, newweightname))
+            return self.reply_target(target, nick, weightstring, True)
+
         if command in ["cf", "fc", "ck", "kc", "fk", "kf"]:  # Aliases for 'temperature'
             commandtext = "{} {} {}".format(commandtext, command[0], command[1])
             command = "temperature"
@@ -46,8 +88,10 @@ class Conversions(moduletemplate.BotModule):
 
             if not commandtext or len(ct) != 3 or ct[1] not in self.temp_list or ct[2] not in self.temp_list:
                 return self.reply_notice(nick, "Syntax: temperature <temperature> <c/f/k> <c/f/k>")
-            if not ct[0].isdigit():
+            if not ct[0].replace(".", "").isdigit():
                 return self.reply_notice(nick, "Temperature has to be a digit")
+            if ct[1] == ct[2]:
+                return self.reply_notice(nick, "You cannot convert two of the same temperatures.")
 
             temp = float(ct[0])
             tempname = ""
@@ -86,7 +130,7 @@ class Conversions(moduletemplate.BotModule):
                 newtempname = "°F"
             else:
                 self.logger.notice("Temperature Conversion: Not found in lists: {}".format(commandtext))
-                return False
+                return self.reply_notice(nick, "An error occured: Conversion type was not found.")
 
             newtemp = round(newtemp, 2)
             tempstring = "$(bold) {} {} $(clear) equals $(bold) {} {}".format(temp, tempname, newtemp, newtempname)
