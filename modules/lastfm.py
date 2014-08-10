@@ -26,7 +26,7 @@ class LastFM(moduletemplate.BotModule):
                               self.PRIV_NONE, ["setlastfm"])
         self.register_command("lastfmunset", None, "Unsets your last.fm username", self.PRIV_NONE, ["unsetlastfm"])
         self.register_command("lastfmget", "<nick>", "Gets <nick>'s set last.fm name.", self.PRIV_MOD, ["getlastfm"])
-        self.register_command("lastfmdel", "<nick>", "Deletes <nick>'s set last.fm name.", self.PRIV_MOD, 
+        self.register_command("lastfmdel", "<nick>", "Deletes <nick>'s set last.fm name.", self.PRIV_MOD,
                               ["dellastfm"])
 
         self.db_file = os.path.join(self.db_dir, "lastfm.db")
