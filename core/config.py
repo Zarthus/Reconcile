@@ -193,8 +193,8 @@ class Config:
                 dbgchan = self.networks[network_name]["debug_chan"]
                 if dbgchan not in self.networks[network_name]["channels"]:
                     self.networks[network_name]["channels"].append(dbgchan)
-                    self.logger.log_verbose("'debug_chan' was not in the channels to join list - added, in {}."
-                                            .format(network_name))
+                    self.logger.log_verbose("'debug_chan' ({}) was not in the channels to join list - added, in {}."
+                                            .format(dbgchan, network_name))
 
             if "account" not in self.networks[network_name]:
                 self.networks[network_name]["account"] = self.networks[network_name]["nick"]
@@ -216,6 +216,9 @@ class Config:
 
             if "modes" not in self.networks[network_name]:
                 self.networks[network_name]["modes"] = None
+
+            if "perform" not in self.networks[network_name]:
+                self.networks[network_name]["perform"] = []
 
             if "moderators" not in self.networks[network_name]:
                 self.networks[network_name]["administrators"] = []

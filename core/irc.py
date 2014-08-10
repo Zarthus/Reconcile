@@ -569,6 +569,7 @@ class IrcConnection:
         self.command_prefix = network["command_prefix"]
         self.invite_join = network["invite_join"]
         self.modes = network["modes"]
+        self.perform = network["perform"]
 
         self.channels = network["channels"]
         self.debug_chan = network["debug_chan"]
@@ -629,6 +630,10 @@ class IrcConnection:
                 self.send_raw("JOIN :" + ",".join(self.channels))
             else:
                 self.logger.log_verbose("Not configured to join any channels.")
+
+            if self.perform:
+                for perform in self.perform:
+                    self.send_raw(perform)
 
             self.logger.log("A connection has been established with: {}".format(self.server_name))
 
