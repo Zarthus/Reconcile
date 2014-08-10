@@ -3,6 +3,7 @@ IRC class for irc connections
 """
 
 import socket
+import ssl
 import time
 import re
 import traceback
@@ -589,11 +590,20 @@ class IrcConnection:
         self.last_chanwho = None  # Last channel who (self.send_chanwho())
 
     def _connect_ssl(self):
-        raise NotImplementedError("Connecting to SSL has not yet been implemented.")
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect((self.server, self.port))
+        self.socket = ssl.wrap_socket(sock)
+
+        self.send_raw("NICK {}".format(self.mnick))
+        self.currentnick = self.mnick
+        # <username> <hostname> <servername> :<realname> - servername/hostname will be ignored by the ircd.
+        self.send_raw("USER {} 0 0 :{}".format(self.ident, self.realname))
+        self.connected = True
 
     def _connect(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((self.server, self.port))
+
         self.send_raw("NICK {}".format(self.mnick))
         self.currentnick = self.mnick
         # <username> <hostname> <servername> :<realname> - servername/hostname will be ignored by the ircd.
