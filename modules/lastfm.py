@@ -21,12 +21,13 @@ class LastFM(moduletemplate.BotModule):
 
         self.register_command("lastfm", "[username]", "Look up last.fm data of [username] or yourself if set.",
                               self.PRIV_NONE, ["lfm", "np"])
-        self.register_command("setlastfm", "[username]",
+        self.register_command("lastfmset", "[username]",
                               "Sets your last.fm username to [username]. No parameters means it will be unset",
-                              self.PRIV_NONE)
-        self.register_command("unsetlastfm", None, "Unsets your last.fm username", self.PRIV_NONE)
-        self.register_command("getlastfm", "<nick>", "Gets <nick>'s set last.fm name.", self.PRIV_MOD)
-        self.register_command("dellastfm", "<nick>", "Deletes <nick>'s set last.fm name.", self.PRIV_MOD)
+                              self.PRIV_NONE, ["setlastfm"])
+        self.register_command("lastfmunset", None, "Unsets your last.fm username", self.PRIV_NONE, ["unsetlastfm"])
+        self.register_command("lastfmget", "<nick>", "Gets <nick>'s set last.fm name.", self.PRIV_MOD, ["getlastfm"])
+        self.register_command("lastfmdel", "<nick>", "Deletes <nick>'s set last.fm name.", self.PRIV_MOD, 
+                              ["dellastfm"])
 
         self.db_file = os.path.join(self.db_dir, "lastfm.db")
         self.lastfm_create_db()
@@ -54,7 +55,7 @@ class LastFM(moduletemplate.BotModule):
                 else:
                     return self.reply_target(target, nick, "Please specify a valid last.fm account name.")
 
-        if command == "unsetlastfm":
+        if command == "unsetlastfm" or command == "lastfmunset":
             lfmnick = self.lastfm_get_nick(nick)
 
             if not lfmnick:
@@ -69,7 +70,7 @@ class LastFM(moduletemplate.BotModule):
             else:
                 return self.reply_target(target, nick, "I was unable to delete your data from my database.")
 
-        if command == "setlastfm":
+        if command == "setlastfm" or command == "lastfmset":
             if commandtext and not commandtext.isalnum():
                 return self.reply_notice(nick, "Usage: setlastfm <username> (must be alphanumeric)")
 
@@ -95,7 +96,7 @@ class LastFM(moduletemplate.BotModule):
                     return self.reply_target(target, nick, "I was unable to store your data in my database.")
 
         if mod:
-            if command == "dellastfm":
+            if command == "dellastfm" or command == "lastfmdel":
                 if not commandtext or not commandtext.isalnum():
                     return self.reply_notice(nick, "Usage: dellastfm <nick>")
 
@@ -109,7 +110,7 @@ class LastFM(moduletemplate.BotModule):
                 else:
                     return self.reply_target(target, nick, "Failed to delete {}'s last.fm record.".format(commandtext))
 
-            if command == "getlastfm":
+            if command == "getlastfm" or command == "lastfmget":
                 if not commandtext or not commandtext.isalnum():
                     return self.reply_notice(nick, "Usage: getlastfm <nick>")
 
