@@ -99,7 +99,7 @@ class ChannelManager:
             conn.commit()
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("Failed to create channel database {}.db: {}".format(channel, self.network_name, str(e)))
+            self.logger.error("Failed to create channel database {}.db: {}".format(self.network_name, str(e)))
 
     def formatDBFileName(self, db_name):
         return self.db_dir + "network_" + db_name + ".db"
