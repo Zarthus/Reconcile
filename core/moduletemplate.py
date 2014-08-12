@@ -190,4 +190,8 @@ class BotModule:
 
     def _getModuleData(self):
         """Read the config's module block for an entry matching the class name of the module."""
-        return self._conn.config.getModuleData(self.module_name)
+        mdata = self._conn.config.getModuleData(self.module_name)
+        if mdata:
+            return mdata
+        else:
+            return []
