@@ -33,6 +33,10 @@ def timesincetimestamp(timestamp, now=None):
     return timesince(datetime.datetime.fromtimestamp(timestamp), now)
 
 
+def timebeforetimestamp(timestamp, now=None):
+    return timesince(datetime.datetime.now(), timestamp)
+
+
 def timesince(d, now=None):
     """
     Takes two datetime objects and returns the time between d and now
