@@ -27,7 +27,8 @@ class IrcConnection:
         self.logger = logger.Logger(self.network_name, self.config.getVerbose(), self.config.getTimestampFormat(),
                                     self.config.getMetadata("logger_terminal_colours"))
         self.validator = validator.Validator()
-        self.channelmanager = channel.ChannelManager(self.config.getDatabaseDir(), self.logger, self.validator)
+        self.channelmanager = channel.ChannelManager(self.config.getDatabaseDir(), self.logger, self.network_name, 
+                                                     self.validator)
         self.commandhelp = commandhelp.CommandHelp(self.logger, self.config.getCommandPrefix(self.network_name))
         self.ratelimiter = ratelimit.Ratelimit(self, self.logger)
         self.force_quit = False  # Tell the main loop in bot.py that we wish to exit the entire bot.
@@ -62,7 +63,8 @@ class IrcConnection:
         self.loadNetworkVariables(self.config.getNetwork(self.network_name), self.currentnick)
 
         self.logger = logger.Logger(self.network_name, self.config.getVerbose(), self.config.getTimestampFormat())
-        self.channelmanager = channel.ChannelManager(self.config.getDatabaseDir(), self.logger, self.validator)
+        self.channelmanager = channel.ChannelManager(self.config.getDatabaseDir(), self.logger, self.network_name,
+                                                     self.validator)
         self.commandhelp = commandhelp.CommandHelp(self.logger, self.config.getCommandPrefix(self.network_name))
         self.ratelimiter = ratelimit.Ratelimit(self, self.logger)
 
@@ -334,7 +336,7 @@ class IrcConnection:
             self.send_chanwho(channel)
             if channel not in self.channels:
                 self.channels.append(channel)
-                self.channelmanager.addForNetwork(self.network_name, channel)
+                self.channelmanager.add(channel)
 
     def on_part(self, nick, channel, message=None):
         if not message:
@@ -345,7 +347,7 @@ class IrcConnection:
         if nick != self.currentnick:
             self.channeldata_remove_user(nick, channel)
         else:
-            self.channelmanager.delForNetwork(self.network_name, channel)
+            self.channelmanager.delete(channel)
             if channel.lower() in self.channel_data:
                 self.channel_data.pop(channel.lower())
 
@@ -356,7 +358,7 @@ class IrcConnection:
         self.logger.event("KICK", "{} was kicked from {} by {}: {}".format(knick, channel, nick, reason))
 
         if knick == self.currentnick:
-            self.channelmanager.delForNetwork(self.network_name, channel)
+            self.channelmanager.delete(channel)
             if channel.lower() in self.channel_data:
                 self.channel_data.pop(channel.lower())
             if channel in self.channels:

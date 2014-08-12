@@ -7,7 +7,7 @@ import sqlite3
 
 
 class ChannelManager:
-    def __init__(self, db_dir, logger, validator=None):
+    def __init__(self, db_dir, logger, network_name=None, validator=None):
         self.logger = logger
 
         if not validator:
@@ -22,6 +22,13 @@ class ChannelManager:
             self.validator = validator
 
         self.db_dir = db_dir
+        self.network_name = network_name
+
+        if self.network_name:
+            self.makeNetworkDB()
+
+    def getList(self):
+        return self.getListFromNetwork(self.network_name)
 
     def getListFromNetwork(self, network_name):
         channels = []
@@ -41,6 +48,9 @@ class ChannelManager:
 
         return channels
 
+    def add(self, channel):
+        self.addForNetwork(self.network_name, channel)
+
     def addForNetwork(self, network_name, channel):
         if not self.validator.channel(channel):
             raise Exception("Could not add channel '{}' to {}.db as it doesn't appear to be a channel."
@@ -58,6 +68,9 @@ class ChannelManager:
             self.logger.error("Failed to insert channel '{}' to {}.db: {}".format(channel, network_name, str(e)))
         self.logger.log_verbose("Added channel {} to {}.db".format(channel, network_name))
 
+    def delete(self, channel):
+        self.delForNetwork(self.network_name, channel)
+
     def delForNetwork(self, network_name, channel):
         if not self.validator.channel(channel):
             raise Exception("Could not delete channel '{}' from {}.db as it doesn't appear to be a channel."
@@ -66,7 +79,6 @@ class ChannelManager:
         try:
             conn = sqlite3.connect(self.formatDBFileName(network_name))
             c = conn.cursor()
-            c.execute("CREATE TABLE IF NOT EXISTS channels (channel TEXT UNIQUE PRIMARY KEY)")
             c.execute("DELETE FROM channels WHERE channel = ?", [channel]).rowcount
             conn.commit()
             conn.close()
@@ -75,5 +87,19 @@ class ChannelManager:
             self.logger.error("Failed to delete channel '{}' from {}.db: {}".format(channel, network_name, str(e)))
         self.logger.log_verbose("Deleted channel {} from {}.db".format(channel, network_name))
 
+    def makeNetworkDB(self):
+        if not self.network_name:
+            self.logger.error("Channel Manager: Cannot create Network Database if no network name is specified.")
+            return False
+
+        try:
+            conn = sqlite3.connect(self.formatDBFileName(self.network_name))
+            c = conn.cursor()
+            c.execute("CREATE TABLE IF NOT EXISTS channels (channel TEXT UNIQUE PRIMARY KEY)")
+            conn.commit()
+            conn.close()
+        except sqlite3.Error as e:
+            self.logger.error("Failed to create channel database {}.db: {}".format(channel, self.network_name, str(e)))
+
     def formatDBFileName(self, db_name):
-        return self.db_dir + db_name + ".db"
+        return self.db_dir + "network_" + db_name + ".db"
