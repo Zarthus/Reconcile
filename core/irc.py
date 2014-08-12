@@ -402,6 +402,7 @@ class IrcConnection:
 
         admin = self.config.isAdministrator(self.network_name, uinfo[3])
         mod = self.config.isModerator(self.network_name, uinfo[3])
+        command = command.lower()
 
         success = self.ModuleHandler.sendCommand(ttarget, nick, command, params, mod, admin)
 
