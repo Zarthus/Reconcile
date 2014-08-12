@@ -32,11 +32,11 @@
   },
 
   "api_keys": {
+    "googl": "",
     "lastfm": "",
     "open_exchange_rates": "",
     "scenesat": "",
     "weather_underground": "",
-    "googl": "",
     "wolframalpha": ""
   },
 
