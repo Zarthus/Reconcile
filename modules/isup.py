@@ -6,7 +6,6 @@ isup - check if a website is up using isup.me and the bot itself
 """
 
 from core import moduletemplate
-from tools import formatter
 
 import requests
 
@@ -14,8 +13,6 @@ import requests
 class Isup(moduletemplate.BotModule):
 
     def on_module_load(self):
-        self.colformat = formatter.IrcFormatter()
-
         self.register_command("isup", "<website>", "Checks if <website> is up using isup.me", self.PRIV_NONE,
                               ["isdown"])
 
@@ -45,4 +42,4 @@ class Isup(moduletemplate.BotModule):
         else:
             isup = "$(dgrey) unknown $+ $(clear)"
 
-        self.reply_target(target, nick, "{} appears to be {}.".format(url, self.colformat.parse(isup)))
+        self.reply_target(target, nick, "{} appears to be {}.".format(url, isup), True)
