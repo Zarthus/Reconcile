@@ -45,6 +45,10 @@
       "rate_limit_delay": 10
     },
 
+    "Seen": {
+      "store_message": false
+    },
+
     "Weather": {
       "use_imperial": false,
       "forecasts_max": 1,

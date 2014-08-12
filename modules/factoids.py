@@ -10,8 +10,8 @@ from tools import formatter
 from tools import validator
 
 import os
-import time
 import sqlite3
+import time
 
 
 class Factoids(moduletemplate.BotModule):
