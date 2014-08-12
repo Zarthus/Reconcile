@@ -338,6 +338,8 @@ class IrcConnection:
                 self.channels.append(channel)
                 self.channelmanager.add(channel)
 
+        self.ModuleHandler.sendJoin(nick, channel)
+
     def on_part(self, nick, channel, message=None):
         if not message:
             self.logger.event("PART", "{} parted {}".format(nick, channel))
@@ -354,6 +356,8 @@ class IrcConnection:
             if channel in self.channels:
                 self.channels.remove(channel)
 
+        self.ModuleHandler.sendPart(nick, channel, message)
+
     def on_kick(self, nick, channel, knick, reason):
         self.logger.event("KICK", "{} was kicked from {} by {}: {}".format(knick, channel, nick, reason))
 
@@ -363,6 +367,8 @@ class IrcConnection:
                 self.channel_data.pop(channel.lower())
             if channel in self.channels:
                 self.channels.remove(channel)
+
+        self.ModuleHandler.sendKick(nick, channel, knick, reason)
 
     def on_invite(self, nick, channel):
         self.logger.event("INVITE", "{} invited me to join {}".format(nick, channel))
@@ -376,6 +382,8 @@ class IrcConnection:
         for chan in self.channel_data:
             if self.isOn(nick, chan):
                 self.channeldata_remove_user(nick, chan)
+
+        self.ModuleHandler.sendQuit(nick, message)
 
     def on_command(self, nick, target, message, uinfo):
         split = message.split()

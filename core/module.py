@@ -30,6 +30,22 @@ class ModuleHandler:
         for module in self.modules:
             self.modules[module].on_action(target, nick, message)
 
+    def sendJoin(self, nick, channel):
+        for module in self.modules:
+            self.modules[module].on_join(nick, channel)
+
+    def sendPart(self, nick, channel, message):
+        for module in self.modules:
+            self.modules[module].on_part(nick, channel, message)
+
+    def sendKick(self, nick, channel, knick, reason):
+        for module in self.modules:
+            self.modules[module].on_kick(nick, channel, knick, reason)
+
+    def sendQuit(self, nick, message):
+        for module in self.modules:
+            self.modules[module].on_quit(nick, message)
+
     def sendNumeric(self, numeric, data):
         for module in self.modules:
             self.modules[module].on_numeric(numeric, data)

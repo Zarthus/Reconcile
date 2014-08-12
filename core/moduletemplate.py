@@ -40,6 +40,22 @@ class BotModule:
         """See on_privmsg"""
         pass
 
+    def on_join(self, nick, channel):
+        """Occurs when someone joins a channel"""
+        pass
+
+    def on_part(self, nick, channel, message):
+        """Occurs when someone parts a channel"""
+        pass
+
+    def on_kick(self, nick, channel, knick, reason):
+        """Occurs when someone gets kicked from a channel"""
+        pass
+
+    def on_quit(self, nick, message):
+        """Occurs when someone quits IRC"""
+        pass
+
     def on_command(self, target, nick, command, commandtext, mod, admin):
         """
         On command is triggered when someone prefixes the bot by its name, or
