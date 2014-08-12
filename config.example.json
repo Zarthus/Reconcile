@@ -24,7 +24,7 @@
       "moderators": [
         "example!moderator@*.zarth.us"
       ],
-      
+
       "disallowed_channels": [
         "#dragonweyr", "#help"
       ]
@@ -35,6 +35,7 @@
     "lastfm": "",
     "open_exchange_rates": "",
     "scenesat": "",
+    "weather_underground": "",
     "googl": "",
     "wolframalpha": ""
   },
@@ -42,6 +43,12 @@
   "modules": {
     "Entertainment": {
       "rate_limit_delay": 10
+    },
+
+    "Weather": {
+      "use_imperial": false,
+      "forecasts_max": 1,
+      "forecasts_ignore_night": false
     },
 
     "XkcdHyphen": {
