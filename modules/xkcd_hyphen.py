@@ -17,7 +17,7 @@ class XkcdHyphen(moduletemplate.BotModule):
 
     def on_privmsg(self, target, nick, message):
         if time.time() + 10 > self.ass_cooldown:
-            if not self.module_data or self.module_data["full_sentence"]:
+            if not self.module_data or "full_sentence" in self.module_data and self.module_data["full_sentence"]:
                 self.parse_full(target, nick, message)
             else:
                 self.parse_partially(target, nick, message)
