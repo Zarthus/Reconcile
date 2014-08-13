@@ -112,7 +112,7 @@ class Factoids(moduletemplate.BotModule):
                     self.notice(nick, "Factoid triggers may only contain A-Z and /")
                 elif self.factoid_exists(factoid_trigger):
                     self.notice(nick, "Factoid trigger '{}' already exists. Use editfactoid instead."
-                                            .format(factoid_trigger))
+                                      .format(factoid_trigger))
                 else:
                     self.factoid_add(nick, factoid_trigger, factoid_response)
                     self.message(target, nick, "Response was added under '{}'".format(factoid_trigger))
@@ -133,7 +133,7 @@ class Factoids(moduletemplate.BotModule):
                     self.notice(nick, "Factoid triggers may only contain A-Z and /")
                 elif not self.factoid_exists(factoid_trigger):
                     self.notice(nick, "Factoid trigger '{}' doesn't exist. Use addfactoid instead."
-                                            .format(factoid_trigger))
+                                      .format(factoid_trigger))
                 else:
                     self.factoid_del(factoid_trigger)
                     self.factoid_add(nick, factoid_trigger, factoid_response)
@@ -156,7 +156,7 @@ class Factoids(moduletemplate.BotModule):
 
             if command == "countfactoid" or command == "countfactoids":
                 return self.message(target, nick, "There are currently {} responses registered in my database."
-                                                       .format(self.factoid_count()))
+                                                  .format(self.factoid_count()))
 
         return False
 

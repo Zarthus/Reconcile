@@ -11,4 +11,4 @@ from core import moduletemplate
 
 class CmdDebug(moduletemplate.BotModule):
     def on_command(self, target, nick, command, commandtext, mod, admin):
-        self.reply_notice(nick, str([target, nick, command, commandtext, mod, admin]))
+        self.notice(nick, str([target, nick, command, commandtext, mod, admin]))

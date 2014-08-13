@@ -23,7 +23,7 @@ class Xkcd(moduletemplate.BotModule):
                 if self.xkcdurl.match(word):
                     info = self.get_xkcd_info(word)
                     if info:
-                        self.reply_target(target, None, "({}) {}".format(nick, info), True)
+                        self.message(target, None, "({}) {}".format(nick, info), True)
 
     def get_xkcd_info(self, url, ret_boolean=False):
         if not url.endswith("/"):

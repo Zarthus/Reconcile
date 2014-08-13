@@ -50,7 +50,7 @@ class Weather(moduletemplate.BotModule):
         if command == "weather":
             if not commandtext:
                 return self.notice(nick, "Usage: weather <location> [-countrycode]"
-                                               "- country code is US, UK, NL etc.")
+                                         "- country code is US, UK, NL etc.")
 
             region = ""
             location = commandtext.strip()

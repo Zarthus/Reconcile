@@ -38,7 +38,7 @@ class Wikipedia(moduletemplate.BotModule):
 
                     info = self.get_wiki_info(language, article, True)
                     if info:
-                        self.reply_target(target, None, "({}) {}".format(nick, info), True)
+                        self.message(target, None, "({}) {}".format(nick, info), True)
 
     def get_wiki_info(self, language, article, ret_boolean=False):
         api_url = "http://{}.wikipedia.org/w/api.php".format(language)

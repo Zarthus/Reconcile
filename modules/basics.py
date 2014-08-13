@@ -45,7 +45,7 @@ class BasicCommands(moduletemplate.BotModule):
 
         if command == "permissions":
             return self.notice(nick, "Permissions for {}: Administrator: {} - Moderator: {}"
-                                           .format(nick, "yes" if admin else "no", "yes" if mod else "no"))
+                                     .format(nick, "yes" if admin else "no", "yes" if mod else "no"))
 
         if command == "ping" and not commandtext:  # Don't reply with params, might interfere with some bots 'ping' cmd
             return self.message(target, nick, "Yes, yes. I am here.")
@@ -102,11 +102,11 @@ class BasicCommands(moduletemplate.BotModule):
 
             if command == "loadedmodules" or command == "modules" or command == "mod":
                 return self.notice(nick, "The following modules are loaded: {}"
-                                               .format(str(self._conn.ModuleHandler.getLoadedModulesList())))
+                                         .format(str(self._conn.ModuleHandler.getLoadedModulesList())))
 
             if command == "availablemodules" or command == "amod":
                 return self.notice(nick, "The following modules are available: {}"
-                                               .format(str(self._conn.ModuleHandler.getAvailableModulesList())))
+                                         .format(str(self._conn.ModuleHandler.getAvailableModulesList())))
 
             if admin:
                 if command == "shutdown":
@@ -139,7 +139,7 @@ class BasicCommands(moduletemplate.BotModule):
 
                     if module not in self._conn.ModuleHandler.getAvailableModulesList():
                         return self.message(target, nick, "Failed to load module '{}', are you sure it exists?"
-                                                               .format(module))
+                                                          .format(module))
                     return self.message(target, nick, "Failed to load module '{}'.".format(module))
 
                 if command == "unloadmodule" or command == "umod":
@@ -157,8 +157,8 @@ class BasicCommands(moduletemplate.BotModule):
 
                     if module not in self._conn.ModuleHandler.getLoadedModulesList():
                         return self.message(target, nick,
-                                                 "Failed to unload module '{}', are you sure it is loaded?"
-                                                 .format(module))
+                                            "Failed to unload module '{}', are you sure it is loaded?"
+                                            .format(module))
                     return self.message(target, nick, "Failed to unload module '{}'.".format(module))
 
                 if command == "reloadmodule" or command == "rmod":
@@ -176,8 +176,8 @@ class BasicCommands(moduletemplate.BotModule):
 
                     if module not in self._conn.ModuleHandler.getAvailableModulesList():
                         return self.message(target, nick,
-                                                 "Failed to reload module '{}', are you sure it exists and is loaded?"
-                                                 .format(module))
+                                            "Failed to reload module '{}', are you sure it exists and is loaded?"
+                                            .format(module))
                     return self.message(target, nick, "Failed to reload module '{}'.".format(module))
 
                 if command == "reconnect":

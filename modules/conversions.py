@@ -71,12 +71,12 @@ class Conversions(moduletemplate.BotModule):
             oamount = self.currency_convert(int(amount), currency, ocurrency)
             if oamount and type(oamount) == float or type(oamount) == int:
                 return self.message(target, nick, "$(bold) {} {} $(clear) is equal to $(bold) {} {} $+ $(clear) ."
-                                                       .format(amount, currency, round(oamount, 3), ocurrency), True)
+                                                  .format(amount, currency, round(oamount, 3), ocurrency), True)
             elif oamount:
                 return self.message(target, nick, "An error occured: {}".format(oamount))
             else:
                 return self.message(target, nick, "Was unable to convert {}{} to {}."
-                                                       .format(amount, currency, ocurrency))
+                                                  .format(amount, currency, ocurrency))
 
         if command == "currencyinfo" or command == "curinfo":
             if not commandtext:
@@ -87,11 +87,10 @@ class Conversions(moduletemplate.BotModule):
             if unabbr:
                 # Yes, the wikipedia url *may* be invalid, but I trust that most of these do exist.
                 return self.message(target, nick, "{} information: Unabbreviated '{}', Wikipedia: {}"
-                                                       .format(currency, unabbr, "https://en.wikipedia.org/wiki/{}"
-                                                                                 .format(unabbr.replace(" ", "_"))))
+                                                  .format(currency, unabbr, "https://en.wikipedia.org/wiki/{}"
+                                                                            .format(unabbr.replace(" ", "_"))))
             else:
-                return self.message(target, nick, "Currency '{}' does not exist or is not known."
-                                                       .format(currency))
+                return self.message(target, nick, "Currency '{}' does not exist or is not known.".format(currency))
 
         if command in ["cf", "fc", "ck", "kc", "fk", "kf"]:  # Aliases for 'temperature'
             commandtext = "{} {} {}".format(commandtext, command[0], command[1])

@@ -24,7 +24,7 @@ class FloodDebug(moduletemplate.BotModule):
                 if int(time.time()) > self.last_flood + 5:
                     self.last_flood = int(time.time())
                     for i in range(10):
-                        self.reply_notice(nick, "flood_notice(): Message {}".format(i))
+                        self.notice(nick, "flood_notice(): Message {}".format(i))
 
                     return True
 
@@ -32,7 +32,7 @@ class FloodDebug(moduletemplate.BotModule):
                 if int(time.time()) > self.last_flood + 5:
                     self.last_flood = int(time.time())
                     for i in range(10):
-                        self.reply_target(target, nick, "flood_channel(): Message {}".format(i))
+                        self.message(target, nick, "flood_channel(): Message {}".format(i))
 
                     return True
 
@@ -40,6 +40,6 @@ class FloodDebug(moduletemplate.BotModule):
                 if int(time.time()) > self.last_flood + 5:
                     self.last_flood = int(time.time())
                     for i in range(10):
-                        self.reply_target(nick, None, "flood_query(): Message {}".format(i))
+                        self.message(nick, None, "flood_query(): Message {}".format(i))
 
                     return True

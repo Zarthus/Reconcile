@@ -29,6 +29,6 @@ class Topic(moduletemplate.BotModule):
                 splitdata = data.split()
                 if self.checking_topic == splitdata[3].lower():
                     self.message(self.checking_topic, None, "Topic for {}: {}"
-                                                                 .format(self.checking_topic,
-                                                                         " ".join(splitdata[4:])[1:]))
+                                                            .format(self.checking_topic,
+                                                                    " ".join(splitdata[4:])[1:]))
                     self.checking_topic = False

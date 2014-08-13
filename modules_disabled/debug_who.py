@@ -28,68 +28,68 @@ class WhoDebug(moduletemplate.BotModule):
         if admin:
             if command == "channeldata":
                 if not commandtext:
-                    return self.reply_notice(nick, "Usage: channeldata <channel>")
+                    return self.notice(nick, "Usage: channeldata <channel>")
 
                 data = pprint.pformat(self.getChannelData(commandtext))
 
-                return self.reply_notice(nick, paste.Paste.gist("Channel Data of {}".format(commandtext),
-                                         data, logger=self.logger))
+                return self.notice(nick, paste.Paste.gist("Channel Data of {}".format(commandtext),
+                                                          data, logger=self.logger))
 
             if command == "userdata":
                 if not commandtext:
-                    return self.reply_notice(nick, "Usage: userdata <channel>")
+                    return self.notice(nick, "Usage: userdata <channel>")
 
                 data = pprint.pformat(self.getUserData(commandtext))
 
-                return self.reply_notice(nick, paste.Paste.gist("User Data of {}".format(commandtext),
-                                         data, logger=self.logger))
+                return self.notice(nick, paste.Paste.gist("User Data of {}".format(commandtext),
+                                                          data, logger=self.logger))
 
             if command == "isidentified":
                 if not commandtext:
-                    return self.reply_notice(nick, "Usage: isidentified <nick>")
+                    return self.notice(nick, "Usage: isidentified <nick>")
 
-                return self.reply_target(target, nick, self.isIdentified(commandtext))
+                return self.message(target, nick, self.isIdentified(commandtext))
 
             if command == "isoper":
                 if not commandtext:
-                    return self.reply_notice(nick, "Usage: isoper <nick>")
+                    return self.notice(nick, "Usage: isoper <nick>")
 
-                return self.reply_target(target, nick, self.isOper(commandtext))
+                return self.message(target, nick, self.isOper(commandtext))
 
             if command == "isadmin":
                 if not commandtext:
-                    return self.reply_notice(nick, "Usage: isadmin <nick>")
+                    return self.notice(nick, "Usage: isadmin <nick>")
 
-                return self.reply_target(target, nick, self.isBotAdmin(commandtext))
+                return self.message(target, nick, self.isBotAdmin(commandtext))
 
             if command == "ismod":
                 if not commandtext:
-                    return self.reply_notice(nick, "Usage: ismod <nick>")
+                    return self.notice(nick, "Usage: ismod <nick>")
 
-                return self.reply_target(target, nick, self.isBotMod(commandtext))
+                return self.message(target, nick, self.isBotMod(commandtext))
 
             if command == "isop":
                 cmdtxt = commandtext.split()
 
                 if not commandtext or len(cmdtxt) != 2:
-                    return self.reply_notice(nick, "Usage: isop <nick> <channel>")
+                    return self.notice(nick, "Usage: isop <nick> <channel>")
 
-                return self.reply_target(target, nick, self.isOp(cmdtxt[0], cmdtxt[1]))
+                return self.message(target, nick, self.isOp(cmdtxt[0], cmdtxt[1]))
 
             if command == "isvoice":
                 cmdtxt = commandtext.split()
 
                 if not commandtext or len(cmdtxt) != 2:
-                    return self.reply_notice(nick, "Usage: isvoice <nick> <channel>")
+                    return self.notice(nick, "Usage: isvoice <nick> <channel>")
 
-                return self.reply_target(target, nick, self.isVoice(cmdtxt[0], cmdtxt[1]))
+                return self.message(target, nick, self.isVoice(cmdtxt[0], cmdtxt[1]))
 
             if command == "ison":
                 cmdtxt = commandtext.split()
 
                 if not commandtext or len(cmdtxt) != 2:
-                    return self.reply_notice(nick, "Usage: ison <nick> <channel>")
+                    return self.notice(nick, "Usage: ison <nick> <channel>")
 
-                return self.reply_target(target, nick, self.isOn(cmdtxt[0], cmdtxt[1]))
+                return self.message(target, nick, self.isOn(cmdtxt[0], cmdtxt[1]))
 
         return False

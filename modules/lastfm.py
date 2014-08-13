@@ -46,7 +46,7 @@ class LastFM(moduletemplate.BotModule):
 
                 if not lfmacct:
                     return self.notice(nick, "Could not find a nick to look up. Please use lastfm <lastfm nick> "
-                                                   "instead, or set a lastfm account with setlastfm <account name>.")
+                                             "instead, or set a lastfm account with setlastfm <account name>.")
 
                 return self.lastfm_nowplaying(target, nick, lfmacct)
             else:
@@ -91,7 +91,7 @@ class LastFM(moduletemplate.BotModule):
                 success = self.lastfm_set_account(lfmnick, commandtext)
                 if success:
                     return self.message(target, nick, "Your last.fm account of '{}' has been bound to {}."
-                                                           .format(commandtext, lfmnick))
+                                                      .format(commandtext, lfmnick))
                 else:
                     return self.message(target, nick, "I was unable to store your data in my database.")
 
@@ -106,7 +106,7 @@ class LastFM(moduletemplate.BotModule):
                 success = self.lastfm_unset_account(commandtext)
                 if success:
                     return self.message(target, nick, "Successfully deleted {}'s last.fm record."
-                                                           .format(commandtext))
+                                                      .format(commandtext))
                 else:
                     return self.message(target, nick, "Failed to delete {}'s last.fm record.".format(commandtext))
 
@@ -117,10 +117,10 @@ class LastFM(moduletemplate.BotModule):
                 data = self.lastfm_get_info(commandtext)
                 if data and len(data) == 3:
                     return self.message(target, nick, "{} has their last.fm account set to '{}', set on {}."
-                                                           .format(data[0], data[1], data[2]))
+                                                      .format(data[0], data[1], data[2]))
                 else:
                     return self.message(target, nick, "'{}' does not have a last.fm account bound to their nick."
-                                                           .format(commandtext))
+                                                      .format(commandtext))
 
         return False
 
