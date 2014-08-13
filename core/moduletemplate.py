@@ -83,7 +83,7 @@ class BotModule:
         """
         pass
 
-    def reply_target(self, target, nick, message, parse=False):
+    def message(self, target, nick, message, parse=False):
         """
         Reply to the user by sending a message to the channel or user,
         Use this for comamnds that contain non-sensitive data that completed successfully.
@@ -101,7 +101,7 @@ class BotModule:
 
         return True
 
-    def reply_notice(self, nick, message, parse=False):
+    def notice(self, nick, message, parse=False):
         """
         Reply to the user with a notice,
         Use this for errors, syntax information or sending private data.
@@ -111,7 +111,7 @@ class BotModule:
 
         return True
 
-    def reply_action(self, target, action, parse=False):
+    def action(self, target, action, parse=False):
         """
         Reply to the user or channel with an ACTION,
         Useful for general fun commands or when the bot needs to 'do' something.

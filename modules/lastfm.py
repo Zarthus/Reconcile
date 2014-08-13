@@ -45,7 +45,7 @@ class LastFM(moduletemplate.BotModule):
                         lfmacct = lfmnick
 
                 if not lfmacct:
-                    return self.reply_notice(nick, "Could not find a nick to look up. Please use lastfm <lastfm nick> "
+                    return self.notice(nick, "Could not find a nick to look up. Please use lastfm <lastfm nick> "
                                                    "instead, or set a lastfm account with setlastfm <account name>.")
 
                 return self.lastfm_nowplaying(target, nick, lfmacct)
@@ -53,73 +53,73 @@ class LastFM(moduletemplate.BotModule):
                 if commandtext.isalnum():
                     return self.lastfm_nowplaying(target, nick, commandtext)
                 else:
-                    return self.reply_target(target, nick, "Please specify a valid last.fm account name.")
+                    return self.message(target, nick, "Please specify a valid last.fm account name.")
 
         if command == "unsetlastfm" or command == "lastfmunset":
             lfmnick = self.lastfm_get_nick(nick)
 
             if not lfmnick:
-                return self.reply_notice(nick, "Cannot retrieve nick.")
+                return self.notice(nick, "Cannot retrieve nick.")
 
             if not self.lastfm_get_info(lfmnick):
-                return self.reply_target(target, nick, "You do not have a last.fm account bound to you.")
+                return self.message(target, nick, "You do not have a last.fm account bound to you.")
 
             success = self.lastfm_unset_account(lfmnick)
             if success:
-                return self.reply_target(target, nick, "Your last.fm account name has been unset")
+                return self.message(target, nick, "Your last.fm account name has been unset")
             else:
-                return self.reply_target(target, nick, "I was unable to delete your data from my database.")
+                return self.message(target, nick, "I was unable to delete your data from my database.")
 
         if command == "setlastfm" or command == "lastfmset":
             if commandtext and not commandtext.isalnum():
-                return self.reply_notice(nick, "Usage: setlastfm <username> (must be alphanumeric)")
+                return self.notice(nick, "Usage: setlastfm <username> (must be alphanumeric)")
 
             lfmnick = self.lastfm_get_nick(nick)
             if not lfmnick:
-                return self.reply_notice(nick, "Cannot retrieve nick.")
+                return self.notice(nick, "Cannot retrieve nick.")
 
             if not commandtext:
                 if not self.lastfm_get_info(lfmnick):
-                    return self.reply_target(target, nick, "You do not have a last.fm account bound to you.")
+                    return self.message(target, nick, "You do not have a last.fm account bound to you.")
 
                 success = self.lastfm_unset_account(lfmnick)
                 if success:
-                    return self.reply_target(target, nick, "Your last.fm account name has been unset")
+                    return self.message(target, nick, "Your last.fm account name has been unset")
                 else:
-                    return self.reply_target(target, nick, "I was unable to delete your data from my database.")
+                    return self.message(target, nick, "I was unable to delete your data from my database.")
             else:
                 success = self.lastfm_set_account(lfmnick, commandtext)
                 if success:
-                    return self.reply_target(target, nick, "Your last.fm account of '{}' has been bound to {}."
+                    return self.message(target, nick, "Your last.fm account of '{}' has been bound to {}."
                                                            .format(commandtext, lfmnick))
                 else:
-                    return self.reply_target(target, nick, "I was unable to store your data in my database.")
+                    return self.message(target, nick, "I was unable to store your data in my database.")
 
         if mod:
             if command == "dellastfm" or command == "lastfmdel":
                 if not commandtext or not commandtext.isalnum():
-                    return self.reply_notice(nick, "Usage: dellastfm <nick>")
+                    return self.notice(nick, "Usage: dellastfm <nick>")
 
                 if not self.lastfm_get_info(commandtext):
-                    return self.reply_target(target, nick, "That account does not exist.")
+                    return self.message(target, nick, "That account does not exist.")
 
                 success = self.lastfm_unset_account(commandtext)
                 if success:
-                    return self.reply_target(target, nick, "Successfully deleted {}'s last.fm record."
+                    return self.message(target, nick, "Successfully deleted {}'s last.fm record."
                                                            .format(commandtext))
                 else:
-                    return self.reply_target(target, nick, "Failed to delete {}'s last.fm record.".format(commandtext))
+                    return self.message(target, nick, "Failed to delete {}'s last.fm record.".format(commandtext))
 
             if command == "getlastfm" or command == "lastfmget":
                 if not commandtext or not commandtext.isalnum():
-                    return self.reply_notice(nick, "Usage: getlastfm <nick>")
+                    return self.notice(nick, "Usage: getlastfm <nick>")
 
                 data = self.lastfm_get_info(commandtext)
                 if data and len(data) == 3:
-                    return self.reply_target(target, nick, "{} has their last.fm account set to '{}', set on {}."
+                    return self.message(target, nick, "{} has their last.fm account set to '{}', set on {}."
                                                            .format(data[0], data[1], data[2]))
                 else:
-                    return self.reply_target(target, nick, "'{}' does not have a last.fm account bound to their nick."
+                    return self.message(target, nick, "'{}' does not have a last.fm account bound to their nick."
                                                            .format(commandtext))
 
         return False
@@ -143,13 +143,13 @@ class LastFM(moduletemplate.BotModule):
             json = r.json
         except Exception as e:
             self.logger.notice("Could not retrieve LastFM np information for {}: {}".format(account, str(e)))
-            self.reply_target(target, nick, "Could not retrieve information: {}".format(str(e)))
+            self.message(target, nick, "Could not retrieve information: {}".format(str(e)))
 
         acct = ""
         lfmstr = ""
 
         if "message" in json:
-            return self.reply_target(target, nick, json["message"])
+            return self.message(target, nick, json["message"])
 
         if "@attr" in json:
             acct = json["@attr"]["user"]
@@ -158,7 +158,7 @@ class LastFM(moduletemplate.BotModule):
 
         if "recenttracks" in json and "track" in json["recenttracks"]:
             if not len(json["recenttracks"]["track"]):
-                return self.reply_target(target, nick, "{} has not listened to any tracks recently.".format(acct))
+                return self.message(target, nick, "{} has not listened to any tracks recently.".format(acct))
 
             json = json["recenttracks"]["track"]
 
@@ -196,9 +196,9 @@ class LastFM(moduletemplate.BotModule):
                 lfmstr = "Could not determine {}'s last played song.".format(acct)
 
         if lfmstr:
-            return self.reply_target(target, nick, lfmstr, True)
+            return self.message(target, nick, lfmstr, True)
         else:
-            return self.reply_target(target, nick, "Unable to fetch last.fm information from {}.".format(acct))
+            return self.message(target, nick, "Unable to fetch last.fm information from {}.".format(acct))
 
     def lastfm_get_nick(self, nick):
         if nick.isalnum():
@@ -207,11 +207,11 @@ class LastFM(moduletemplate.BotModule):
         account = self.getUserData(nick)
         if account:
             if not account["identified"] or account["account"] == "0" or not account["account"].isalnum():
-                self.reply_notice(nick, "For security reasons, your name or NickServ account must be alphanumeric.")
+                self.notice(nick, "For security reasons, your name or NickServ account must be alphanumeric.")
                 return False
             else:
                 return account["account"]
-        self.reply_notice(nick, "Your name is not alphanumeric, and I was unable to retrieve your account name.")
+        self.notice(nick, "Your name is not alphanumeric, and I was unable to retrieve your account name.")
         return False
 
     def lastfm_get_info(self, nick):

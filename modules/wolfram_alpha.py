@@ -28,21 +28,21 @@ class WolframAlpha(moduletemplate.BotModule):
         if command == "wolframalpha" or command == "wa" or command == "wolfram":
             if "wolframalpha" not in self.api_key:
                 # The module would initially not be loaded if there is no API Key, but safety checks never hurt anyone.
-                return self.reply_notice(nick, "There is no API Key set for WolframAlpha, please ask the maintainer" +
+                return self.notice(nick, "There is no API Key set for WolframAlpha, please ask the maintainer" +
                                                " to configure one to be set.")
 
             if not commandtext:
-                return self.reply_notice(nick, "Usage: wolframalpha <query>")
+                return self.notice(nick, "Usage: wolframalpha <query>")
 
             if self.last_request > int(time.time()) + 5:
                 timeleft = int(time.time()) + 5 - self.last_request
 
-                return self.reply_notice(nick, "This command is rate limited. Please try again in {} second{}."
+                return self.notice(nick, "This command is rate limited. Please try again in {} second{}."
                                                .format(timeleft, "s" if timeleft != 1 else ""))
 
             query_url = "http://www.wolframalpha.com/input/?i={}".format(urllib.parse.quote(commandtext))
             query_response = self.compute(commandtext)
-            return self.reply_target(target, nick, "{} - {}".format(query_response, query_url))
+            return self.message(target, nick, "{} - {}".format(query_response, query_url))
         return False
 
     def compute(self, query):

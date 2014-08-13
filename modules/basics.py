@@ -44,11 +44,11 @@ class BasicCommands(moduletemplate.BotModule):
     def on_command(self, target, nick, command, commandtext, mod, admin):
 
         if command == "permissions":
-            return self.reply_notice(nick, "Permissions for {}: Administrator: {} - Moderator: {}"
+            return self.notice(nick, "Permissions for {}: Administrator: {} - Moderator: {}"
                                            .format(nick, "yes" if admin else "no", "yes" if mod else "no"))
 
         if command == "ping" and not commandtext:  # Don't reply with params, might interfere with some bots 'ping' cmd
-            return self.reply_target(target, nick, "Yes, yes. I am here.")
+            return self.message(target, nick, "Yes, yes. I am here.")
 
         if command == "commands":
             if not commandtext:
@@ -57,55 +57,55 @@ class BasicCommands(moduletemplate.BotModule):
 
         if command == "commandinfo":
             if not commandtext:
-                return self.reply_notice(nick, "Usage: commandinfo <command>")
-            return self.reply_notice(nick, self._conn.commandhelp.getCommandInfo(commandtext))
+                return self.notice(nick, "Usage: commandinfo <command>")
+            return self.notice(nick, self._conn.commandhelp.getCommandInfo(commandtext))
 
         if command == "help":
             if not commandtext:
                 return self.listCommands(nick, mod, admin)
 
-            return self.reply_notice(nick, self._conn.commandhelp.getCommandHelp(commandtext))
+            return self.notice(nick, self._conn.commandhelp.getCommandHelp(commandtext))
 
         if mod:
             if command == "join":
                 if not commandtext:
-                    return self.reply_notice(nick, "Usage: join <channels to join>")
+                    return self.notice(nick, "Usage: join <channels to join>")
 
                 self._conn.join(commandtext)
-                return self.reply_notice(nick, "Attempting to join: {}".format(commandtext.replace(",", ", ")))
+                return self.notice(nick, "Attempting to join: {}".format(commandtext.replace(",", ", ")))
 
             if command == "part":
                 if not commandtext:
-                    return self.reply_notice(nick, "Usage: part <channels to part>")
+                    return self.notice(nick, "Usage: part <channels to part>")
 
                 self._conn.part(commandtext)
-                return self.reply_notice(nick, "Attempting to part: {}".format(commandtext.replace(",", ", ")))
+                return self.notice(nick, "Attempting to part: {}".format(commandtext.replace(",", ", ")))
 
             if command == "nick":
                 if not commandtext:
-                    return self.reply_notice(nick, "Usage: nick <new nick>")
+                    return self.notice(nick, "Usage: nick <new nick>")
 
                 self._conn.nick(commandtext)
-                return self.reply_notice(nick, "Attempting to change name to: {}".format(commandtext))
+                return self.notice(nick, "Attempting to change name to: {}".format(commandtext))
 
             if command == "message":
                 m = commandtext.split()
 
                 if not commandtext or len(m) < 2:
-                    return self.reply_target(target, "Usage: message <target> <message>")
+                    return self.message(target, "Usage: message <target> <message>")
 
                 mess = " ".join(m[1:])
                 targ = m[0]
 
-                self.reply_target(targ, None, mess)
-                return self.reply_target(target, nick, "Sent message '{}' to '{}'.".format(mess, targ))
+                self.message(targ, None, mess)
+                return self.message(target, nick, "Sent message '{}' to '{}'.".format(mess, targ))
 
             if command == "loadedmodules" or command == "modules" or command == "mod":
-                return self.reply_notice(nick, "The following modules are loaded: {}"
+                return self.notice(nick, "The following modules are loaded: {}"
                                                .format(str(self._conn.ModuleHandler.getLoadedModulesList())))
 
             if command == "availablemodules" or command == "amod":
-                return self.reply_notice(nick, "The following modules are available: {}"
+                return self.notice(nick, "The following modules are available: {}"
                                                .format(str(self._conn.ModuleHandler.getAvailableModulesList())))
 
             if admin:
@@ -115,7 +115,7 @@ class BasicCommands(moduletemplate.BotModule):
                     return True
 
                 if command == "rehash":
-                    self.reply_target(target, nick, "Rehashing my configuration right now.")
+                    self.message(target, nick, "Rehashing my configuration right now.")
 
                     # optional syntax parameter: "rehash reconnect"
                     if not commandtext or commandtext and commandtext.strip().lower() != "reconnect":
@@ -126,7 +126,7 @@ class BasicCommands(moduletemplate.BotModule):
 
                 if command == "loadmodule" or command == "lmod":
                     if not commandtext:
-                        return self.reply_notice(nick, "Usage: loadmodule <modulename>")
+                        return self.notice(nick, "Usage: loadmodule <modulename>")
 
                     module = commandtext
                     if not module.endswith(".py"):
@@ -135,16 +135,16 @@ class BasicCommands(moduletemplate.BotModule):
                     success = self._conn.ModuleHandler.load(module)
 
                     if success:
-                        return self.reply_target(target, nick, "Successfully loaded module '{}'".format(module))
+                        return self.message(target, nick, "Successfully loaded module '{}'".format(module))
 
                     if module not in self._conn.ModuleHandler.getAvailableModulesList():
-                        return self.reply_target(target, nick, "Failed to load module '{}', are you sure it exists?"
+                        return self.message(target, nick, "Failed to load module '{}', are you sure it exists?"
                                                                .format(module))
-                    return self.reply_target(target, nick, "Failed to load module '{}'.".format(module))
+                    return self.message(target, nick, "Failed to load module '{}'.".format(module))
 
                 if command == "unloadmodule" or command == "umod":
                     if not commandtext:
-                        return self.reply_notice(nick, "Usage: unloadmodule <modulename>")
+                        return self.notice(nick, "Usage: unloadmodule <modulename>")
 
                     module = commandtext
                     if not module.endswith(".py"):
@@ -153,17 +153,17 @@ class BasicCommands(moduletemplate.BotModule):
                     success = self._conn.ModuleHandler.unload(module)
 
                     if success:
-                        return self.reply_target(target, nick, "Successfully unloaded module '{}'".format(module))
+                        return self.message(target, nick, "Successfully unloaded module '{}'".format(module))
 
                     if module not in self._conn.ModuleHandler.getLoadedModulesList():
-                        return self.reply_target(target, nick,
+                        return self.message(target, nick,
                                                  "Failed to unload module '{}', are you sure it is loaded?"
                                                  .format(module))
-                    return self.reply_target(target, nick, "Failed to unload module '{}'.".format(module))
+                    return self.message(target, nick, "Failed to unload module '{}'.".format(module))
 
                 if command == "reloadmodule" or command == "rmod":
                     if not commandtext:
-                        return self.reply_notice(nick, "Usage: reloadmodule <modulename>")
+                        return self.notice(nick, "Usage: reloadmodule <modulename>")
 
                     module = commandtext
                     if not module.endswith(".py"):
@@ -172,16 +172,16 @@ class BasicCommands(moduletemplate.BotModule):
                     success = self._conn.ModuleHandler.reload(module)
 
                     if success:
-                        return self.reply_target(target, nick, "Successfully reloaded module '{}'".format(module))
+                        return self.message(target, nick, "Successfully reloaded module '{}'".format(module))
 
                     if module not in self._conn.ModuleHandler.getAvailableModulesList():
-                        return self.reply_target(target, nick,
+                        return self.message(target, nick,
                                                  "Failed to reload module '{}', are you sure it exists and is loaded?"
                                                  .format(module))
-                    return self.reply_target(target, nick, "Failed to reload module '{}'.".format(module))
+                    return self.message(target, nick, "Failed to reload module '{}'.".format(module))
 
                 if command == "reconnect":
-                    self.reply_target(target, nick, "Reconnecting to the network right now.")
+                    self.message(target, nick, "Reconnecting to the network right now.")
                     self._conn.reconnect()
                     return True
 
@@ -190,9 +190,9 @@ class BasicCommands(moduletemplate.BotModule):
     def listCommands(self, nick, mod, admin, module=None):
         cmds = self._conn.commandhelp.getCommands(mod, admin, module)
         if module:
-            self.reply_notice(nick, "Listing commands from the module '{}'".format(module))
+            self.notice(nick, "Listing commands from the module '{}'".format(module))
         else:
-            self.reply_notice(nick, "Listing all available commands:")
+            self.notice(nick, "Listing all available commands:")
 
         max_cmds = 15
         cmdlist = ""
@@ -202,11 +202,11 @@ class BasicCommands(moduletemplate.BotModule):
             cmdlist += ", " + cmd
 
             if i == max_cmds:
-                self.reply_notice(nick, cmdlist[2:])
+                self.notice(nick, cmdlist[2:])
                 cmdlist = ""
                 i = 0
 
         if cmdlist:
-            self.reply_notice(nick, cmdlist[2:])
+            self.notice(nick, cmdlist[2:])
 
         return True

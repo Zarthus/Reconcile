@@ -21,7 +21,7 @@ class Isup(moduletemplate.BotModule):
             if commandtext and " " not in commandtext:
                 self.check_if_up(commandtext, target, nick)
             else:
-                self.reply_notice(nick, "Usage: isup <website> -- check if a website is up using isup.me")
+                self.notice(nick, "Usage: isup <website> -- check if a website is up using isup.me")
 
             return True
 
@@ -42,4 +42,4 @@ class Isup(moduletemplate.BotModule):
         else:
             isup = "$(dgrey) unknown $+ $(clear)"
 
-        self.reply_target(target, nick, "{} appears to be {}.".format(url, isup), True)
+        self.message(target, nick, "{} appears to be {}.".format(url, isup), True)

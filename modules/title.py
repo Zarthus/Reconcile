@@ -31,7 +31,7 @@ class Title(moduletemplate.BotModule):
                 if self.xkcdurl.match(word):
                     info = self.get_xkcd_info(word, True)
                     if info:
-                        self.reply_target(target, None, "({}) {}".format(nick, info), True)
+                        self.message(target, None, "({}) {}".format(nick, info), True)
                 elif self.wikipedia_url.match(word):
                     match = self.wikipedia_url.match(word)
                     groups = match.groups()
@@ -50,25 +50,25 @@ class Title(moduletemplate.BotModule):
 
                     info = self.get_wiki_info(language, article, True)
                     if info:
-                        self.reply_target(target, None, "({}) {}".format(nick, info), True)
+                        self.message(target, None, "({}) {}".format(nick, info), True)
                 else:
                     title = self.get_title(word, True, True)
                     if title and title != self.last_title:
                         self.last_title = title
-                        self.reply_target(target, None, "({}) {}".format(nick, title))
+                        self.message(target, None, "({}) {}".format(nick, title))
 
     def on_command(self, target, nick, command, commandtext, mod, admin):
         if command == "title" or command == "gettitle":
             if not commandtext:
-                return self.reply_notice(nick, "Usage: title <website>")
-            return self.reply_target(target, nick, self.get_title(commandtext, False))
+                return self.notice(nick, "Usage: title <website>")
+            return self.message(target, nick, self.get_title(commandtext, False))
         if command == "xkcd":
             if not commandtext or not commandtext.isdigit():
-                return self.reply_notice(nick, "Usage: xkcd <id>")
-            return self.reply_target(target, nick, self.get_xkcd_info("http://xkcd.com/{}/".format(commandtext)), True)
+                return self.notice(nick, "Usage: xkcd <id>")
+            return self.message(target, nick, self.get_xkcd_info("http://xkcd.com/{}/".format(commandtext)), True)
         if command == "wiki" or command == "wikipedia":
             if not commandtext:
-                return self.reply_notice(nick, "Usage: wiki <article> [language = en]")
+                return self.notice(nick, "Usage: wiki <article> [language = en]")
 
             cmdtext = commandtext.split()
             article = cmdtext[0]
@@ -77,7 +77,7 @@ class Title(moduletemplate.BotModule):
             if len(cmdtext) > 1 and len(cmdtext[1]) == 2:
                 language = cmdtext[1]
 
-            return self.reply_target(target, nick, self.get_wiki_info(language, article), True)
+            return self.message(target, nick, self.get_wiki_info(language, article), True)
         return False
 
     def is_url(self, url):

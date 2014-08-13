@@ -49,7 +49,7 @@ class Weather(moduletemplate.BotModule):
     def on_command(self, target, nick, command, commandtext, mod, admin):
         if command == "weather":
             if not commandtext:
-                return self.reply_notice(nick, "Usage: weather <location> [-countrycode]"
+                return self.notice(nick, "Usage: weather <location> [-countrycode]"
                                                "- country code is US, UK, NL etc.")
 
             region = ""
@@ -64,25 +64,25 @@ class Weather(moduletemplate.BotModule):
 
             weather = None
             if region and not region.isalpha():
-                return self.reply_notice(nick, "Country Code must be alphabetical (i.e. US, UK, NL).")
+                return self.notice(nick, "Country Code must be alphabetical (i.e. US, UK, NL).")
             if region and location:
                 weather = self.check_weather("{}/{}".format(region, location))
             elif location:
                 weather = self.check_weather(location)
             else:
-                return self.reply_notice(nick, "Could not parse arguments properly. Did you specify a location?")
+                return self.notice(nick, "Could not parse arguments properly. Did you specify a location?")
 
             if weather:
                 if type(weather) == list:
                     for item in weather:
                         # item.startswith($(red)) == colour-parse if it is an alert.
                         # if it doesn't, no need to parse it.
-                        self.reply_target(target, nick, item, item.startswith("$(red)"))
+                        self.message(target, nick, item, item.startswith("$(red)"))
                         nick = None  # Set nick to none to prevent multiple highlights.
                 else:
-                    self.reply_target(target, nick, weather)
+                    self.message(target, nick, weather)
             else:
-                self.reply_target(target, nick, "Could not find weather information about '{}'".format(commandtext))
+                self.message(target, nick, "Could not find weather information about '{}'".format(commandtext))
             return True
         return False
 

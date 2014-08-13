@@ -52,7 +52,7 @@ class Conversions(moduletemplate.BotModule):
     def on_command(self, target, nick, command, commandtext, mod, admin):
         if command == "currency" or command == "cur" or command == "convert":
             if not commandtext or len(commandtext.split()) != 3:
-                return self.reply_notice(nick, "Usage: currency <amount> <currency> <other currency>")
+                return self.notice(nick, "Usage: currency <amount> <currency> <other currency>")
 
             split = commandtext.split()
             amount = split[0]
@@ -60,37 +60,37 @@ class Conversions(moduletemplate.BotModule):
             ocurrency = split[2].upper()
 
             if not amount.isdigit():
-                return self.reply_notice(nick, "<amount> needs to be a numeric value.")
+                return self.notice(nick, "<amount> needs to be a numeric value.")
             if not currency.isalpha():
-                return self.reply_notice(nick, "<currency> may only be alphabetic letters.")
+                return self.notice(nick, "<currency> may only be alphabetic letters.")
             if not ocurrency.isalpha():
-                return self.reply_notice(nick, "<other currency> may only be alphabetic letters.")
+                return self.notice(nick, "<other currency> may only be alphabetic letters.")
             if ocurrency == currency:
-                return self.reply_notice(nick, "<currency> and <other currency> may not be the same.")
+                return self.notice(nick, "<currency> and <other currency> may not be the same.")
 
             oamount = self.currency_convert(int(amount), currency, ocurrency)
             if oamount and type(oamount) == float or type(oamount) == int:
-                return self.reply_target(target, nick, "$(bold) {} {} $(clear) is equal to $(bold) {} {} $+ $(clear) ."
+                return self.message(target, nick, "$(bold) {} {} $(clear) is equal to $(bold) {} {} $+ $(clear) ."
                                                        .format(amount, currency, round(oamount, 3), ocurrency), True)
             elif oamount:
-                return self.reply_target(target, nick, "An error occured: {}".format(oamount))
+                return self.message(target, nick, "An error occured: {}".format(oamount))
             else:
-                return self.reply_target(target, nick, "Was unable to convert {}{} to {}."
+                return self.message(target, nick, "Was unable to convert {}{} to {}."
                                                        .format(amount, currency, ocurrency))
 
         if command == "currencyinfo" or command == "curinfo":
             if not commandtext:
-                return self.reply_notice(nick, "Usage: currencyinfo <currency>")
+                return self.notice(nick, "Usage: currencyinfo <currency>")
 
             currency = commandtext.upper()
             unabbr = self.currency_info(currency)
             if unabbr:
                 # Yes, the wikipedia url *may* be invalid, but I trust that most of these do exist.
-                return self.reply_target(target, nick, "{} information: Unabbreviated '{}', Wikipedia: {}"
+                return self.message(target, nick, "{} information: Unabbreviated '{}', Wikipedia: {}"
                                                        .format(currency, unabbr, "https://en.wikipedia.org/wiki/{}"
                                                                                  .format(unabbr.replace(" ", "_"))))
             else:
-                return self.reply_target(target, nick, "Currency '{}' does not exist or is not known."
+                return self.message(target, nick, "Currency '{}' does not exist or is not known."
                                                        .format(currency))
 
         if command in ["cf", "fc", "ck", "kc", "fk", "kf"]:  # Aliases for 'temperature'
@@ -101,11 +101,11 @@ class Conversions(moduletemplate.BotModule):
             ct = commandtext.lower().split()
 
             if not commandtext or len(ct) != 3 or ct[1] not in self.temp_list or ct[2] not in self.temp_list:
-                return self.reply_notice(nick, "Syntax: temperature <temperature> <c/f/k> <c/f/k>")
+                return self.notice(nick, "Syntax: temperature <temperature> <c/f/k> <c/f/k>")
             if not ct[0].replace(".", "").isdigit():
-                return self.reply_notice(nick, "Temperature has to be a digit")
+                return self.notice(nick, "Temperature has to be a digit")
             if ct[1] == ct[2]:
-                return self.reply_notice(nick, "You cannot convert two of the same temperatures.")
+                return self.notice(nick, "You cannot convert two of the same temperatures.")
 
             temp = float(ct[0])
             tempname = ""
@@ -144,12 +144,12 @@ class Conversions(moduletemplate.BotModule):
                 newtempname = "°F"
             else:
                 self.logger.notice("Temperature Conversion: Not found in lists: {}".format(commandtext))
-                return self.reply_notice(nick, "An error occured: Conversion type was not found.")
+                return self.notice(nick, "An error occured: Conversion type was not found.")
 
             newtemp = round(newtemp, 2)
             tempstring = ("$(bold) {} {} $(clear) is equal to $(bold) {} {}"
                           .format(temp, tempname, newtemp, newtempname))
-            return self.reply_target(target, nick, tempstring, True)
+            return self.message(target, nick, tempstring, True)
 
         if command in ["kg", "lb"]:  # Aliases for 'weight'
             commandtext = "{} {}".format(commandtext, command)
@@ -159,9 +159,9 @@ class Conversions(moduletemplate.BotModule):
             ct = commandtext.lower().split()
 
             if not commandtext or len(ct) != 2 or ct[1] not in self.weight_list:
-                return self.reply_notice(nick, "Syntax: weight <weight> <kg/lb>")
+                return self.notice(nick, "Syntax: weight <weight> <kg/lb>")
             if not ct[0].replace(".", "").isdigit():
-                return self.reply_notice(nick, "Weight has to be a digit")
+                return self.notice(nick, "Weight has to be a digit")
 
             weight = float(ct[0])
             weightname = ""
@@ -180,12 +180,12 @@ class Conversions(moduletemplate.BotModule):
                 newweightname = "lb" if int(newweight) == 1 else "lbs"
             else:
                 self.logger.notice("Weight Conversion: Not found in lists: {}".format(commandtext))
-                return self.reply_notice(nick, "An error occured: Conversion type was not found.")
+                return self.notice(nick, "An error occured: Conversion type was not found.")
 
             newweight = round(newweight, 2)
             weightstring = ("$(bold) {} {} $(clear) is equal to $(bold) {} {}"
                             .format(weight, weightname, newweight, newweightname))
-            return self.reply_target(target, nick, weightstring, True)
+            return self.message(target, nick, weightstring, True)
 
         if command in ["km", "m", "mi"]:
             commandtext = "{} {}".format(commandtext, command)
@@ -195,9 +195,9 @@ class Conversions(moduletemplate.BotModule):
             ct = commandtext.lower().split()
 
             if not commandtext or len(ct) != 2 or ct[1] not in self.distance_list:
-                return self.reply_notice(nick, "Syntax: distance <distance> <km/mi>")
+                return self.notice(nick, "Syntax: distance <distance> <km/mi>")
             if not ct[0].replace(".", "").isdigit():
-                return self.reply_notice(nick, "Distance has to be a digit")
+                return self.notice(nick, "Distance has to be a digit")
 
             dist = float(ct[0])
             distname = ""
@@ -216,12 +216,12 @@ class Conversions(moduletemplate.BotModule):
                 newdistname = "mile" if int(newdist) == 1 else "miles"
             else:
                 self.logger.notice("Distance Conversion: Not found in lists: {}".format(commandtext))
-                return self.reply_notice(nick, "An error occured: Conversion type was not found.")
+                return self.notice(nick, "An error occured: Conversion type was not found.")
 
             newdist = round(newdist, 2)
             diststring = ("$(bold) {} {} $(clear) is equal to $(bold) {} {}"
                           .format(dist, distname, newdist, newdistname))
-            return self.reply_target(target, nick, diststring, True)
+            return self.message(target, nick, diststring, True)
 
     def currency_convert(self, amount, currency, ocurrency):
         if time.time() > self.cache["convert"]["age"] + 3600 * 6:

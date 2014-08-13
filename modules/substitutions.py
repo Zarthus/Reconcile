@@ -23,10 +23,10 @@ class Substitutions(moduletemplate.BotModule):
                 sub = self.substitute(target, msg[1], msg[2])
                 if sub:
                     if sub[0] == nick:
-                        self.reply_target(target, None, "What {} meant to say: {}"
+                        self.message(target, None, "What {} meant to say: {}"
                                                         .format(nick, sub[1]))
                     else:
-                        self.reply_target(target, None, "What {} thinks {} meant to say: {}"
+                        self.message(target, None, "What {} thinks {} meant to say: {}"
                                                         .format(nick, sub[0], sub[1]))
                     return True
 

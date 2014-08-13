@@ -30,7 +30,7 @@ class XkcdHyphen(moduletemplate.BotModule):
             if ass_next:
                 assword = "ass-{}".format(word)
                 m = message.replace("-ass", "").replace(word, assword)
-                self.reply_target(target, nick, m)
+                self.message(target, nick, m)
                 self.ass_cooldown = time.time()
                 break
 
@@ -44,7 +44,7 @@ class XkcdHyphen(moduletemplate.BotModule):
         for word in message.split():
             if ass_next:
                 m = "{} ass-{}".format(ass_next, word)
-                self.reply_target(target, nick, m)
+                self.message(target, nick, m)
                 self.ass_cooldown = time.time()
                 break
 

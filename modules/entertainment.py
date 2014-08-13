@@ -24,31 +24,31 @@ class Entertainment(moduletemplate.BotModule):
     def on_command(self, target, nick, command, commandtext, mod, admin):
         if command == "coin" or command == "coinflip":
             if not self.ratelimit("coin"):  # hardcoded string because of alias.
-                return self.reply_notice(nick, "This command is rate limited, please wait before using it again.")
+                return self.notice(nick, "This command is rate limited, please wait before using it again.")
 
             coinsides = ["heads", "tails"]
-            return self.reply_target(target, nick, "The coin lands on $(bold) {} $+ $(clear) ."
+            return self.message(target, nick, "The coin lands on $(bold) {} $+ $(clear) ."
                                                    .format(random.choice(coinsides)), True)
 
         if command == "slap":
             if not self.ratelimit(command):
-                return self.reply_notice(nick, "This command is rate limited, please wait before using it again.")
+                return self.notice(nick, "This command is rate limited, please wait before using it again.")
 
             slapnick = nick if not commandtext else commandtext
             return self.slap(target, slapnick)
 
         if command == "pick" or command == "choose":
             if not commandtext or len(commandtext.split()) < 2:
-                return self.reply_notice(nick, "Usage: pick <item1> <item2> [item3 ...]")
+                return self.notice(nick, "Usage: pick <item1> <item2> [item3 ...]")
 
             if not self.ratelimit(command):
-                return self.reply_notice(nick, "This command is rate limited, please wait before using it again.")
+                return self.notice(nick, "This command is rate limited, please wait before using it again.")
 
-            return self.reply_target(target, nick, random.choice(commandtext.split()))
+            return self.message(target, nick, random.choice(commandtext.split()))
 
         if command == "hug":
             if not self.ratelimit(command):
-                return self.reply_notice(nick, "This command is rate limited, please wait before using it again.")
+                return self.notice(nick, "This command is rate limited, please wait before using it again.")
 
             return self.hug(target, "everyone" if not commandtext else commandtext)
 
@@ -64,7 +64,7 @@ class Entertainment(moduletemplate.BotModule):
             "smacks {} onto their head"
         ]
 
-        return self.reply_action(target, random.choice(slaps).format(slapnick))
+        return self.action(target, random.choice(slaps).format(slapnick))
 
     def hug(self, target, hugged):
         hugs = [
@@ -80,7 +80,7 @@ class Entertainment(moduletemplate.BotModule):
             "gives {} a virtual love hug"
         ]
 
-        return self.reply_action(target, random.choice(hugs).format(hugged))
+        return self.action(target, random.choice(hugs).format(hugged))
 
     def ratelimit(self, command):  # Limit the use of commands - false is recently used, true is can use..
         if ((command not in self.last_command) or

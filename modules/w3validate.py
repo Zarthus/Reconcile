@@ -21,8 +21,8 @@ class W3Validate(moduletemplate.BotModule):
     def on_command(self, target, nick, command, commandtext, mod, admin):
         if command == "w3validate" or command == "validate" or command == "val":
             if not commandtext:
-                return self.reply_notice(nick, "Usage: w3validate <website>")
-            self.reply_target(target, nick, self.w3_validate_url(commandtext), True)
+                return self.notice(nick, "Usage: w3validate <website>")
+            self.message(target, nick, self.w3_validate_url(commandtext), True)
         return False
 
     def w3_validate_url(self, website):

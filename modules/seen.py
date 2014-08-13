@@ -85,10 +85,10 @@ class Seen(moduletemplate.BotModule):
     def on_command(self, target, nick, command, commandtext, mod, admin):
         if command == "seen":
             if not commandtext:
-                return self.reply_notice(nick, "Usage: seen <nickname>")
+                return self.notice(nick, "Usage: seen <nickname>")
 
             if not self.validator.nickname(commandtext):
-                return self.reply_notice(nick, "Nickname is not a valid nickname for IRC.")
+                return self.notice(nick, "Nickname is not a valid nickname for IRC.")
 
             if commandtext.lower() == nick.lower():
                 responses = [
@@ -99,15 +99,15 @@ class Seen(moduletemplate.BotModule):
                     "I don't know, and I don't care."
                 ]
 
-                return self.reply_target(target, None, random.choice(responses).replace("$(nick)", nick))
+                return self.message(target, None, random.choice(responses).replace("$(nick)", nick))
 
             if not self.was_seen(commandtext):
-                return self.reply_target(target, nick, "I have not seen '{}' before.".format(commandtext))
+                return self.message(target, nick, "I have not seen '{}' before.".format(commandtext))
 
             seendata = self.get_seen(commandtext)
             if seendata:
-                return self.reply_target(target, nick, seendata)
-            return self.reply_target(target, nick, "I could not look up data for '{}'.".format(commandtext))
+                return self.message(target, nick, seendata)
+            return self.message(target, nick, "I could not look up data for '{}'.".format(commandtext))
         return False
 
     def get_userhost_from_nick(self, nick):

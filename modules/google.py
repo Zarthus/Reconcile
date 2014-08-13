@@ -24,15 +24,15 @@ class Google(moduletemplate.BotModule):
     def on_command(self, target, nick, command, commandtext, mod, admin):
         if command == "google" or command == "search":
             if not commandtext:
-                return self.reply_notice(nick, "Usage: google <search>")
+                return self.notice(nick, "Usage: google <search>")
 
-            return self.reply_target(target, nick, self.google_search(commandtext))
+            return self.message(target, nick, self.google_search(commandtext))
 
         if command == "image" or command == "gis" or command == "imagesearch":
             if not commandtext:
-                return self.reply_notice(nick, "Usage: image <search>")
+                return self.notice(nick, "Usage: image <search>")
 
-            return self.reply_target(target, nick, self.google_image_search(commandtext))
+            return self.message(target, nick, self.google_image_search(commandtext))
 
         return False
 
