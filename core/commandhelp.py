@@ -156,37 +156,35 @@ class CommandHelp:
         return ("The command '{}' originates from the module '{}', {} and requires {} to use."
                 .format(command, self.commands[command]["module"], aliasstring, privstring))
 
-    def getCommandPaste(self, command, mod, admin, markdown=True):
-        if self.commands_gist_md and markdown:
-            return self.commands_gist_md
-        elif self.commands_gist_txt and not markdown:
-            return self.commands_gist_txt
+    def getCommandPaste(self, command, mod, admin, markdown=False, force_refresh=False):
+        if not force_refresh:
+            if self.commands_gist_md and markdown:
+                return self.commands_gist_md
+            elif self.commands_gist_txt and not markdown:
+                return self.commands_gist_txt
 
         fname = "command help" + (".md" if markdown else ".txt")
 
-        modules = []
         module_cmds = {}
         for command in self.commands.items():
             module = command[1]["module"]
-            modules.append(module)
 
             if module not in module_cmds:
                 module_cmds[module] = []
 
             module_cmds[module].append(command[0])
 
-        modules = list(set(modules))
-
+        module_cmds = sorted(module_cmds.items())
         pastestr = ""
         if markdown:
-            for mod in module_cmds.items():
+            for mod in module_cmds:
                 pastestr += "**From the module `{}`:**  \n".format(mod[0])
                 for cmds in mod[1]:
                     pastestr += ("  " + self.getCommandHelpMarkdown(cmds))
                 pastestr += "\n\n"
 
         else:
-            for mod in module_cmds.items():
+            for mod in module_cmds:
                 pastestr += "From the module {}:\n".format(mod[0])
                 for cmds in mod[1]:
                     pastestr += ("  " + self.getCommandHelp(cmds) + "\n")
