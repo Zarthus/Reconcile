@@ -671,6 +671,10 @@ class IrcConnection:
             user = uinfo.split("@")[0][len(nick) + 1:]
             host = uinfo.split("@")[1]
 
+            udata = self.getUserData(nick)  # Set host / ident so no /WHO is needed.
+            if not udata:
+                self.send_who(nick)
+
         if params_list:
             params = " ".join(params_list)
             if params.startswith(":"):
