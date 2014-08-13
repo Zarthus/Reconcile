@@ -3,6 +3,8 @@ commandhelp.py
 Register and unregister commands to make CommandHelp generate a nice list of which commands are available.
 """
 
+from tools import paste
+
 
 class CommandHelp:
 
@@ -14,6 +16,9 @@ class CommandHelp:
         self.command_prefix = command_prefix
         self.commands = {}
         self.logger = logger
+
+        self.commands_gist_md = None
+        self.commands_gist_txt = None
 
     def register(self, command, params, help, priv, aliases=None, module=None):
         command = command.lower()
@@ -87,6 +92,39 @@ class CommandHelp:
         return "{}{} {}- {}{}{}".format(self.command_prefix, command, cmdparams, self.commands[command]["help"],
                                         aliasstring, privstring)
 
+    def getCommandHelpMarkdown(self, command):
+        """Return command help in markdown."""
+        command = command.lower()
+
+        if self.isAlias(command):
+            command = self.isAliasOf(command).lower()
+
+        if command not in self.commands and not self.isAlias(command):
+            return "The command `{}` is not in my help file.".format(command)
+
+        privstring = ""
+        aliasstring = ""
+        cmdparams = ""
+
+        if self.commands[command]["params"]:
+            cmdparams = self.commands[command]["params"] + " "
+
+        if self.commands[command]["priv"] == self.PRIV_MOD:
+            privstring = " - **moderator command**"
+        elif self.commands[command]["priv"] == self.PRIV_ADMIN:
+            privstring = " - **administrator command**"
+
+        if self.commands[command]["aliases"]:
+            for alias in self.commands[command]["aliases"]:
+                aliasstring += ", `{}`".format(alias)
+            aliasstring = " - aliases: {}".format(aliasstring[2:])
+
+        chelp = (self.commands[command]["help"].replace("<", "`<").replace(">", ">`")
+                                               .replace("[", "`[").replace("]", "]`"))
+
+        return "`{}{} {}` - {}{}{}  \n".format(self.command_prefix, command, cmdparams.rstrip(),
+                                               chelp, aliasstring, privstring)
+
     def getCommandInfo(self, command):
         command = command.lower()
 
@@ -117,6 +155,49 @@ class CommandHelp:
 
         return ("The command '{}' originates from the module '{}', {} and requires {} to use."
                 .format(command, self.commands[command]["module"], aliasstring, privstring))
+
+    def getCommandPaste(self, command, mod, admin, markdown=True):
+        if self.commands_gist_md and markdown:
+            return self.commands_gist_md
+        elif self.commands_gist_txt and not markdown:
+            return self.commands_gist_txt
+
+        fname = "command help" + (".md" if markdown else ".txt")
+
+        modules = []
+        module_cmds = {}
+        for command in self.commands.items():
+            module = command[1]["module"]
+            modules.append(module)
+
+            if module not in module_cmds:
+                module_cmds[module] = []
+
+            module_cmds[module].append(command[0])
+
+        modules = list(set(modules))
+
+        pastestr = ""
+        if markdown:
+            for mod in module_cmds.items():
+                pastestr += "**From the module `{}`:**  \n".format(mod[0])
+                for cmds in mod[1]:
+                    pastestr += ("  " + self.getCommandHelpMarkdown(cmds))
+                pastestr += "\n\n"
+
+        else:
+            for mod in module_cmds.items():
+                pastestr += "From the module {}:\n".format(mod[0])
+                for cmds in mod[1]:
+                    pastestr += ("  " + self.getCommandHelp(cmds) + "\n")
+                pastestr += "\n"
+
+        if markdown:
+            self.commands_gist_md = paste.Paste.gist("List of commands.", pastestr, fname, logger=self.logger)
+            return self.commands_gist_md
+        else:
+            self.commands_gist_txt = paste.Paste.gist("List of commands.", pastestr, fname, logger=self.logger)
+            return self.commands_gist_txt
 
     def isAlias(self, command):
         if command in self.commands:

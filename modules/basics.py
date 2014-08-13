@@ -19,6 +19,9 @@ class BasicCommands(moduletemplate.BotModule):
         self.register_command("commandinfo", "<command>", "Display information about <command>", self.PRIV_NONE)
         self.register_command("help", "[command]", "Display help information about [command] or list all commands",
                               self.PRIV_NONE)
+        self.register_command("gistcommands", "[text]", "Return a gist of all available commands. "
+                              "Return as .txt format with [text]",
+                              self.PRIV_NONE, ["gistcmds", "listcommands", "listcmds"])
         self.register_command("join", "<channel[,channel]>", "Join a comma separated list of channels.",
                               self.PRIV_MOD)
         self.register_command("part", "<channel[,channel]>", "Leave a comma separated list of channels.",
@@ -65,6 +68,18 @@ class BasicCommands(moduletemplate.BotModule):
                 return self.listCommands(nick, mod, admin)
 
             return self.notice(nick, self._conn.commandhelp.getCommandHelp(commandtext))
+
+        if command == "gistcommands" or command == "listcommands" or command == "gistcmds" or command == "listcmds":
+            markdown = False  # Paste as markdown or .txt
+            ct = commandtext.lower().strip()
+
+            if ct == "md" or ct == "markdown":
+                markdown = True
+            # Paste all commands (and their respective commandhelps) to gist.github.com
+            # this is useful if you want to provide a list of commands in your channels topic, etc.
+            cmdpaste = self._conn.commandhelp.getCommandPaste(nick, True, True, markdown)
+
+            return self.message(target, nick, cmdpaste)
 
         if mod:
             if command == "join":
