@@ -141,7 +141,7 @@ class Seen(moduletemplate.BotModule):
         try:
             conn = sqlite3.connect(self.db_file)
             c = conn.cursor()
-            result = c.execute("SELECT nick FROM seen WHERE nick = ?", [nickname])
+            result = c.execute("SELECT nick FROM seen WHERE lower(nick) = ?", [nickname])
 
             if result.fetchone():
                 seen = True
@@ -163,7 +163,7 @@ class Seen(moduletemplate.BotModule):
         try:
             conn = sqlite3.connect(self.db_file)
             c = conn.cursor()
-            result = c.execute("SELECT * FROM seen WHERE nick = ?", [nickname]).fetchone()
+            result = c.execute("SELECT * FROM seen WHERE lower(nick) = ?", [nickname]).fetchone()
 
             if len(result) > 4:
                 response = ("{} ({}) was last seen on {} ({} ago) {}"
@@ -181,7 +181,6 @@ class Seen(moduletemplate.BotModule):
             self.logger.notice("seen: Tried to store invalid nickname {}".format(nickname))
             return False
 
-        nickname = nickname.lower()
         host = self.get_userhost_from_nick(nickname)
         timestamp = time.strftime("%d %B, %Y - %H:%M:%S %Z")
         unix_timestamp = int(time.time())
