@@ -29,7 +29,7 @@ class LastFM(moduletemplate.BotModule):
         self.register_command("lastfmdel", "<nick>", "Deletes <nick>'s set last.fm name.", self.PRIV_MOD,
                               ["dellastfm"])
 
-        self.db_file = os.path.join(self.db_dir, "lastfm.db")
+        self.db_file = os.path.join(self.db_dir, "{}_lastfm.db".format(self.network_name))
         self.lastfm_create_db()
 
     def on_command(self, target, nick, command, commandtext, mod, admin):

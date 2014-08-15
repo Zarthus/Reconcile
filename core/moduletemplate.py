@@ -10,6 +10,7 @@ class BotModule:
         self._conn = conn
         self.logger = logger
         self.module_name = module_name
+        self.network_name = self._conn.network_name
         self.db_dir = self._conn.config.getDatabaseDir()
 
         self._registered_commands = []

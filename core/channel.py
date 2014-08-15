@@ -4,6 +4,7 @@ Manage which channels to join for each network.
 """
 
 import sqlite3
+import os
 
 
 class ChannelManager:
@@ -102,4 +103,4 @@ class ChannelManager:
             self.logger.error("Failed to create channel database {}.db: {}".format(self.network_name, str(e)))
 
     def formatDBFileName(self, db_name):
-        return self.db_dir + "network_" + db_name + ".db"
+        return os.path.join(self.db_dir, "{}_{}.db".format(db_name, db_name))

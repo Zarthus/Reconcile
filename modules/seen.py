@@ -22,7 +22,7 @@ class Seen(moduletemplate.BotModule):
                               ("Return when (or if) <nickname> was seen by the bot. This data may not be fully "
                                "accurate because not everyone joins the channels the bot is in."), self.PRIV_NONE)
 
-        self.db_file = os.path.join(self.db_dir, "seen.db")
+        self.db_file = os.path.join(self.db_dir, "{}_seen.db".format(self.network_name))
         self.validator = validator.Validator()
 
         self.make_seen_db()

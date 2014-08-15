@@ -19,7 +19,7 @@ class Dictionary(moduletemplate.BotModule):
         except Exception:
             # Generate our own API Key.
             import hashlib
-            uniquestr = bytes(self._conn.network_name + self._conn.mnick + self._conn.altnick, "UTF-8")
+            uniquestr = bytes(self.network_name + self._conn.mnick + self._conn.altnick, "UTF-8")
             self.api_key["atd_spellcheck"] = hashlib.md5(uniquestr).hexdigest()
 
         self.register_command("spellcheck", "<word/sentence>",

@@ -20,7 +20,7 @@ class Factoids(moduletemplate.BotModule):
         self.colformat = formatter.IrcFormatter()
         self.validator = validator.Validator()
 
-        self.db_file = os.path.join(self.db_dir, "factoids.db")
+        self.db_file = os.path.join(self.db_dir, "{}_factoids.db".format(self.network_name))
         self.factoid_make_db()
 
         self.register_command("isfactoid", "<factoid>", "Check if <factoid> exists and return information if it does.",
