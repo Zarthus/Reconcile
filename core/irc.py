@@ -42,7 +42,7 @@ class IrcConnection:
     def tick(self):
         try:
             self.readBuffer()
-        except Exception:
+        except Exception as e:
             traceback.print_exc()
             tb = traceback.format_exc()
 
@@ -50,7 +50,7 @@ class IrcConnection:
                 gist = paste.Paste.gist("Traceback for {} on {} at {}".format(self.currentnick, self.network_name,
                                         time.strftime(self.config.getMetadata("timestamp"))),
                                         tb, "traceback.py", False, self.logger)
-                self.say(self.debug_chan, "An exception has occured and has been logged: {}".format(gist))
+                self.say(self.debug_chan, "An exception has occured and has been logged: {} | {}".format(gist, str(e)))
 
         except KeyboardInterrupt:
             self.force_quit = True
