@@ -89,7 +89,7 @@ def check_module(module_name):
                 if word.startswith("self.module_data["):
                     funcname = word.split("\"")[1]
                     confblock_func.append(funcname)
-    
+
     confblock_func = list(set(confblock_func))
 
     for requirement in requirements.items():
