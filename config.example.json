@@ -32,6 +32,7 @@
   },
 
   "api_keys": {
+    "atd_spellcheck": "",
     "googl": "",
     "lastfm": "",
     "open_exchange_rates": "",
