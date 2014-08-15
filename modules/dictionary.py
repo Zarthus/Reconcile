@@ -80,5 +80,4 @@ class Dictionary(moduletemplate.BotModule):
                 if subchild.tag == "suggestions" and curstr:
                     for option in subchild:
                         retlist[curstr].append(option.text)
-        print(str(retlist))
         return retlist
