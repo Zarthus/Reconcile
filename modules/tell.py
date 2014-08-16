@@ -168,25 +168,26 @@ class Tell(moduletemplate.BotModule):
         return True
 
     def has_tells(self, to):
-        if to.lower() in self.hastells:
-            return self.hastells[to.lower()]
+        to = to.lower()
+        if to in self.hastells:
+            return self.hastells[to]
 
         try:
             conn = sqlite3.connect(self.db_file)
             c = conn.cursor()
             result = c.execute("SELECT timestamp FROM tell WHERE lower(recipient) = ?",
-                               [to.lower()]).fetchone()
+                               [to]).fetchone()
             if result and len(result) >= 1:
-                self.hastells[to.lower()] = True
+                self.hastells[to] = True
             else:
-                self.hastells[to.lower()] = False
+                self.hastells[to] = False
             conn.close()
         except sqlite3.Error as e:
             self.logger.error("has_tells({}) error: {}".format(to, str(e)))
             return False
 
-        if to.lower() in self.hastells:  # This should always be set, but the extra security if doesn't hurt.
-            return self.hastells[to.lower()]
+        if to in self.hastells:  # This should always be set, but the extra security if doesn't hurt.
+            return self.hastells[to]
         return False
 
     def tell_exists(self, sender, to):
