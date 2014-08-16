@@ -178,9 +178,18 @@ class Config:
             if "channels" not in self.networks[network_name]:
                 # Query the database to find out which channels to join.
                 self.networks[network_name]["channels"] = cm.getListFromNetwork(network_name)
-                self.logger.log_verbose("Will join {} channels on {}: {}"
-                                        .format(len(self.networks[network_name]["channels"]),
-                                                network_name, self.networks[network_name]["channels"]))
+
+                chanlen = len(self.networks[network_name]["channels"])
+                nicelist = None
+                for chan in self.networks[network_name]["channels"]:
+                    if nicelist:
+                        nicelist = ", {}".format(chan)
+                    else:
+                        nicelist = ": {}".format(chan)
+
+                self.logger.log_verbose("Will join {} channel{} on {}{}"
+                                        .format(chanlen, "s" if chanlen != 1 else "",
+                                                network_name, nicelist))
 
             if "debug_chan" not in self.networks[network_name]:
                 # Debug chan may be nothing at all, but we should still fill it in.
@@ -195,6 +204,7 @@ class Config:
                     self.networks[network_name]["channels"].append(dbgchan)
                     self.logger.log_verbose("'debug_chan' ({}) was not in the channels to join list - added, in {}."
                                             .format(dbgchan, network_name))
+                    cm.addForNetwork(network_name, dbgchan)
 
             if "account" not in self.networks[network_name]:
                 self.networks[network_name]["account"] = self.networks[network_name]["nick"]
