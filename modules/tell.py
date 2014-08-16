@@ -131,9 +131,8 @@ class Tell(moduletemplate.BotModule):
             conn = sqlite3.connect(self.db_file)
             c = conn.cursor()
             result = c.execute("SELECT sender, message, timestamp, unix_timestamp FROM tell WHERE "
-                               "lower(recipient) = ?", [nick.lower()]).fetchmany()
+                               "lower(recipient) = ?", [nick.lower()]).fetchall()
 
-            print(result)
             for msg in result:
                 self.message(nick, None, "$(bold) {} $(clear) left you a message: {} - Sent on {} ({} ago)"
                                          .format(msg[0], msg[1], msg[2],
