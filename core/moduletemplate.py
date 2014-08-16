@@ -211,4 +211,4 @@ class BotModule:
         if mdata:
             return mdata
         else:
-            return []
+            return {}
