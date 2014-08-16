@@ -231,12 +231,18 @@ class IrcConnection:
         format: 000 user host nick status account realname
         This should be used to identify a single (or array of) users.
         """
+
+        if self.last_uwho and nick == self.last_uwho:
+            self.logger.log_verbose("send_who() WHO {} prevented, recently WHO'd nick.".format(nick))
+            return False
+
         if nick.startswith("#"):
-            self.logger.error("send_who({}) expects a nick, not a channel.".format(nick))
+            self.logger.error("send_who({}): expects a nick, not a channel.".format(nick))
             return False
 
         self.logger.log_verbose("send_who(): WHO {}".format(nick))
         self.send_raw("WHO {} %tuhnfar,000".format(nick))
+        self.last_uwho = nick
 
     def send_chanwho(self, channel):
         """
@@ -251,7 +257,7 @@ class IrcConnection:
         if self.last_chanwho:
             if self.last_chanwho[0] == channel and int(time.time()) < self.last_chanwho[1] + 5:
                 # Let's not flood the server too much, one chanwho per channel per 5 seconds
-                self.logger.log_verbose("send_chanwho(): WHO {}: Blocked by rate-limitation.".format(channel))
+                self.logger.log_verbose("send_chanwho(): WHO {} prevented, recently WHO'd channel.".format(channel))
                 return False
 
         if channel.lower() in self.channel_data:
@@ -598,6 +604,7 @@ class IrcConnection:
         self.queue_notice = queue.Queue()
 
         self.user_data = {}  # Data gathered by /WHO
+        self.last_uwho = None
         self.channel_data = {}
         self.last_chanwho = None  # Last channel who (self.send_chanwho())
 
