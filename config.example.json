@@ -50,6 +50,10 @@
       "store_message": false
     },
 
+    "Tell": {
+      "max_tells": 5
+    },
+    
     "Weather": {
       "use_imperial": false,
       "forecasts_max": 1,
