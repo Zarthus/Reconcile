@@ -174,6 +174,7 @@ class IrcConnection:
         self.currentnick = None
         self.connected = False
         self.server_name = None
+        self.socket.close()
 
     def nick(self, newnick):
         if not self.validator.nickname(newnick):
