@@ -10,7 +10,7 @@ from core import moduletemplate
 import re
 
 
-class Substitutions(moduletemplate.BotModule):
+class Substitution(moduletemplate.BotModule):
 
     def on_module_load(self):
         self.issubpattern = re.compile(r"[sS]/[^/]{1,64}/[^/]{1,64}[^ ]")

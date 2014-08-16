@@ -1,5 +1,5 @@
 """
-currency.py by Zarthus
+conversion.py by Zarthus
 Licensed under MIT
 
 This is a module that introduces commands to convert currencies.
@@ -11,7 +11,7 @@ import requests
 import time
 
 
-class Conversions(moduletemplate.BotModule):
+class Conversion(moduletemplate.BotModule):
 
     def on_module_load(self):
         self.requireApiKey("open_exchange_rates")

@@ -1,5 +1,5 @@
 """
-factoids.py by Zarthus
+factoid.py by Zarthus
 Licensed under MIT
 
 Factoids: brief answers to frequently asked questions and other responses.
@@ -14,7 +14,7 @@ import sqlite3
 import time
 
 
-class Factoids(moduletemplate.BotModule):
+class Factoid(moduletemplate.BotModule):
 
     def on_module_load(self):
         self.colformat = formatter.IrcFormatter()
