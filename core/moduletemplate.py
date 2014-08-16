@@ -124,9 +124,12 @@ class BotModule:
 
         return True
 
+    def debug(self, message, format=False):
+        self._conn.debug(message, format)
+
     def mode(self, target, modes):
         self._conn.mode(target, modes)
-        
+
     def send_raw(self, raw_message):
         """
         Send a raw message to the network.

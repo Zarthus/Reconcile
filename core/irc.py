@@ -50,7 +50,7 @@ class IrcConnection:
                 gist = paste.Paste.gist("Traceback for {} on {} at {}".format(self.currentnick, self.network_name,
                                         time.strftime(self.config.getMetadata("timestamp"))),
                                         tb, "traceback.py", False, self.logger)
-                self.say(self.debug_chan, "An exception has occured and has been logged: {} | {}".format(gist, str(e)))
+                self.debug("An exception has occured and has been logged: {} | {}".format(gist, str(e)))
 
         except KeyboardInterrupt:
             self.force_quit = True
@@ -115,6 +115,12 @@ class IrcConnection:
 
     def send_raw(self, data):
         self.socket.send(bytes(data + "\r\n", "utf-8"))
+
+    def debug(self, message, format=False):
+        self.logger.debug(message)
+
+        if self.debug_chan:
+            self.say(self.debug_chan, message, format)
 
     def say(self, target, message, format=False):
         """Queue a PRIVMG to the ratelimiter."""

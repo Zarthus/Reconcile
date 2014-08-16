@@ -27,6 +27,17 @@ class Logger:
     def event(self, event, text):
         print("{} {} | {} - {}".format(self.getTimestamp(), self.network_name, event, text))
 
+    def debug(self, text):
+        """
+        debug() should be used with care, if you need to log something, use log_verbose, if something went wrong
+        that normally shouldn't, use debug()
+        
+        in short, if the user should see the message, use debug(), if it's rather irrelevant, use log_verbose
+        """
+
+        print("{}{} {} | Debug: {}{}".format(self.col_debug_prefix, self.getTimestamp(), self.network_name, text,
+                                             self.col_debug_suffix))
+
     def log_verbose(self, text):
         if self.verbose:
             print("{} {} | {}".format(self.getTimestamp(), self.network_name, text))
@@ -52,6 +63,9 @@ class Logger:
 
                 self.col_error_prefix = "\033[31m"
                 self.col_error_suffix = "\033[0m"
+
+                self.col_debug_prefix = "\033[94m"
+                self.col_debug_suffix = "\033[0m"
             else:
                 self.setColoursNone()
         else:
@@ -63,3 +77,6 @@ class Logger:
 
         self.col_error_prefix = ""
         self.col_error_suffix = ""
+
+        self.col_debug_prefix = ""
+        self.col_debug_suffix = ""
