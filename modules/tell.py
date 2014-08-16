@@ -85,8 +85,8 @@ class Tell(moduletemplate.BotModule):
             if self.tell_passes_limit(nick):
                 return self.notice(nick, "You cannot set anymore tells. "
                                          "Use deltell <nickname | *> to delete existing tells")
-            if self.tell_passes_limit(to):
-                return self.notice(nick, "{} cannot receive anymore tells.".format(nick))
+            if self.tell_passes_limit(to, False):
+                return self.notice(nick, "{} cannot receive anymore tells.".format(to))
 
             if self.tell_exists(nick, to):
                 return self.notice(nick, "You are already sending a message to {}. "
@@ -133,6 +133,7 @@ class Tell(moduletemplate.BotModule):
             result = c.execute("SELECT sender, message, timestamp, unix_timestamp FROM tell WHERE "
                                "lower(recipient) = ?", [nick.lower()]).fetchmany()
 
+            print(result)
             for msg in result:
                 self.message(nick, None, "$(bold) {} $(clear) left you a message: {} - Sent on {} ({} ago)"
                                          .format(msg[0], msg[1], msg[2],
@@ -205,18 +206,34 @@ class Tell(moduletemplate.BotModule):
 
         return exists
 
-    def tell_passes_limit(self, sender):
+    def tell_passes_limit(self, sender, send=True):
+        """
+        Check if somebody is sending too many tells.
+        Sender: string, sender or receiver nick.
+        Send: Is it a sender, or a receiver.
+
+        Send should be set to false if you want to check if they have too many pending messages,
+        otherwise if they are sending too many.
+        """
+
         passedlimit = False
         try:
             conn = sqlite3.connect(self.db_file)
             c = conn.cursor()
-            result = c.execute("SELECT count(timestamp) FROM tell WHERE lower(sender) = ?",
-                               [sender.lower()]).fetchone()
+
+            result = None
+            if send:
+                result = c.execute("SELECT count(timestamp) FROM tell WHERE lower(sender) = ?",
+                                   [sender.lower()]).fetchone()
+            else:
+                result = c.execute("SELECT count(timestamp) FROM tell WHERE lower(recipient) = ?",
+                                   [sender.lower()]).fetchone()
+
             if result[0] >= self.module_data["max_tells"]:
                 passedlimit = True
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("tell_passes_limit({}) error: {}".format(sender, str(e)))
+            self.logger.error("tell_passes_limit({}, {}) error: {}".format(sender, str(send), str(e)))
             return False
 
         return passedlimit
