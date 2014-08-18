@@ -22,7 +22,7 @@ class Substitution(moduletemplate.BotModule):
             if len(msg) > 2 and len(msg) < 5:
                 sub = self.substitute(target, msg[1], msg[2])
                 if sub:
-                    if sub[0] == nick:
+                    if not sub[0] or sub[0] == nick:
                         self.message(target, None, "What {} meant to say: {}"
                                                    .format(nick, sub[1]))
                     else:
@@ -45,23 +45,35 @@ class Substitution(moduletemplate.BotModule):
         if target not in self.previous_messages:
             return False
 
-        pattern = re.compile(search)
-
         msglist = self.previous_messages[target]
         msglist.reverse()
+        invalid_regex = False
+        errdata = None
+
+        try:
+            pattern = re.compile(search)
+        except Exception as e:
+            # More over to trying to just replace() it.
+            invalid_regex = True
+            self.logger.log_verbose("Substitute: Erroneous Regular Expression handled: {}".format(str(e)))
+
         for msg in msglist:
-            if pattern.search(msg):
+            if invalid_regex and search in msg or not invalid_regex and pattern.search(msg):
                 msg = msg.split(" ")
                 nick = msg[0]
                 msg = " ".join(msg[1:])
                 sub = ""
 
-                try:
-                    sub = re.sub(search, replacement, msg)
-                except Exception:
-                    pass
+                if invalid_regex:
+                    if msg.replace(search, replacement) != msg:
+                        return [nick, msg.replace(search, replacement)]
+                else:
+                    try:
+                        sub = re.sub(search, replacement, msg)
+                    except Exception:
+                        pass
 
-                if sub:
-                    return [nick, sub]
+                    if sub:
+                        return [nick, sub]
                 break
         return False
