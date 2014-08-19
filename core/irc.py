@@ -670,7 +670,7 @@ class IrcConnection:
                 for perform in self.perform:
                     self.send_raw(perform)
 
-            self.logger.log("A connection has been established with: {}".format(self.server_name))
+            self.logger.log("A connection has been established with {}.".format(self.server_name))
 
         self.ModuleHandler.sendNumeric(numeric, data)
         return False

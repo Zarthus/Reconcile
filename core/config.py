@@ -180,16 +180,19 @@ class Config:
                 self.networks[network_name]["channels"] = cm.getListFromNetwork(network_name)
 
                 chanlen = len(self.networks[network_name]["channels"])
-                nicelist = None
-                for chan in self.networks[network_name]["channels"]:
-                    if nicelist:
-                        nicelist = ", {}".format(chan)
-                    else:
-                        nicelist = ": {}".format(chan)
+                if chanlen == 0:
+                    self.logger.log_verbose("Will not join any channels on {}.".format(network_name))
+                else:
+                    nicelist = None
+                    for chan in self.networks[network_name]["channels"]:
+                        if nicelist:
+                            nicelist = ", {}".format(chan)
+                        else:
+                            nicelist = ": {}".format(chan)
 
-                self.logger.log_verbose("Will join {} channel{} on {}{}"
-                                        .format(chanlen, "s" if chanlen != 1 else "",
-                                                network_name, nicelist))
+                    self.logger.log_verbose("Will join {} channel{} on {}{}"
+                                            .format(chanlen, "s" if chanlen != 1 else "",
+                                                    network_name, nicelist))
 
             if "debug_chan" not in self.networks[network_name]:
                 # Debug chan may be nothing at all, but we should still fill it in.
