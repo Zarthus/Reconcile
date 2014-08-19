@@ -239,7 +239,7 @@ class IrcConnection:
         """
 
         if self.last_uwho and nick == self.last_uwho:
-            self.logger.log_verbose("send_who() WHO {} prevented, recently WHO'd nick.".format(nick))
+            self.logger.log_verbose("send_who(): WHO {} prevented, recently WHO'd nick.".format(nick))
             return False
 
         if nick.startswith("#"):
