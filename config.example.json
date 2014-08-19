@@ -1,6 +1,6 @@
 {
   "irc": {
-    "espernet": {
+    "EsperNet": {
       "server": "irc.esper.net",
       "port": 6667,
       "ssl": false,
@@ -46,6 +46,11 @@
       "rate_limit_delay": 10
     },
 
+    "Quote": {
+        "quote_ratelimit": 15,
+        "quote_ratelimit_individual": true
+    },
+
     "Seen": {
       "store_message": false
     },
@@ -53,7 +58,7 @@
     "Tell": {
       "max_tells": 5
     },
-    
+
     "Weather": {
       "use_imperial": false,
       "forecasts_max": 1,
