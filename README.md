@@ -5,10 +5,6 @@ A Python Utility bot for python3 and above.
 Compatible with RFC1459 networks such as networks that run charybdis, ircd-seven or ircd-ratbox.  
 This bot was designed with Atheme services in mind, and may not work optimally on networks that run different services.
 
-### In development
-
-As of right now, Reconcile is under development and not yet ready for actual use.
-
 ## Installation
 
 To make use of Reconcile, ensure the following requirements are met:  
