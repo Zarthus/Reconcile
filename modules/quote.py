@@ -36,7 +36,7 @@ class Quote(moduletemplate.BotModule):
         if "quote_ratelimit_individual" not in self.module_data:
             self.module_data["quote_ratelimit_individual"] = True
 
-        self.quote_data = {"last_quote": 0}
+        self.quote_data = {}
 
         self.quote_make_db()
 
