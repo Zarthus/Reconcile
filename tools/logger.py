@@ -31,7 +31,7 @@ class Logger:
         """
         debug() should be used with care, if you need to log something, use log_verbose, if something went wrong
         that normally shouldn't, use debug()
-        
+
         in short, if the user should see the message, use debug(), if it's rather irrelevant, use log_verbose
         """
 

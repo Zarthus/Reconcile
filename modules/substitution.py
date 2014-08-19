@@ -48,7 +48,6 @@ class Substitution(moduletemplate.BotModule):
         msglist = self.previous_messages[target]
         msglist.reverse()
         invalid_regex = False
-        errdata = None
 
         try:
             pattern = re.compile(search)
