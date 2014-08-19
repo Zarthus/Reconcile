@@ -73,7 +73,6 @@ class Quote(moduletemplate.BotModule):
                 return self.notice(nick, "Quote with ID {} does not exist.".format(id))
 
             author = self.quote_author(id)
-            print(author, self.get_author(nick))
             if author != self.get_author(nick) and not mod:
                 return self.notice(nick, "Quote with ID {} was added by {}, you do not have permission to edit it."
                                          .format(id, author))
