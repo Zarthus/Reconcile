@@ -146,7 +146,7 @@ class Title(moduletemplate.BotModule):
         if "year" in json and "month" in json and "day" in json and "num" in json and "safe_title" in json:
             explainurl = "http://www.explainxkcd.com/{}".format(json["num"])
 
-            return ("xkcd $(bold) {} $+ $(bold) : $(bold) {} $(bold) ({} {} {}) - Explained: {}"
+            return ("xkcd $(bold){}$(bold):$(bold) {}$(bold) ({} {} {}) - Explained: {}"
                     .format(json["num"], json["safe_title"], json["day"], months[int(json["month"])], json["year"],
                             explainurl))
         return False if ret_boolean else "Failed to get xkcd '{}'.".format(url)
@@ -186,7 +186,6 @@ class Title(moduletemplate.BotModule):
                 if extract.endswith("may refer to:"):  # will not work if we're not looking from en.wikipedia.org
                     return False if ret_boolean else "Information returned was not informative."
 
-                return "Wikipedia article for $(bold) {} $+ $(bold) : {}".format(data[pageid]["title"],
-                                                                                 extract)
+                return "Wikipedia article for $(bold){}$(bold): {}".format(data[pageid]["title"], extract)
             return False if ret_boolean else "Wikipedia returned no information."
         return False if ret_boolean else "Failed to retrieve wikipedia article '{}'.".format(article)

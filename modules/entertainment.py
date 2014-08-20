@@ -27,7 +27,7 @@ class Entertainment(moduletemplate.BotModule):
                 return self.notice(nick, "This command is rate limited, please wait before using it again.")
 
             coinsides = ["heads", "tails"]
-            return self.message(target, nick, "The coin lands on $(bold) {} $+ $(clear) ."
+            return self.message(target, nick, "The coin lands on $(bold){}$(clear)."
                                               .format(random.choice(coinsides)), True)
 
         if command == "slap":

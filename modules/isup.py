@@ -34,12 +34,12 @@ class Isup(moduletemplate.BotModule):
         isup = ""
 
         if "It's just you. " in r.text:
-            isup = "$(green) up $+ $(clear)"
+            isup = "$(green)up$(clear)"
         elif "It's not just you! " in r.text:
-            isup = "$(red) down $+ $(clear)"
+            isup = "$(red)down$(clear)"
         elif "doesn't look like a site on the interwho" in r.text:
-            isup = "$(dgrey) an invalid website $+ $(clear)"
+            isup = "$(dgrey)an invalid website$(clear)"
         else:
-            isup = "$(dgrey) unknown $+ $(clear)"
+            isup = "$(dgrey)unknown$(clear)"
 
         self.message(target, nick, "{} appears to be {}.".format(url, isup), True)

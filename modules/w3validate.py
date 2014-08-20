@@ -39,10 +39,10 @@ class W3Validate(moduletemplate.BotModule):
         valid = r.headers["x-w3c-validator-status"].lower()
 
         if valid == "valid":
-            return "The website {} is $(green) {} $+ $(clear) . ({})".format(website, valid, val_link)
+            return "The website {} is $(green){}$(clear). ({})".format(website, valid, val_link)
         if valid == "abort":
             # Possibility that the URL is invalid
-            return ("The validation for '{}' $(grey) aborted $(clear) unexpectedly. Is this a valid URL?"
+            return ("The validation for '{}' $(grey)aborted$(clear) unexpectedly. Is this a valid URL?"
                     .format(website))
 
         errors = r.headers["x-w3c-validator-errors"]
@@ -51,14 +51,14 @@ class W3Validate(moduletemplate.BotModule):
 
         errstring = ""
         if errors:
-            errstring += "Errors: $(red,bold) {} $+ $(clear) , ".format(errors)
+            errstring += "Errors: $(red, bold){}$(clear), ".format(errors)
         if warnings:
-            errstring += "Warnings: $(orange,bold) {} $+ $(clear) , ".format(warnings)
+            errstring += "Warnings: $(orange, bold){}$(clear), ".format(warnings)
         if recursion:
-            errstring += "Recursion: $(grey,bold) {} $+ $(clear) , ".format(recursion)
+            errstring += "Recursion: $(grey, bold){}$(clear), ".format(recursion)
         if errstring:
             # Remove the ", " from the string.
             errstring = errstring[:-2]
-            return "The website {} is $(red) {} $+ $(clear) . {} ({})".format(website, valid, errstring, val_link)
+            return "The website {} is $(red){}$(clear). {} ({})".format(website, valid, errstring, val_link)
 
-        return "The website {} is $(red) {} $+ $(clear) . ({})".format(website, valid, val_link)
+        return "The website {} is $(red){}$(clear). ({})".format(website, valid, val_link)

@@ -202,7 +202,7 @@ class Weather(moduletemplate.BotModule):
                 if len(message) > 50:
                     message = message[:50] + ".."
 
-                retlist.append("$(red) {} Type Alert! $(clear) - {} ({}, significance: {}): {}"
+                retlist.append("$(red){} Type Alert!$(clear) - {} ({}, significance: {}): {}"
                                .format(type, desc, timedata, signif, message))
 
             else:

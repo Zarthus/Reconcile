@@ -41,7 +41,7 @@ class Dictionary(moduletemplate.BotModule):
                         for listitem in item[1]:
                             itemstr = "{}, {}".format(itemstr, listitem)
                         itemstr = itemstr.lstrip(", ")
-                        spstr = "{} | Suggestions for $(bold) {} $+ $(bold) : {}".format(spstr, item[0], itemstr)
+                        spstr = "{} | Suggestions for $(bold){}$(bold) : {}".format(spstr, item[0], itemstr)
                     spstr = spstr.lstrip(" | ")
 
                     return self.message(target, nick, spstr, True)

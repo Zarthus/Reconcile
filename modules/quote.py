@@ -105,11 +105,11 @@ class Quote(moduletemplate.BotModule):
             if commandtext:
                 if commandtext.isalpha() or "@" in commandtext:
                     count = self.quote_count(commandtext)
-                    return self.message(target, nick, "There are $(bold) {} $(bold) quote{} in my database for "
-                                                      "$(bold) {} $+ $(bold) ."
+                    return self.message(target, nick, "There are $(bold){}$(bold) quote{} in my database for "
+                                                      "$(bold){}$(bold)."
                                                       .format(count, "s" if count != 1 else "", commandtext), True)
             count = self.quote_count("*")
-            return self.message(target, nick, "There are $(bold) {} $(bold) quote{} in my database."
+            return self.message(target, nick, "There are $(bold){}$(bold) quote{} in my database."
                                               .format(count, "s" if count != 1 else ""), True)
         return False
 

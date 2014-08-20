@@ -48,7 +48,7 @@ class Xkcd(moduletemplate.BotModule):
         if "year" in json and "month" in json and "day" in json and "num" in json and "safe_title" in json:
             explainurl = "http://www.explainxkcd.com/{}".format(json["num"])
 
-            return ("xkcd $(bold) {} $+ $(bold) : $(bold) {} $(bold) ({} {} {}) - Explained: {}"
+            return ("xkcd $(bold){}$(bold): $(bold){}$(bold) ({} {} {}) - Explained: {}"
                     .format(json["num"], json["safe_title"], json["day"], months[int(json["month"])], json["year"],
                             explainurl))
         return False if ret_boolean else "Failed to get xkcd '{}'.".format(url)

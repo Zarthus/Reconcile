@@ -48,7 +48,7 @@ class Tell(moduletemplate.BotModule):
         if nick.lower() not in self.hastells:
             if self.has_tells(nick):
                 count = self.tell_count(nick)
-                self.message(nick, None, "Hello {}! You seem to have $(bold) {} $(bold) pending message{}. "
+                self.message(nick, None, "Hello {}! You seem to have $(bold){}$(bold) pending message{}. "
                                          "To view these messages, reply to my query with 'listtells' or speak in a "
                                          "channel we share.".format(nick, count, "s" if count != 1 else ""), True)
 
@@ -134,11 +134,11 @@ class Tell(moduletemplate.BotModule):
                                "lower(recipient) = ?", [nick.lower()]).fetchall()
 
             for msg in result:
-                self.message(nick, None, "$(bold) {} $(clear) left you a message: {} - Sent on {} ({} ago)"
+                self.message(nick, None, "$(bold){}$(clear) left you a message: {} - Sent on {} ({} ago)"
                                          .format(msg[0], msg[1], msg[2],
                                                  duration.timesincetimestamp(int(msg[3]))), True)
 
-                if msg[0] == "$(lime) TellModule":  # We don't want this kind of recursion.
+                if msg[0] == "$(lime)TellModule":  # We don't want this kind of recursion.
                     continue
 
                 if nick.lower() != msg[0].lower():
@@ -148,7 +148,7 @@ class Tell(moduletemplate.BotModule):
                                                    .format(msg[1], nick, msg[2]))
                     else:
                         # Manually add a new entry to the database to let the user know their message was delivered.
-                        sender = "$(lime) TellModule"
+                        sender = "$(lime)TellModule"
                         rcvmsg = ("Your message '{}' to {} has been delivered (Sent by you on: {})."
                                   .format(msg[1], nick, msg[2]))
                         timestamp = time.strftime("%Y-%m-%d %H:%M:%S %Z")

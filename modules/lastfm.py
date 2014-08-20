@@ -168,14 +168,14 @@ class LastFM(moduletemplate.BotModule):
 
                 album = json["album"]["#text"]
                 if album != song and album != artist:
-                    album = "from the album ' $+ $(bold) {} $+ $(bold) '".format(album)
+                    album = "from the album '$(bold){}$(bold)'".format(album)
                 else:
                     album = ""
 
                 timeago = duration.timesincetimestamp(int(json["date"]["uts"]))
 
-                lfmstr = ("$(bold) {} $(bold) last listened to ' $+ $(bold) {} $+ $(bold) ' by "
-                          "' $+ $(bold) {} $+ $(bold) ' {} ({} ago)"
+                lfmstr = ("$(bold){}$(bold) last listened to '$(bold){}$(bold)' by "
+                          "'$(bold){}$(bold)' {} ({} ago)"
                           .format(acct, song, artist, album, timeago)).rstrip() + "."
             elif type(json) == list:  # Currently playing
                 json = json[0]
@@ -185,12 +185,12 @@ class LastFM(moduletemplate.BotModule):
 
                 album = json["album"]["#text"]
                 if album and album != song and album != artist:
-                    album = "from the album ' $+ $(bold) {} $+ $(bold) '".format(album)
+                    album = "from the album '$(bold){}$(bold)'".format(album)
                 else:
                     album = ""
 
-                lfmstr = ("$(bold) {} $(bold) is listening to ' $+ $(bold) {} $+ $(bold) ' by "
-                          "' $+ $(bold) {} $+ $(bold) ' {}"
+                lfmstr = ("$(bold){}$(bold) is listening to '$(bold) {}$(bold)' by "
+                          "'$(bold){}$(bold)' {}"
                           .format(acct, song, artist, album)).rstrip() + "."
             else:
                 lfmstr = "Could not determine {}'s last played song.".format(acct)

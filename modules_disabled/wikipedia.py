@@ -70,7 +70,6 @@ class Wikipedia(moduletemplate.BotModule):
                 extract = data[pageid]["extract"]
                 if len(extract) > 253:
                     extract = extract[:253] + "..."
-                return "Wikipedia article for $(bold) {} $+ $(bold) : {}..".format(data[pageid]["title"],
-                                                                                   extract)
+                return "Wikipedia article for $(bold){}$(bold): {}..".format(data[pageid]["title"], extract)
             return False if ret_boolean else "Wikipedia returned no information."
         return False if ret_boolean else "Failed to retrieve wikipedia article '{}'.".format(article)

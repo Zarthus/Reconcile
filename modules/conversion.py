@@ -70,7 +70,7 @@ class Conversion(moduletemplate.BotModule):
 
             oamount = self.currency_convert(int(amount), currency, ocurrency)
             if oamount and type(oamount) == float or type(oamount) == int:
-                return self.message(target, nick, "$(bold) {} {} $(clear) is equal to $(bold) {} {} $+ $(clear) ."
+                return self.message(target, nick, "$(bold){} {}$(clear) is equal to $(bold){} {}$(clear)."
                                                   .format(amount, currency, round(oamount, 3), ocurrency), True)
             elif oamount:
                 return self.message(target, nick, "An error occured: {}".format(oamount))
@@ -146,7 +146,7 @@ class Conversion(moduletemplate.BotModule):
                 return self.notice(nick, "An error occured: Conversion type was not found.")
 
             newtemp = round(newtemp, 2)
-            tempstring = ("$(bold) {} {} $(clear) is equal to $(bold) {} {}"
+            tempstring = ("$(bold){} {}$(clear) is equal to $(bold){} {}"
                           .format(temp, tempname, newtemp, newtempname))
             return self.message(target, nick, tempstring, True)
 
@@ -182,7 +182,7 @@ class Conversion(moduletemplate.BotModule):
                 return self.notice(nick, "An error occured: Conversion type was not found.")
 
             newweight = round(newweight, 2)
-            weightstring = ("$(bold) {} {} $(clear) is equal to $(bold) {} {}"
+            weightstring = ("$(bold){} {}$(clear) is equal to $(bold){} {}"
                             .format(weight, weightname, newweight, newweightname))
             return self.message(target, nick, weightstring, True)
 
@@ -218,7 +218,7 @@ class Conversion(moduletemplate.BotModule):
                 return self.notice(nick, "An error occured: Conversion type was not found.")
 
             newdist = round(newdist, 2)
-            diststring = ("$(bold) {} {} $(clear) is equal to $(bold) {} {}"
+            diststring = ("$(bold){} {}$(clear) is equal to $(bold){} {}"
                           .format(dist, distname, newdist, newdistname))
             return self.message(target, nick, diststring, True)
 
