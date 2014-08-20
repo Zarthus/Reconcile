@@ -2,9 +2,9 @@
 <html>
 
   <head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Reconcile : Reconcile is a Python Utility IRC bot for python3 and higher." />
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Reconcile : Reconcile is a Python Utility IRC bot for python3 and higher.">
 
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
@@ -32,14 +32,12 @@
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
         <h1>
-<a name="reconcile-" class="anchor" href="#reconcile-"><span class="octicon octicon-link"></span></a>Reconcile </h1>
+<a name="reconcile-" class="anchor" href="#reconcile-"><span class="octicon octicon-link"></span></a>Reconcile <a href="https://travis-ci.org/Zarthus/Reconcile"><img src="https://travis-ci.org/Zarthus/Reconcile.svg" alt="Build Status"></a>
+</h1>
 
-<p>A Python Utility bot for python3 and above.</p>
-
-<h3>
-<a name="in-development" class="anchor" href="#in-development"><span class="octicon octicon-link"></span></a>In development</h3>
-
-<p>As of right now, Reconcile is under development and not yet ready for actual use.</p>
+<p>A Python Utility bot for python3 and above.<br>
+Compatible with RFC1459 networks such as networks that run charybdis, ircd-seven or ircd-ratbox.<br>
+This bot was designed with Atheme services in mind, and may not work optimally on networks that run different services.</p>
 
 <h2>
 <a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
@@ -60,57 +58,8 @@
 
 <p>Once the installation requirements are satified, copy or rename <code>config.example.json</code> to <code>config.json</code> and configure it to your liking.  </p>
 
-<p>Here is a copy of a configuration with comments -- but do not copy it directly, use <code>config.example.json</code> for that.   </p>
-
-<pre><code>{
-  "irc": { // irc block
-    "espernet": { // name of the block.
-      "server": "irc.esper.net", // server to connect to.
-      "port": 6667, // port to connect to - do not use a plus sign.
-      "ssl": false, // connecting with ssl or not 
-
-      "nick": "Reconcile", // the primary nickname to try. 
-      "altnick": "Reconcile_", // if the primary nickname is taken, we connect with this instead. Leave blank for nick_
-
-      "ident": "reconcile", // the ident (also known as username) of the bot 
-      "realname": "Zarthus his bot", // the real name of the bot, if left blank it will contain a link to the github repository
-
-      "account": "zarthus-bots", // the account to identify to.
-      "password": "irc-password", // the password the bot should use to identify to the account specified.
-
-      "command_prefix": "!", // The prefix all commands will have.
-
-      // A list of administrators, supports wildcard *, nickname (anything before !) can be left out.
-      // administrators have access to everything, use this with caution.
-      "administrators": [
-        "Zarthus!Zarthus@zarth.us"
-      ],
-
-      "moderators": [
-        "hej@hello.me",
-        "bye@goodbye.net",
-        "*@moderate.us"
-      ]
-    }
-  },
-
-  // a list of api keys some modules require, modules will automatically unload themselves if no api key was found.
-  // and will be found in disabled_modules/no_api_key/
-  "api_keys": {
-    "lastfm": "",
-    "wolframalpha": ""
-  },
-
-  // bot metadata, generally data that is used in certain modules.
-  "metadata": {
-    "bot_version": "0.1", // the bot version
-    "bot_maintainer": "Zarthus", // the bot maintainer, change this to your own name
-    "github_url": "https:\/\/github.com\/zarthus\/reconcile", // a link to the github repository where the source code can be found
-    "verbose": true // verbosity; some things will not be logged if this is set to false. Can be useful for debugging.
-  }
-}
-
-</code></pre>
+<p><a href="https://github.com/Zarthus/Reconcile/wiki/Configuring-Reconcile">Here</a> is a copy of a configuration with comments -- describing what they do and which options are available.<br>
+But do not copy it directly, use <code>config.example.json</code> for that.  </p>
 
 <p>Once these requirements are met, go ahead and run <code>python bot.py</code> to start the bot.</p>
 
@@ -122,12 +71,15 @@
 <h2>
 <a name="contributing" class="anchor" href="#contributing"><span class="octicon octicon-link"></span></a>Contributing</h2>
 
-<p>Should you be willing to contribute to any module, or make your own - it should meet the following guidelines:<br>
-Tested thoroughly,<br>
-Non exploiting - as in that it does not try attempt malicious activies, or otherwise goes against guidelines of tools (such as websites) it is interacting with,<br>
-PEP8 compatible,<br>
+<p>Should you be willing to contribute to any module, or make your own - it should meet the following guidelines:  </p>
+
+<p>Tested thoroughly,<br>
+Non exploiting - as in that it does not try attempt malicious activities, or otherwise goes against guidelines of tools (such as websites) it is interacting with,<br>
+flake8 (<a href="http://legacy.python.org/dev/peps/pep-0008/">PEP8</a> and <a href="https://pypi.python.org/pypi/pyflakes">Pyflakes</a>) compatible,<br>
 Your code is not longer than 119 characters (raised from the original 79 pep8 checks against)<br>
-Travis compatible (see <code>.travis.yml</code> to see what tests are being performed) </p>
+Travis compatible (see <a href=".travis.yml"><code>.travis.yml</code></a> to see what tests are being performed)<br><a href="http://tools.ietf.org/html/rfc1459.html">RFC 1459 compatible</a>
+Should your module require an API key, please edit <code>config.example.json</code> and <code>docs/apikeys.md</code> accordingly.<br>
+Should your module require a configuration block, don't forget to edit the <a href="https://github.com/Zarthus/Reconcile/wiki/Configuring-Reconcile">wiki</a></p>
 
 <h3>
 <a name="bugs--suggestions" class="anchor" href="#bugs--suggestions"><span class="octicon octicon-link"></span></a>Bugs / Suggestions</h3>
