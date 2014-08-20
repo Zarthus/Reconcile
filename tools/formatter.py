@@ -6,6 +6,9 @@ Parses colours using a $(colour) or $(formatting) template.
 Supports both the American and British spellings of many colours and words.
 """
 
+import re
+from random import randint
+
 
 IRC_COLOUR_DICT = {
     "white": "00",
@@ -32,7 +35,8 @@ IRC_COLOUR_DICT = {
     "dgray": "14",
     "dark_gray": "14",
     "grey": "15",
-    "gray": "15"
+    "gray": "15",
+    "random": ""  # Special keyword, generate a random number.
 }
 
 IRC_FORMATTING_DICT = {
@@ -64,6 +68,8 @@ class IrcFormatter:
         self.getColor = self.getColour
         self.getAvailableColors = self.getAvailableColours
 
+        self.colour_re = re.compile(r"(\$\(.*?\))", re.I)
+
     def getColour(self, colour, return_formatted=True):
         """
         Return numeric in string format of human readable colour formatting.
@@ -71,13 +77,24 @@ class IrcFormatter:
 
         Throws KeyError if colour is not found.
         """
+        colour = colour.lower()
 
-        if colour.lower() not in IRC_COLOUR_DICT:
+        if colour not in IRC_COLOUR_DICT:
             raise KeyError("The colour '{}' is not in the list of available colours.".format(colour))
 
+        if colour == "random":  # Special keyword for a random colour
+            rand = randint(0, 16)
+            if rand < 10:  # Append '0' before colour so it always is double digits.
+                rand = "0" + str(rand)
+            rand = str(rand)
+
+            if return_formatted:
+                return self.getFormat("colour") + rand
+            return rand
+
         if return_formatted:
-            return self.getFormat("colour") + IRC_COLOUR_DICT[colour.lower()]
-        return IRC_COLOUR_DICT[colour.lower()]
+            return self.getFormat("colour") + IRC_COLOUR_DICT[colour]
+        return IRC_COLOUR_DICT[colour]
 
     def getFormat(self, formatting):
         """
@@ -114,25 +131,19 @@ class IrcFormatter:
         parse: Formats a string, replacing words wrapped in $( ) with actual colours or formatting.
 
         example:
-        IrcFormatter.parse("The quick $(brown) brown $(clear) fox jumps over the $(bold) lazy dog $(clear)")
-        To concatinate, use $+ -- i.e. IrcFormatter.parse("$(red) He $(blue) $+ y there")
+        IrcFormatter.parse("The quick $(brown)brown$(clear) fox jumps over the$(bold) lazy dog$(clear).")
 
         This method will not throw any KeyErrors, but will instead ignore input between $() if it doesn't know what to
         replace it with.
         """
 
         formatted = ""
-
-        for word in string.split(" "):
-            if word == "$+":
-                formatted = formatted.rstrip()
-                continue
-
-            if word.startswith("$(") and word.endswith(")"):
-                formatted += self._replace(word[2:-1])
-                continue
-
-            formatted += word + " "
+        regex = self.colour_re.split(string)
+        for match in regex:
+            if match.startswith("$(") and match.endswith(")"):
+                formatted += self._replace(match)
+            else:
+                formatted += match
 
         return formatted
 
@@ -140,32 +151,29 @@ class IrcFormatter:
         """strip: Similiar to parse, only this removes colour codes"""
 
         stripped = ""
-
-        for word in string.split(" "):
-            if word == "$+":
+        for match in self.colour_re.split(string):
+            if match.startswith("$(") and match.endswith(")"):
                 continue
 
-            if word.startswith("$(") and word.endswith(")"):
-                continue
+            stripped += match
 
-            stripped += word + " "
-
-        return stripped.replace("  ", " ").rstrip()
+        return stripped.strip()
 
     def _replace(self, string):
+        if not string.startswith("$(") and not string.endswith(")"):
+            return string
+        string = string[2:-1]
         ret = ""
         count = 1
-        split = string.lower().split(",")
-
-        for word in split:
-            if word.lower() in IRC_COLOUR_DICT:
+        formattings = string.lower().replace(" ", "").split(",")
+        for formatting in formattings:
+            if formatting in IRC_COLOUR_DICT:
                 if count % 2 == 0:
-                    ret += "," + self.getColour(word, False)
+                    ret += "," + self.getColour(formatting, False)
                 else:
-                    ret += self.getColour(word)
-
+                    ret += self.getColour(formatting)
                 count += 1
-            if word.lower() in IRC_FORMATTING_DICT:
-                ret += self.getFormat(word)
+            elif formatting in IRC_FORMATTING_DICT:
+                ret += self.getFormat(formatting)
 
-        return ret
+        return ret.strip()

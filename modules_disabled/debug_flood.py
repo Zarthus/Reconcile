@@ -43,3 +43,4 @@ class FloodDebug(moduletemplate.BotModule):
                         self.message(nick, None, "flood_query(): Message {}".format(i))
 
                     return True
+        return False
