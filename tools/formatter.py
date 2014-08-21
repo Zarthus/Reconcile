@@ -68,7 +68,7 @@ class IrcFormatter:
         self.getColor = self.getColour
         self.getAvailableColors = self.getAvailableColours
 
-        self.colour_re = re.compile(r"(\$\(.*?\))", re.I)
+        self.colour_re = re.compile(r"\$\(.*?\)", re.I)
 
     def getColour(self, colour, return_formatted=True):
         """
@@ -84,7 +84,7 @@ class IrcFormatter:
 
         if colour == "random":  # Special keyword for a random colour
             rand = randint(0, 16)
-            if rand < 10:  # Append '0' before colour so it always is double digits.
+            if rand < 10:  # Prepend '0' before colour so it always is double digits.
                 rand = "0" + str(rand)
             rand = str(rand)
 
@@ -141,7 +141,7 @@ class IrcFormatter:
         regex = self.colour_re.split(string)
         for match in regex:
             if match.startswith("$(") and match.endswith(")"):
-                formatted += self._replace(match)
+                formatted += self._convert(match)
             else:
                 formatted += match
 
@@ -159,7 +159,7 @@ class IrcFormatter:
 
         return stripped.strip()
 
-    def _replace(self, string):
+    def _convert(self, string):
         if not string.startswith("$(") and not string.endswith(")"):
             return string
         string = string[2:-1]
