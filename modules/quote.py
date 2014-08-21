@@ -27,7 +27,8 @@ class Quote(moduletemplate.BotModule):
         self.register_command("quoteedit", "<Quote ID> <new quote>",
                               "Edit <Quote ID> with <new quote>, you may only edit your own quotes.",
                               self.PRIV_NONE, ["editquote"])
-        self.register_command("quotecount", None, "List total number of quotes in the database.",
+        self.register_command("quotecount", "[account name / host address]",
+                              "List total number of quotes in the database.",
                               self.PRIV_NONE, ["countquote", "countquotes"])
 
         if "quote_ratelimit" not in self.module_data:
