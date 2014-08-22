@@ -107,7 +107,7 @@ class BasicCommands(moduletemplate.BotModule):
                 m = commandtext.split()
 
                 if not commandtext or len(m) < 2:
-                    return self.message(target, "Usage: message <target> <message>")
+                    return self.notice(target, "Usage: message <target> <message>")
 
                 mess = " ".join(m[1:])
                 targ = m[0]
