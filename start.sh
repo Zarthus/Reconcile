@@ -58,10 +58,6 @@ for pass in 1 2; do
   done
 done
 
-echo $be_verbose
-echo $use_py3
-echo $use_py2
-
 if [ -e "ircbot.pid" ]; then
   if [ $be_verbose -eq "1" ]; then
     echo "ircbot.pid exists, will not start as process is already running."
