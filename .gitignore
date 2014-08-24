@@ -2,3 +2,4 @@ config.json
 *.pyc
 db/*.db
 logs/*.log
+ircbot.pid
