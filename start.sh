@@ -43,10 +43,6 @@ function doexit() {
   exit $success_kill
 }
 
-be_verbose=0
-use_py3=0
-use_py2=0
-
 for pass in 1 2; do
   while [ -n "$1" ]; do
     case $1 in
