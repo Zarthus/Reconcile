@@ -117,20 +117,46 @@ class Config:
     def getTimestampFormat(self):
         return self.metadata["timestamp"] if "timestamp" in self.metadata else "%H:%M"
 
+    def getLogTimestampFormat(self):
+        return self.metadata["log_timestamp"] if "log_timestamp" in self.metadata else "%Y-%m-%d %H:%M:%S"
+
     def getDatabaseDir(self):
         if "db_dir" in self.metadata:
-            if not self.metadata["db_dir"].endswith("/"):
-                self.metadata["db_dir"] + "/"
+            self.metadata["db_dir"] = os.path.join(self.metadata["db_dir"])
 
             if not os.path.isdir(self.metadata["db_dir"]):
                 os.mkdir(self.metadata["db_dir"])
 
             return self.metadata["db_dir"]
         else:
-            if not os.path.isdir("db/"):
-                os.mkdir("db/")
+            self.metadata["db_dir"] = os.path.join("db")
 
-            return "db/"
+            if not os.path.isdir("db"):
+                os.mkdir("db")
+
+            return "db"
+
+    def getLogging(self):
+        if "log_to_file" in self.metadata:
+            if not self.metadata["log_to_file"]:
+                return False
+        return self.getLogDir()
+
+    def getLogDir(self):
+        if "log_dir" in self.metadata:
+            self.metadata["log_dir"] = os.path.join(self.metadata["log_dir"])
+
+            if not os.path.isdir(self.metadata["log_dir"]):
+                os.mkdir(self.metadata["log_dir"])
+
+            return self.metadata["log_dir"]
+        else:
+            self.metadata["log_dir"] = os.path.join("logs")
+
+            if not os.path.isdir("logs"):
+                os.mkdir("logs")
+
+            return "logs"
 
     def getModuleData(self, module_name):
         return self.modules[module_name] if module_name in self.modules else None

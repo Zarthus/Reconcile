@@ -24,7 +24,8 @@ class IrcConnection:
         self.config = config
         self.loadNetworkVariables(network)
 
-        self.logger = logger.Logger(self.network_name, self.config.getVerbose(), self.config.getTimestampFormat(),
+        self.logger = logger.Logger(self.network_name, self.config.getLogging(), self.config.getVerbose(),
+                                    self.config.getTimestampFormat(), self.config.getLogTimestampFormat(),
                                     self.config.getMetadata("logger_terminal_colours"))
         self.validator = validator.Validator()
         self.channelmanager = channel.ChannelManager(self.config.getDatabaseDir(), self.logger, self.network_name,
@@ -62,7 +63,9 @@ class IrcConnection:
 
         self.loadNetworkVariables(self.config.getNetwork(self.network_name), self.currentnick)
 
-        self.logger = logger.Logger(self.network_name, self.config.getVerbose(), self.config.getTimestampFormat())
+        self.logger = logger.Logger(self.network_name, self.config.getLogging(), self.config.getVerbose(),
+                                    self.config.getTimestampFormat(), self.config.getLogTimestampFormat(),
+                                    self.config.getMetadata("logger_terminal_colours"))
         self.channelmanager = channel.ChannelManager(self.config.getDatabaseDir(), self.logger, self.network_name,
                                                      self.validator)
         self.commandhelp = commandhelp.CommandHelp(self.logger, self.config.getCommandPrefix(self.network_name))
