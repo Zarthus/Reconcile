@@ -27,15 +27,15 @@ function doexit() {
   rm ircbot.pid
   success_rm=$?
 
-  if [ $success_kill -eq "0" ]; then
+  if [[ $success_kill -eq 0 ]]; then
     echo "The bot have been forcefully shut down."
   else
     echo "Could not kill the process."
   fi
 
-  if [ $success_rm -ne "0" ]; then
+  if [[ $success_rm -ne 0 ]]; then
     echo "Could not remove ircbot.pid."
-    if [ $success_kill -eq "0" ]; then
+    if [[ $success_kill -eq 0 ]]; then
       exit 1
     fi
   fi
@@ -43,40 +43,39 @@ function doexit() {
   exit $success_kill
 }
 
-for pass in 1 2; do
-  while [ -n "$1" ]; do
-    case $1 in
-      --) shift; break;;
-      -*) case $1 in
-        -h|--help)     help;;
-        -v|--verbose)  be_verbose=1;;
-        -3|--python3)  use_py3=1;;
-        -2|--python2)  use_py2=1;;
-        -k|--kill)     doexit;;
-      esac;;
-    esac
-  done
+be_verbose=0
+use_python3=0
+use_python2=0
+
+for arg in $@; do
+  case "$arg" in
+    -h|--help)     help;;
+    -v|--verbose)  be_verbose=1;;
+    -3|--python3)  use_python3=1;;
+    -2|--python2)  use_python2=1;;
+    -k|--kill)     doexit;;
+  esac
 done
 
 if [ -e "ircbot.pid" ]; then
-  if [ $be_verbose -eq "1" ]; then
+  if [[ $be_verbose -eq 1 ]]; then
     echo "ircbot.pid exists, will not start as process is already running."
   fi
   exit 0
 fi
 
-if [ $be_verbose -eq "1" ]; then
+if [[ $be_verbose -eq 1 ]]; then
   echo "Starting bot."
 fi
 
-if [ $use_py3 -eq "1" ]; then
+if [[ $use_py3 -eq 1 ]]; then
   screen python3 bot.py
-elif [ $use_py2 -eq "1" ]; then
+elif [[ $use_py2 -eq 1 ]]; then
   screen python bot.py
 else
-  pytest=`python3 -c "print('1')"`  # Some machines run both python2 and python3.
+  pytest=`python3 -c "print('1')"`  # Some machines run both python2 and python3, if python3 is a command we use that.
 
-  if [ $pytest -eq "1" ]; then
+  if [[ $pytest -eq 1 ]]; then
     screen python3 bot.py
   else
     screen python bot.py
