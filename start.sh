@@ -9,9 +9,9 @@ Starts the python bot in a screen session if it is not already running.
   -h, --help        display this help file.
   -v, --verbose     show more verbose output.
   -3, --python3     use the 'python3' command over 'python'.
-  -2, --python2     use the 'python' command over 'python3'."
+  -2, --python2     use the 'python' command over 'python3'.
   -k, --kill        kill the process the bot is using, this is not a graceful way of exiting,
-                      use of the bots actual functions are recommended.
+                      use of the bots actual functions are recommended."
 
   exit 0
 }
