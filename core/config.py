@@ -253,6 +253,9 @@ class Config:
                 self.logger.log_verbose("'invite_join' was not configured in {} - False assumed".format(network_name))
                 warnings += 1
 
+            if "leave_empty_channels" not in self.networks[network_name]:
+                self.networks[network_name]["leave_empty_channels"] = True
+
             if "modes" not in self.networks[network_name]:
                 self.networks[network_name]["modes"] = None
 

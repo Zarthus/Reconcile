@@ -168,10 +168,10 @@ class IrcConnection:
     def part(self, channel, reason=None):
         if not reason:
             self.logger.log("Parting channel '{}'".format(channel))
-            self.send_raw("PART :{}".format(channel))
+            self.send_raw("PART {}".format(channel))
         else:
             self.logger.log("Parting channel '{}' with reason: {}".format(channel, reason))
-            self.send_raw("PART :{} {}".format(channel, reason))
+            self.send_raw("PART {} :{}".format(channel, reason))
 
     def quit(self, message=None):
         if not message:
@@ -364,6 +364,8 @@ class IrcConnection:
 
         if nick != self.currentnick:
             self.channeldata_remove_user(nick, channel)
+
+            self.check_channel_empty(channel)
         else:
             self.channelmanager.delete(channel)
             if channel.lower() in self.channel_data:
@@ -383,6 +385,8 @@ class IrcConnection:
                 self.channel_data.pop(channel.lower())
             if channel in self.channels:
                 self.channels.remove(channel)
+        else:
+            self.check_channel_empty(channel)
 
         self.ModuleHandler.sendKick(nick, channel, knick, reason)
 
@@ -398,6 +402,7 @@ class IrcConnection:
         for chan in self.channel_data:
             if self.isOn(nick, chan):
                 self.channeldata_remove_user(nick, chan)
+                self.check_channel_empty(chan)
 
         self.ModuleHandler.sendQuit(nick, message)
 
@@ -570,6 +575,18 @@ class IrcConnection:
             return self.channel_data[channel]
         return False
 
+    def check_channel_empty(self, channel):
+        if self.leave_empty_channels:
+            ucount = 0
+            cdata = self.getChannelData(channel)
+            if cdata:
+                for value in cdata.items():
+                    for user in value[1]:
+                        ucount += 1
+
+            if ucount == 1:
+                self.part(channel, "Channel is empty, leaving channel.")
+
     def register_command(self, command, params, help, priv, aliases=None, module=None):
         self.commandhelp.register(command, params, help, priv, aliases, module)
 
@@ -596,6 +613,7 @@ class IrcConnection:
 
         self.command_prefix = network["command_prefix"]
         self.invite_join = network["invite_join"]
+        self.leave_empty_channels = network["leave_empty_channels"]
         self.modes = network["modes"]
         self.perform = network["perform"]
 

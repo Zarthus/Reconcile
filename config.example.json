@@ -16,6 +16,7 @@
 
       "command_prefix": "!",
       "invite_join": true,
+      "leave_empty_channels": true,
 
       "administrators": [
         "example!admin@admins.zarth.us"
