@@ -9,7 +9,7 @@ Starts the python bot in a screen session if it is not already running.
   -h, --help        display this help file.
   -v, --verbose     show more verbose output.
   -3, --python3     use the 'python3' command over 'python'.
-  -2, --python2     use the 'python' command over 'python3'.
+  -p, --python      use the 'python' command over 'python3'.
   -k, --kill        kill the process the bot is using, this is not a graceful way of exiting,
                       use of the bots actual functions are recommended."
 
@@ -45,14 +45,14 @@ function doexit() {
 
 be_verbose=0
 use_python3=0
-use_python2=0
+use_python=0
 
 for arg in $@; do
   case "$arg" in
     -h|--help)     help;;
     -v|--verbose)  be_verbose=1;;
     -3|--python3)  use_python3=1;;
-    -2|--python2)  use_python2=1;;
+    -p|--python)   use_python=1;;
     -k|--kill)     doexit;;
   esac
 done
@@ -68,9 +68,9 @@ if [[ $be_verbose -eq 1 ]]; then
   echo "Starting bot."
 fi
 
-if [[ $use_py3 -eq 1 ]]; then
+if [[ $use_python3 -eq 1 ]]; then
   screen python3 bot.py
-elif [[ $use_py2 -eq 1 ]]; then
+elif [[ $use_python -eq 1 ]]; then
   screen python bot.py
 else
   pytest=`python3 -c "print('1')"`  # Some machines run both python2 and python3, if python3 is a command we use that.
