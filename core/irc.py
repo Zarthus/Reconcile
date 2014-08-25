@@ -321,7 +321,7 @@ class IrcConnection:
             self.ctcp_reply(nick, ctcp, "Current time: {}".format(time.strftime("%H:%M:%S - %A %d %B, %Y")))
 
         elif ctcp.startswith("PING"):
-            self.ctcp_reply(nick, "PING", int(time.time()))
+            self.ctcp_reply(nick, "PING", ctcp.strip("\x01")[5:])
 
         else:
             return False
