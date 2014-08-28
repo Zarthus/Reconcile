@@ -23,17 +23,6 @@ class IrcConnection:
     def __init__(self, network, config, modules=None):
         self.config = config
         self.loadNetworkVariables(network)
-
-        self.logger = logger.Logger(self.network_name, self.config.getLogging(), self.config.getVerbose(),
-                                    self.config.getTimestampFormat(), self.config.getLogTimestampFormat(),
-                                    self.config.getMetadata("logger_terminal_colours"))
-        self.validator = validator.Validator()
-        self.channelmanager = channel.ChannelManager(self.config.getDatabaseDir(), self.logger, self.network_name,
-                                                     self.validator)
-        self.commandhelp = commandhelp.CommandHelp(self.logger, self.config.getCommandPrefix(self.network_name))
-        self.ratelimiter = ratelimit.Ratelimit(self, self.logger)
-        self.force_quit = False  # Tell the main loop in bot.py that we wish to exit the entire bot.
-
         self._loadModules()
 
         self.numeric_regex = re.compile(":.* [0-9]{3}")
@@ -94,17 +83,7 @@ class IrcConnection:
 
     def rehash(self, reconnect=False):
         self.config.rehash()
-
         self.loadNetworkVariables(self.config.getNetwork(self.network_name), self.currentnick)
-
-        self.logger = logger.Logger(self.network_name, self.config.getLogging(), self.config.getVerbose(),
-                                    self.config.getTimestampFormat(), self.config.getLogTimestampFormat(),
-                                    self.config.getMetadata("logger_terminal_colours"))
-        self.channelmanager = channel.ChannelManager(self.config.getDatabaseDir(), self.logger, self.network_name,
-                                                     self.validator)
-        self.commandhelp = commandhelp.CommandHelp(self.logger, self.config.getCommandPrefix(self.network_name))
-        self.ratelimiter = ratelimit.Ratelimit(self, self.logger)
-
         self.ModuleHandler.unloadAll()
         self._loadModules()
 
@@ -179,6 +158,9 @@ class IrcConnection:
 
         self.logger.log("Quitting IRC: {}".format(message))
         self.send_raw("QUIT :{}".format(message))
+        self.disconnect()
+
+    def disconnect(self):
         self.ratelimiter.stop()
         self.currentnick = None
         self.connected = False
@@ -210,10 +192,10 @@ class IrcConnection:
                             .format(self.server, self.currentnick))
 
         if self.ssl:
-            self.logger.log("Attempting to connect to server with SSL.")
+            self.logger.log("Attempting to connect to server ({}:{}) with SSL.".format(self.server, self.port))
             self._connect_ssl()
         else:
-            self.logger.log("Attempting to connect to server.")
+            self.logger.log("Attempting to connect to server. ({}:{})".format(self.server, self.port))
             self._connect()
         if not reconnecting:
             self.ratelimiter.start()
@@ -222,15 +204,16 @@ class IrcConnection:
             self.ratelimiter.start()
 
     def reconnect(self, message=None):
-        if not self.connected:
-            self.logger.notice("Cannot reconnect to {} - no connection has been established".format(self.server))
-        else:
+        if self.connected:
             if message:
                 self.quit("Reconnecting: {}".format(message))
             else:
                 self.quit("Reconnecting.")
+            time.sleep(2)
+        else:  # We quit by other means than user input.
+            self.reconnect_attempts += 1
+            time.sleep(2 * self.reconnect_attempts)
 
-        time.sleep(2)
         self.connect(True)
 
     def send_who(self, nick):
@@ -440,6 +423,11 @@ class IrcConnection:
             if self.isOn(nick, chan):
                 self.channeldata_remove_user(nick, chan)
                 self.check_channel_empty(chan)
+
+        if nick == self.currentnick and self.connected:
+            self.logger.notice("We have disconnected from {}, attempting to reconnect.".format(self.server_name))
+            self.disconnect()
+            self.reconnect()
 
         self.ModuleHandler.sendQuit(nick, message)
 
@@ -673,6 +661,7 @@ class IrcConnection:
         self.commandhelp.unregister(command)
 
     def loadNetworkVariables(self, network, curnick=None):
+        """variables that will get created on initialisation, recreated on rehash"""
         self.connected = False
 
         self.id = network["id"]
@@ -713,6 +702,19 @@ class IrcConnection:
         self.last_uwho = None
         self.channel_data = {}
         self.last_chanwho = None  # Last channel who (self.send_chanwho())
+
+        self.reconnect_attempts = 0  # Each time we reconnect we take a bit longer to reconnect.
+
+        self.logger = logger.Logger(self.network_name, self.config.getLogging(), self.config.getVerbose(),
+                                    self.config.getTimestampFormat(), self.config.getLogTimestampFormat(),
+                                    self.config.getMetadata("logger_terminal_colours"))
+        self.validator = validator.Validator()
+        self.channelmanager = channel.ChannelManager(self.config.getDatabaseDir(), self.logger, self.network_name,
+                                                     self.validator)
+        self.commandhelp = commandhelp.CommandHelp(self.logger, self.config.getCommandPrefix(self.network_name))
+        self.ratelimiter = ratelimit.Ratelimit(self, self.logger)
+
+        self.force_quit = False  # Tell the main loop in bot.py that we wish to exit the entire bot.
 
     def _connect_ssl(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
