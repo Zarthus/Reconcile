@@ -65,7 +65,6 @@ class BasicCommands(moduletemplate.BotModule):
                 if uname:
                     isad = self.isBotAdministrator(uname["nick"])
                     ismd = self.isBotModerator(uname["nick"])
-                    print(str(uname), ismd, isad)
 
                     return self.message(target, nick,
                                         "Permissions for $(bold){}$(bold): Administrator: {} - Moderator: {}"
