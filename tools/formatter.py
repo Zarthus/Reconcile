@@ -147,7 +147,12 @@ class IrcFormatter:
     def strip(self, string):
         """strip: Similiar to parse, only this removes colour codes"""
 
-        stripped = re.sub(string, self.colour_re, "")
+        stripped = ""
+
+        regex = self.colour_re.split(string)
+        for match in regex:
+            stripped += match
+
         return stripped.strip()
 
     def _convert(self, string):
