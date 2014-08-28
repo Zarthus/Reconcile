@@ -83,7 +83,9 @@ class IrcConnection:
 
     def rehash(self, reconnect=False):
         self.config.rehash()
+        self.ratelimiter.stop()
         self.loadNetworkVariables(self.config.getNetwork(self.network_name), self.currentnick)
+        self.ratelimiter.start()
         self.ModuleHandler.unloadAll()
         self._loadModules()
 
