@@ -137,26 +137,17 @@ class IrcFormatter:
         replace it with.
         """
 
-        formatted = ""
-        regex = self.colour_re.split(string)
+        formatted = string
+        regex = self.colour_re.findall(string)
         for match in regex:
-            if match.startswith("$(") and match.endswith(")"):
-                formatted += self._convert(match)
-            else:
-                formatted += match
+            formatted = formatted.replace(match, self._convert(match), 1)
 
         return formatted
 
     def strip(self, string):
         """strip: Similiar to parse, only this removes colour codes"""
 
-        stripped = ""
-        for match in self.colour_re.split(string):
-            if match.startswith("$(") and match.endswith(")"):
-                continue
-
-            stripped += match
-
+        stripped = re.sub(string, self.colour_re, "")
         return stripped.strip()
 
     def _convert(self, string):
