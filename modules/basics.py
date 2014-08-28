@@ -11,7 +11,8 @@ from core import moduletemplate
 class BasicCommands(moduletemplate.BotModule):
 
     def on_module_load(self):
-        self.register_command("permissions", None, "Show if you are a bot administrator or moderator", self.PRIV_NONE)
+        self.register_command("permissions", "[nick]",
+                              "Show if you or [nick] are a bot administrator or moderator", self.PRIV_NONE)
         self.register_command("ping", None, "Make the bot reply with a message to see if it is still there.",
                               self.PRIV_NONE)
         self.register_command("commands", "[module]", "List all commands or from those from [module]",
@@ -47,8 +48,33 @@ class BasicCommands(moduletemplate.BotModule):
     def on_command(self, target, nick, command, commandtext, mod, admin):
 
         if command == "permissions":
-            return self.notice(nick, "Permissions for {}: Administrator: {} - Moderator: {}"
-                                     .format(nick, "yes" if admin else "no", "yes" if mod else "no"))
+            if not commandtext:
+                    return self.message(target, nick,
+                                        "Your permissions: Administrator: {} - Moderator: {}"
+                                        .format("$(green)yes$(clear)" if admin else "$(red)no$(clear)",
+                                                "$(green)yes$(clear)" if mod else "$(red)no$(clear)"), True)
+            else:
+                name = commandtext
+
+                if " " in name:
+                    return self.notice(nick, "Usage: permissions [nick]")
+                if "@" in commandtext and "!" in commandtext:  # Try and subtract the nick from nick!user@host
+                    name = commandtext.split("!")[0]
+
+                uname = self.getUserData(name)
+                if uname:
+                    isad = self.isBotAdministrator(uname["nick"])
+                    ismd = self.isBotModerator(uname["nick"])
+                    print(str(uname), ismd, isad)
+
+                    return self.message(target, nick,
+                                        "Permissions for $(bold){}$(bold): Administrator: {} - Moderator: {}"
+                                        .format(name, "$(green)yes$(clear)" if isad else "$(red)no$(clear)",
+                                                "$(green)yes$(clear)" if ismd else "$(red)no$(clear)"), True)
+                else:
+                    return self.message(target, nick,
+                                        "I have no data recorded of '{}', do they share a channel with me?"
+                                        .format(name))
 
         if command == "ping" and not commandtext:  # Don't reply with params, might interfere with some bots 'ping' cmd
             return self.message(target, nick, "Yes, yes. I am here.")
