@@ -613,6 +613,8 @@ class IrcConnection:
         return False
 
     def isBotAdmin(self, nick):
+        nick = nick.lower()
+
         if nick in self.user_data:
             usermask = "{}!{}@{}".format(self.user_data[nick]["nick"],
                                          self.user_data[nick]["user"],
@@ -621,6 +623,8 @@ class IrcConnection:
         return False
 
     def isBotModerator(self, nick):
+        nick = nick.lower()
+
         if nick in self.user_data:
             usermask = "{}!{}@{}".format(self.user_data[nick]["nick"],
                                          self.user_data[nick]["user"],
