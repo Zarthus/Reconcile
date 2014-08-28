@@ -36,7 +36,7 @@ class Xkcd(moduletemplate.BotModule):
             r.raise_for_status()
             json = r.json
         except Exception as e:
-            self.logger.notice("Failed to get xkcd '{}': {}".format(url, str(e)))
+            self.warning("Failed to get xkcd '{}': {}".format(url, str(e)))
             return False if ret_boolean else "Failed to get xkcd '{}': {}".format(url, str(e))
 
         months = {

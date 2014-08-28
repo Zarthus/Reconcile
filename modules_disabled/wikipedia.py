@@ -59,7 +59,7 @@ class Wikipedia(moduletemplate.BotModule):
             r.raise_for_status()
             json = r.json
         except Exception as e:
-            self.logger.notice("Failed to retrieve wikipedia article '{}' - {}".format(article, str(e)))
+            self.warning("Failed to retrieve wikipedia article '{}' - {}".format(article, str(e)))
             return False if ret_boolean else "Failed to retrieve wikipedia article '{}' - {}".format(article, str(e))
 
         if "query" in json and "pages" in json["query"]:
