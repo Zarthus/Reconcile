@@ -58,6 +58,40 @@ class IrcConnection:
 
         return self.force_quit
 
+    def readBuffer(self):
+        buff = self.socket.recv(4096)
+        lines = buff.decode("utf-8").split("\n")
+        for data in lines:
+            data = str(data).strip()
+
+            if not data:
+                continue
+
+            words = data.split()
+
+            if len(words) > 1:
+                if words[0] == "PING":
+                    # Reply to PING
+                    self.send_raw("PONG " + words[1])
+                    continue
+
+                if self.numeric_regex.match(" ".join(words[:2])):
+                    # Check if a server numeric is sent, and handle it appropriately.
+                    if self.on_numeric(int(words[1]), data):
+                        # _processIrcNumeric returns true if we need to continue, false if we don't
+                        continue
+
+                if self.isEvent(words[1]):
+                    # Most(?) events share the following syntax:
+                    # :nick!user@host EVENT target [[:]message/params]
+
+                    uinfo = words[0][1:]
+                    event = words[1]
+                    target = words[2]
+                    params = words[3:] if len(words) > 3 else None
+
+                    self.processEvent(uinfo, event, target, params)
+
     def rehash(self, reconnect=False):
         self.config.rehash()
 
@@ -81,40 +115,6 @@ class IrcConnection:
                 self.nick(self.mnick)
 
         self.logger.log("Rehash completed.")
-
-    def readBuffer(self):
-        buff = self.socket.recv(4096)
-        lines = buff.decode("utf-8").split("\n")
-        for data in lines:
-            data = str(data).strip()
-
-            if not data:
-                continue
-
-            words = data.split()
-
-            if len(words) > 1:
-                if words[0] == "PING":
-                    # Reply to PING
-                    self.send_raw("PONG " + words[1])
-                    continue
-
-                if self.numeric_regex.match(" ".join(words[:2])):
-                    # Check if a server numeric is sent, and handle it appropriately.
-                    if self._processIrcNumeric(int(words[1]), data):
-                        # _processIrcNumeric returns true if we need to continue, false if we don't
-                        continue
-
-                if self.isEvent(words[1]):
-                    # Most(?) events share the following syntax:
-                    # :nick!user@host EVENT target [[:]message/params]
-
-                    uinfo = words[0][1:]
-                    event = words[1]
-                    target = words[2]
-                    params = words[3:] if len(words) > 3 else None
-
-                    self._processEvent(uinfo, event, target, params)
 
     def send_raw(self, data):
         self.socket.send(bytes(data + "\r\n", "utf-8"))
@@ -281,6 +281,43 @@ class IrcConnection:
             return True
         return False
 
+    def processEvent(self, uinfo, event, target, params_list):
+        nick = uinfo.split("!")[0]
+        user = ""
+        host = ""
+        params = ""
+
+        if event in ["PRIVMSG", "NOTICE", "JOIN", "PART", "KICK"] and self.validator.hostmask(uinfo):
+            user = uinfo.split("@")[0][len(nick) + 1:]
+            host = uinfo.split("@")[1]
+
+            udata = self.getUserData(nick)  # Set host / ident so no /WHO is needed.
+            if not udata:
+                self.send_who(nick)
+
+        if params_list:
+            params = " ".join(params_list)
+            if params.startswith(":"):
+                params = params[1:]
+
+        if event == "PRIVMSG":
+            self.on_privmsg(nick, target, params, [nick, user, host, uinfo])
+        elif event == "NOTICE":
+            self.on_notice(nick, target, params)
+        elif event == "MODE":
+            self.on_mode(nick, target, params)
+        elif event == "JOIN":
+            self.on_join(nick, target)
+        elif event == "PART":
+            self.on_part(nick, target, params)
+        elif event == "INVITE":
+            self.on_invite(nick, params)
+        elif event == "KICK":
+            kreason = " ".join(params_list[1:])[1:]
+            self.on_kick(nick, target, params_list[0], kreason if kreason else "No reason.")
+        elif event == "QUIT":
+            self.on_quit(nick, params)
+
     def on_privmsg(self, nick, target, message, uinfo=None):
         if message.startswith("\x01") and message.endswith("\x01"):
             if message.lstrip("\x01").startswith("ACTION"):
@@ -441,6 +478,48 @@ class IrcConnection:
         if not success and target == self.currentnick and nick != self.currentnick:
             self.say(nick, "I'm sorry, but I did not understand the command '{}'.".format(command))
         return success
+
+    def on_numeric(self, numeric, data):
+        """
+        The ircd sends numerics to indicate something is wrong (or right),
+        This method will interact with a few of them
+
+        https://www.alien.net.au/irc/irc2numerics.html
+        """
+
+        if numeric == 354:
+            # RPL_WHOREPLY
+            whodata = data.split()[3:]
+            if len(whodata):
+                self.on_whoreply(data.split()[3:])
+
+        if numeric == 433:
+            # Nick is already taken.
+            if self.currentnick != self.altnick:
+                self.nick(self.altnick)
+            return True
+
+        if numeric == 422 or numeric == 376:
+            # No MOTD found or End of MOTD
+            if self.password and self.account:
+                self.send_raw("PRIVMSG NickServ :IDENTIFY {} {}".format(self.account, self.password))
+
+            if self.modes:
+                self.mode(self.currentnick, self.modes)
+
+            if len(self.channels):
+                self.send_raw("JOIN :" + ",".join(self.channels))
+            else:
+                self.logger.log_verbose("Not configured to join any channels.")
+
+            if self.perform:
+                for perform in self.perform:
+                    self.send_raw(perform)
+
+            self.logger.log("A connection has been established with {}.".format(self.server_name))
+
+        self.ModuleHandler.sendNumeric(numeric, data)
+        return False
 
     def on_whoreply(self, args):
         """Handles custom WHO requests by the bot."""
@@ -655,83 +734,6 @@ class IrcConnection:
         # <username> <hostname> <servername> :<realname> - servername/hostname will be ignored by the ircd.
         self.send_raw("USER {} 0 0 :{}".format(self.ident, self.realname))
         self.connected = True
-
-    def _processIrcNumeric(self, numeric, data):
-        """
-        The ircd sends numerics to indicate something is wrong (or right),
-        This method will interact with a few of them
-        """
-
-        if numeric == 354:
-            # RPL_WHOREPLY
-            whodata = data.split()[3:]
-            if len(whodata):
-                self.on_whoreply(data.split()[3:])
-
-        if numeric == 433:
-            # Nick is already taken.
-            self.send_raw("NICK " + self.altnick)
-            self.currentnick = self.altnick
-            return True
-
-        if numeric == 422 or numeric == 376:
-            # No MOTD found or End of MOTD
-            if self.password and self.account:
-                self.send_raw("PRIVMSG NickServ :IDENTIFY {} {}".format(self.account, self.password))
-
-            if self.modes:
-                self.mode(self.currentnick, self.modes)
-
-            if len(self.channels):
-                self.send_raw("JOIN :" + ",".join(self.channels))
-            else:
-                self.logger.log_verbose("Not configured to join any channels.")
-
-            if self.perform:
-                for perform in self.perform:
-                    self.send_raw(perform)
-
-            self.logger.log("A connection has been established with {}.".format(self.server_name))
-
-        self.ModuleHandler.sendNumeric(numeric, data)
-        return False
-
-    def _processEvent(self, uinfo, event, target, params_list):
-        nick = uinfo.split("!")[0]
-        user = ""
-        host = ""
-        params = ""
-
-        if event in ["PRIVMSG", "NOTICE", "JOIN", "PART", "KICK"] and self.validator.hostmask(uinfo):
-            user = uinfo.split("@")[0][len(nick) + 1:]
-            host = uinfo.split("@")[1]
-
-            udata = self.getUserData(nick)  # Set host / ident so no /WHO is needed.
-            if not udata:
-                self.send_who(nick)
-
-        if params_list:
-            params = " ".join(params_list)
-            if params.startswith(":"):
-                params = params[1:]
-
-        if event == "PRIVMSG":
-            self.on_privmsg(nick, target, params, [nick, user, host, uinfo])
-        elif event == "NOTICE":
-            self.on_notice(nick, target, params)
-        elif event == "MODE":
-            self.on_mode(nick, target, params)
-        elif event == "JOIN":
-            self.on_join(nick, target)
-        elif event == "PART":
-            self.on_part(nick, target, params)
-        elif event == "INVITE":
-            self.on_invite(nick, params)
-        elif event == "KICK":
-            kreason = " ".join(params_list[1:])[1:]
-            self.on_kick(nick, target, params_list[0], kreason if kreason else "No reason.")
-        elif event == "QUIT":
-            self.on_quit(nick, params)
 
     def _loadModules(self):
         self.ModuleHandler = module.ModuleHandler(self)
