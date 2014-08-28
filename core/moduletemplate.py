@@ -151,6 +151,9 @@ class BotModule:
 
     def notice_verbose(self, message):
         self.logger.notice_verbose("({}) {}".format(self.module_name, message))
+        
+    def warning_verbose(self, message):
+        self.logger.notice_verbose("({}) {}".format(self.module_name, message))
 
     def error(self, message):
         self.logger.error("({}) {}".format(self.module_name, message))
