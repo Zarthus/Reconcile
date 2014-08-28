@@ -124,9 +124,6 @@ class BotModule:
 
         return True
 
-    def debug(self, message, format=False):
-        self._conn.debug(message, format)
-
     def mode(self, target, modes):
         self._conn.mode(target, modes)
 
@@ -139,6 +136,24 @@ class BotModule:
 
         self.logger.log("Module '{}' sending raw message: '{}'".format(self.module_name, raw_message))
         self._conn.send_raw(raw_message)
+
+    def debug(self, message, format=False):
+        self._conn.debug(message, format)
+
+    def log(self, message):
+        self.logger.log("({}) {}".format(self.module_name, message))
+
+    def log_verbose(self, message):
+        self.logger.log_verbose("({}) {}".format(self.module_name, message))
+
+    def warning(self, message):
+        self.logger.notice("({}) {}".format(self.module_name, message))
+
+    def notice_verbose(self, message):
+        self.logger.notice_verbose("({}) {}".format(self.module_name, message))
+
+    def error(self, message):
+        self.logger.error("({}) {}".format(self.module_name, message))
 
     def isOp(self, nick, channel):
         return self._conn.isOp(nick, channel)

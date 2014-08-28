@@ -142,7 +142,7 @@ class LastFM(moduletemplate.BotModule):
             r.raise_for_status()
             json = r.json
         except Exception as e:
-            self.logger.notice("Could not retrieve LastFM np information for {}: {}".format(account, str(e)))
+            self.warning("Could not retrieve LastFM np information for {}: {}".format(account, str(e)))
             self.message(target, nick, "Could not retrieve information: {}".format(str(e)))
 
         acct = ""
@@ -189,7 +189,7 @@ class LastFM(moduletemplate.BotModule):
                 else:
                     album = ""
 
-                lfmstr = ("$(bold){}$(bold) is listening to '$(bold) {}$(bold)' by "
+                lfmstr = ("$(bold){}$(bold) is listening to '$(bold){}$(bold)' by "
                           "'$(bold){}$(bold)' {}"
                           .format(acct, song, artist, album)).rstrip() + "."
             else:
@@ -216,7 +216,7 @@ class LastFM(moduletemplate.BotModule):
 
     def lastfm_get_info(self, nick):
         if not nick.isalnum():
-            self.logger.notice("lastfm: Possible injection: INSERT for nick '{}' requested.".format(nick))
+            self.warning("lastfm: Possible injection: INSERT for nick '{}' requested.".format(nick))
             return False
 
         nick = nick.lower()
@@ -231,14 +231,14 @@ class LastFM(moduletemplate.BotModule):
 
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("lastfm_get_info({}) error: {}".format(nick, str(e)))
+            self.error("lastfm_get_info({}) error: {}".format(nick, str(e)))
             return False
 
         return data
 
     def lastfm_unset_account(self, nick):
         if not nick.isalnum():
-            self.logger.notice("lastfm: Possible injection: INSERT for nick '{}' requested.".format(nick))
+            self.warning("lastfm: Possible injection: INSERT for nick '{}' requested.".format(nick))
             return False
 
         nick = nick.lower()
@@ -250,17 +250,17 @@ class LastFM(moduletemplate.BotModule):
             conn.commit()
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("lastfm_unset_account({}) error: {}".format(nick, str(e)))
+            self.error("lastfm_unset_account({}) error: {}".format(nick, str(e)))
             return False
 
         return True
 
     def lastfm_set_account(self, nick, account):
         if not nick.isalnum():
-            self.logger.notice("lastfm: Possible injection: INSERT for nick '{}' requested.".format(nick))
+            self.warning("lastfm: Possible injection: INSERT for nick '{}' requested.".format(nick))
             return False
         if not account.isalnum():
-            self.logger.notice("lastfm: Possible injection: INSERT for account '{}' requested.".format(account))
+            self.warning("lastfm: Possible injection: INSERT for account '{}' requested.".format(account))
             return False
 
         nick = nick.lower()
@@ -273,14 +273,14 @@ class LastFM(moduletemplate.BotModule):
             conn.commit()
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("lastfm_set_account({}, {}) error: {}".format(nick, account, str(e)))
+            self.error("lastfm_set_account({}, {}) error: {}".format(nick, account, str(e)))
             return False
 
         return True
 
     def lastfm_get_account(self, nick):
         if not nick.isalnum():
-            self.logger.notice("lastfm: Possible injection: Lookup for '{}' requested.".format(nick))
+            self.warning("lastfm: Possible injection: Lookup for '{}' requested.".format(nick))
             return False
 
         nick = nick.lower()
@@ -295,7 +295,7 @@ class LastFM(moduletemplate.BotModule):
 
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("lastfm_get_account({}) error: {}".format(nick, str(e)))
+            self.error("lastfm_get_account({}) error: {}".format(nick, str(e)))
             return False
 
         return account
@@ -309,4 +309,4 @@ class LastFM(moduletemplate.BotModule):
             conn.commit()
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("lastfm_create_db() error: Failed to create database lastfm.db: {}".format(str(e)))
+            self.error("lastfm_create_db() error: Failed to create database lastfm.db: {}".format(str(e)))

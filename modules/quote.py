@@ -156,7 +156,7 @@ class Quote(moduletemplate.BotModule):
                 exists = True
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("quote_exists({}) error: {}".format(id, str(e)))
+            self.error("quote_exists({}) error: {}".format(id, str(e)))
             return False
         return exists
 
@@ -175,7 +175,7 @@ class Quote(moduletemplate.BotModule):
             conn.commit()
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("quote_add({}, {}) error: {}".format(author, quote, str(e)))
+            self.error("quote_add({}, {}) error: {}".format(author, quote, str(e)))
             return "Could not add quote: {}".format(str(e))
         return "Quote has been added under the ID {}.".format(id)
 
@@ -193,7 +193,7 @@ class Quote(moduletemplate.BotModule):
             conn.commit()
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("quote_edit({}, {}) error: {}".format(id, newquote, str(e)))
+            self.error("quote_edit({}, {}) error: {}".format(id, newquote, str(e)))
             return "Could not edit quote: {}".format(str(e))
         return False  # Returns text (truthy) on failure; false on success.
 
@@ -211,7 +211,7 @@ class Quote(moduletemplate.BotModule):
             conn.commit()
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("quote_delete({}) error: {}".format(id, str(e)))
+            self.error("quote_delete({}) error: {}".format(id, str(e)))
             return "Could not delete quote: {}".format(str(e))
         return False  # Returns text (truthy) on failure; false on success.
 
@@ -231,7 +231,7 @@ class Quote(moduletemplate.BotModule):
 
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("quote_author({}) error: {}".format(author, str(e)))
+            self.error("quote_author({}) error: {}".format(author, str(e)))
             return False
 
         if author:
@@ -254,7 +254,7 @@ class Quote(moduletemplate.BotModule):
 
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("quote_random() error: {}".format(str(e)))
+            self.error("quote_random() error: {}".format(str(e)))
             return "Could not retrieve random quote: {}".format(str(e))
 
         if quote:
@@ -281,7 +281,7 @@ class Quote(moduletemplate.BotModule):
 
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("quote_search({}) error: {}".format(search, str(e)))
+            self.error("quote_search({}) error: {}".format(search, str(e)))
             return "Could not retrieve quote: {}".format(str(e))
 
         if quote:
@@ -306,7 +306,7 @@ class Quote(moduletemplate.BotModule):
 
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("quote_count({}) error: {}".format(author, str(e)))
+            self.error("quote_count({}) error: {}".format(author, str(e)))
             return False
         return count
 
@@ -320,4 +320,4 @@ class Quote(moduletemplate.BotModule):
             conn.commit()
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("quote_make_db() error: {}".format(str(e)))
+            self.error("quote_make_db() error: {}".format(str(e)))

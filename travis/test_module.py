@@ -39,6 +39,7 @@ def check_module(module_name):
         "extends_template": False,
         "utilises_callback": False,
         "utilises_logger": True,  # Check against use of print() instead of self.logger.log
+        "does_not_call_logger_directly": True  # Check if self.log over self.logger.log was used.
     }
 
     optional = {
@@ -76,6 +77,9 @@ def check_module(module_name):
 
         if line.startswith("print("):
             requirements["utilises_logger"] = False
+
+        if line.startswith("self.logger."):
+            requirements["does_not_call_logger_directly"] = False
 
         if line.startswith("self.requireapikey"):
             optional["requires_api_key"] = True

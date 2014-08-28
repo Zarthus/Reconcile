@@ -163,7 +163,7 @@ class Tell(moduletemplate.BotModule):
             conn.commit()
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("show_tells({}) error: {}".format(nick, str(e)))
+            self.error("show_tells({}) error: {}".format(nick, str(e)))
             return False
         return True
 
@@ -183,7 +183,7 @@ class Tell(moduletemplate.BotModule):
                 self.hastells[to] = False
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("has_tells({}) error: {}".format(to, str(e)))
+            self.error("has_tells({}) error: {}".format(to, str(e)))
             return False
 
         if to in self.hastells:  # This should always be set, but the extra security if doesn't hurt.
@@ -201,7 +201,7 @@ class Tell(moduletemplate.BotModule):
                 exists = True
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("tell_exists({}, {}) error: {}".format(sender, to, str(e)))
+            self.error("tell_exists({}, {}) error: {}".format(sender, to, str(e)))
             return False
 
         return exists
@@ -233,7 +233,7 @@ class Tell(moduletemplate.BotModule):
                 passedlimit = True
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("tell_passes_limit({}, {}) error: {}".format(sender, str(send), str(e)))
+            self.error("tell_passes_limit({}, {}) error: {}".format(sender, str(send), str(e)))
             return False
 
         return passedlimit
@@ -257,7 +257,7 @@ class Tell(moduletemplate.BotModule):
             count = result[0]
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("tell_list({}) error: {}".format(sender, str(e)))
+            self.error("tell_list({}) error: {}".format(sender, str(e)))
             return False
         return count
 
@@ -272,7 +272,7 @@ class Tell(moduletemplate.BotModule):
             conn.commit()
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("tell_store({}, {}, {}) error: {}".format(sender, to, message, str(e)))
+            self.error("tell_store({}, {}, {}) error: {}".format(sender, to, message, str(e)))
             return False
 
         self.hastells[to.lower()] = True
@@ -287,7 +287,7 @@ class Tell(moduletemplate.BotModule):
             conn.commit()
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("tell_delete({}, {}) error: {}".format(sender, to, str(e)))
+            self.error("tell_delete({}, {}) error: {}".format(sender, to, str(e)))
             return False
 
         self.hastells[to.lower()] = False
@@ -302,7 +302,7 @@ class Tell(moduletemplate.BotModule):
             conn.commit()
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("tell_delete_all({}) error: {}".format(sender, str(e)))
+            self.error("tell_delete_all({}) error: {}".format(sender, str(e)))
             return False
 
         self.hastells[sender.lower()] = False
@@ -317,4 +317,4 @@ class Tell(moduletemplate.BotModule):
             conn.commit()
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("tell_make_db() error: Failed to create database tell.db: {}".format(str(e)))
+            self.error("tell_make_db() error: Failed to create database tell.db: {}".format(str(e)))

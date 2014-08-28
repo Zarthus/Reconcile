@@ -67,7 +67,7 @@ class Dictionary(moduletemplate.BotModule):
 
             xml = r.text
         except Exception as e:
-            self.logger.error("Spellcheck error: {}".format(str(e)))
+            self.error("Spellcheck error: {}".format(str(e)))
             return "Could not check spelling: {}".format(str(e))
 
         retlist = {}

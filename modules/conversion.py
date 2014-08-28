@@ -142,7 +142,7 @@ class Conversion(moduletemplate.BotModule):
                 tempname = "K"
                 newtempname = "°F"
             else:
-                self.logger.notice("Temperature Conversion: Not found in lists: {}".format(commandtext))
+                self.warning("Temperature Conversion: Not found in lists: {}".format(commandtext))
                 return self.notice(nick, "An error occured: Conversion type was not found.")
 
             newtemp = round(newtemp, 2)
@@ -178,7 +178,7 @@ class Conversion(moduletemplate.BotModule):
                 weightname = "kg"
                 newweightname = "lb" if int(newweight) == 1 else "lbs"
             else:
-                self.logger.notice("Weight Conversion: Not found in lists: {}".format(commandtext))
+                self.warning("Weight Conversion: Not found in lists: {}".format(commandtext))
                 return self.notice(nick, "An error occured: Conversion type was not found.")
 
             newweight = round(newweight, 2)
@@ -214,7 +214,7 @@ class Conversion(moduletemplate.BotModule):
                 distname = "kilometer" if int(dist) == 1 else "kilometers"
                 newdistname = "mile" if int(newdist) == 1 else "miles"
             else:
-                self.logger.notice("Distance Conversion: Not found in lists: {}".format(commandtext))
+                self.warning("Distance Conversion: Not found in lists: {}".format(commandtext))
                 return self.notice(nick, "An error occured: Conversion type was not found.")
 
             newdist = round(newdist, 2)
@@ -270,12 +270,12 @@ class Conversion(moduletemplate.BotModule):
             r.raise_for_status()
             json = r.json
         except Exception as e:
-            self.logger.notice("Error occured caching currency conversion: {}".format(str(e)))
+            self.warning("Error occured caching currency conversion: {}".format(str(e)))
             return False
 
         self.cache["convert"]["age"] = time.time()
         self.cache["convert"]["json"] = json
-        self.logger.log_verbose("Cached currency conversions.")
+        self.log_verbose("Cached currency conversions.")
 
         return True
 
@@ -293,10 +293,10 @@ class Conversion(moduletemplate.BotModule):
             r.raise_for_status()
             json = r.json
         except Exception as e:
-            self.logger.notice("Error occured caching currency info: {}".format(str(e)))
+            self.warning("Error occured caching currency info: {}".format(str(e)))
             return False
 
         self.cache["info"]["age"] = time.time()
         self.cache["info"]["json"] = json
-        self.logger.log_verbose("Cached currency information.")
+        self.log_verbose("Cached currency information.")
         return True

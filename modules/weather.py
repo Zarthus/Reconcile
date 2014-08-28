@@ -38,9 +38,9 @@ class Weather(moduletemplate.BotModule):
             self.module_data["forecasts_max"] = 1
 
         if self.module_data["forecasts_max"] > 5:
-            self.logger.notice("Too high value: Weather forecasts_max is set to {}, "
-                               "maximum value: 5. Please edit your configuration and lower this value."
-                               .format(self.module_data["forecasts_max"]))
+            self.warning("Too high value: Weather forecasts_max is set to {}, "
+                         "maximum value: 5. Please edit your configuration and lower this value."
+                         .format(self.module_data["forecasts_max"]))
             self.module_data["forecasts_max"] = 5
 
         if "forecasts_ignore_night" not in self.module_data:
@@ -105,7 +105,7 @@ class Weather(moduletemplate.BotModule):
             r.raise_for_status()
             json = r.json
         except Exception as e:
-            self.logger.error("Could not find weather information for {}: {}".format(location, str(e)))
+            self.error("Could not find weather information for {}: {}".format(location, str(e)))
             return "Could not find weather information for {}: {}".format(location, str(e))
 
         contents = ""
@@ -129,7 +129,7 @@ class Weather(moduletemplate.BotModule):
                 r.raise_for_status()
                 json = r.json
             except Exception as e:
-                self.logger.error("Could not lookup weather information for {}: {}".format(location, str(e)))
+                self.error("Could not lookup weather information for {}: {}".format(location, str(e)))
                 return "Could not lookup weather information for {}: {}".format(location, str(e))
 
             try:
@@ -138,13 +138,13 @@ class Weather(moduletemplate.BotModule):
                 # The same happens underneath
                 contents = self.parse_weather(json)
             except Exception as e:
-                self.logger.error("Error parsing forecast: {}".format(str(e)))
+                self.error("Error parsing forecast: {}".format(str(e)))
                 return "Error parsing forecast: {}".format(str(e))
         elif "forecast" in json:
             try:
                 contents = self.parse_weather(json)
             except Exception as e:
-                self.logger.error("Error parsing forecast: {}".format(str(e)))
+                self.error("Error parsing forecast: {}".format(str(e)))
                 return "Error parsing forecast: {}".format(str(e))
 
         if contents:

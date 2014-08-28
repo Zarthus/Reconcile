@@ -21,6 +21,9 @@ class Logger:
         print("{} {} | {}".format(self.getTimestamp(), self.network_name, text))
         self._write("[{}] {}".format(self.getLogTimestamp(), text))
 
+    def warning(self, text):
+        self.notice(text)
+
     def notice(self, text):
         print("{}{} {} | Notice: {}{}".format(self.col_notice_prefix, self.getTimestamp(), self.network_name, text,
                                               self.col_notice_suffix))

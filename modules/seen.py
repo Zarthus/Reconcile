@@ -133,7 +133,7 @@ class Seen(moduletemplate.BotModule):
 
     def was_seen(self, nickname):
         if not self.validator.nickname(nickname):
-            self.logger.notice("seen: Tried to get wasseen data from invalid nickname {}".format(nickname))
+            self.warning("seen: Tried to get wasseen data from invalid nickname {}".format(nickname))
             return False
 
         seen = False
@@ -148,13 +148,13 @@ class Seen(moduletemplate.BotModule):
 
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("was_seen({}) error: {}".format(nickname, str(e)))
+            self.error("was_seen({}) error: {}".format(nickname, str(e)))
 
         return seen
 
     def get_seen(self, nickname):
         if not self.validator.nickname(nickname):
-            self.logger.notice("seen: Tried to get seen data from invalid nickname {}".format(nickname))
+            self.warning("seen: Tried to get seen data from invalid nickname {}".format(nickname))
             return False
 
         nickname = nickname.lower()
@@ -172,13 +172,13 @@ class Seen(moduletemplate.BotModule):
 
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("get_seen({}) error: {}".format(nickname, str(e)))
+            self.error("get_seen({}) error: {}".format(nickname, str(e)))
 
         return response
 
     def store_seen(self, nickname, data):
         if not self.validator.nickname(nickname):
-            self.logger.notice("seen: Tried to store invalid nickname {}".format(nickname))
+            self.warning("seen: Tried to store invalid nickname {}".format(nickname))
             return False
 
         host = self.get_userhost_from_nick(nickname)
@@ -194,7 +194,7 @@ class Seen(moduletemplate.BotModule):
             conn.commit()
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("store_seen({}, {}) error: {}".format(nickname, data, str(e)))
+            self.error("store_seen({}, {}) error: {}".format(nickname, data, str(e)))
 
     def make_seen_db(self):
         try:
@@ -205,4 +205,4 @@ class Seen(moduletemplate.BotModule):
             conn.commit()
             conn.close()
         except sqlite3.Error as e:
-            self.logger.error("make_seen_db() error: Failed to create database seen.db: {}".format(str(e)))
+            self.error("make_seen_db() error: Failed to create database seen.db: {}".format(str(e)))

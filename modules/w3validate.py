@@ -33,7 +33,7 @@ class W3Validate(moduletemplate.BotModule):
             r = requests.get(val_link)
             r.raise_for_status()
         except Exception as e:
-            self.logger.notice("Validation for '{}' failed: {}".format(website, str(e)))
+            self.warning("Validation for '{}' failed: {}".format(website, str(e)))
             return "Validation for '{}' failed: {}".format(website, str(e))
 
         valid = r.headers["x-w3c-validator-status"].lower()

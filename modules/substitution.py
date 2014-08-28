@@ -54,7 +54,7 @@ class Substitution(moduletemplate.BotModule):
         except Exception as e:
             # More over to trying to just replace() it.
             invalid_regex = True
-            self.logger.log_verbose("Substitute: Erroneous Regular Expression handled: {}".format(str(e)))
+            self.log_verbose("Substitute: Erroneous Regular Expression handled: {}".format(str(e)))
 
         for msg in msglist:
             if invalid_regex and search in msg or not invalid_regex and pattern.search(msg):
