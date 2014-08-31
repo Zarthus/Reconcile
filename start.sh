@@ -12,7 +12,7 @@ Starts the python bot in a screen session if it is not already running.
   -p, --python      use the 'python' command over 'python3'.
   -k, --kill        kill the process the bot is using, this is not a graceful way of exiting,
                       use of the bots actual functions are recommended.
-  -d, --daemon      launch the bot but don't attack to the created screen (mostly for use by the init script)."
+  -d, --daemon      launch the bot but don't attach to the created screen (mostly for use by the init script)."
 
   exit 0
 }
