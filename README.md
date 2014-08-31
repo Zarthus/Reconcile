@@ -47,7 +47,7 @@ flake8 ([PEP8](http://legacy.python.org/dev/peps/pep-0008/) and [Pyflakes](https
 Your code is not longer than 119 characters (raised from the original 79 pep8 checks against)
 Travis compatible (see [`.travis.yml`](.travis.yml) to see what tests are being performed)
 [RFC 1459 compatible](http://tools.ietf.org/html/rfc1459.html)
-Should your module require an API key, please edit `config.example.json` and `docs/apikeys.md` accordingly.
+Should your module require an API key, please edit `config.example.json` and [the Wiki Page](https://github.com/Zarthus/Reconcile/wiki/API-Keys) accordingly (in alphabetical order).
 Should your module require a configuration block, don't forget to edit the [wiki](https://github.com/Zarthus/Reconcile/wiki/Configuring-Reconcile)
 
 ### Bugs / Suggestions
@@ -55,6 +55,6 @@ Feel free to make an [issue](https://github.com/zarthus/reconcile/issues/new) if
 
 ### Support
 
-Should you have issues getting the bot running, have an issue, or have a general inquiry, you can contact me on IRC via [webchat](https://webchat.esper.net/?channels=zarthus) or [connect directly with a client](irc://irc.esper.net/zarthus)
+If the [Wiki Pages](https://github.com/Zarthus/Reconcile/wiki) are of no help, and still have an issue, or have a general inquiry, you can contact me on IRC via [webchat](https://webchat.esper.net/?channels=zarthus) or [connect directly with a client](irc://irc.esper.net/zarthus)
 
 It may take a while to get a response; and I do not guarantee one, as I am not a 24/7 answering machine. But I'll try my best!
