@@ -11,7 +11,8 @@ Starts the python bot in a screen session if it is not already running.
   -3, --python3     use the 'python3' command over 'python'.
   -p, --python      use the 'python' command over 'python3'.
   -k, --kill        kill the process the bot is using, this is not a graceful way of exiting,
-                      use of the bots actual functions are recommended."
+                      use of the bots actual functions are recommended.
+  -d, --daemon      launch the bot but don't attack to the created screen (mostly for use by the init script)."
 
   exit 0
 }
@@ -19,7 +20,7 @@ Starts the python bot in a screen session if it is not already running.
 function doexit() {
   if [ ! -f "ircbot.pid" ]; then
     echo "Could not kill bot - no ircbot.pid exists. Is the bot running?"
-    exit 1
+    exit 2
   fi
 
   kill `cat ircbot.pid`
@@ -46,6 +47,7 @@ function doexit() {
 be_verbose=0
 use_python3=0
 use_python=0
+screen_args=""
 
 for arg in $@; do
   case "$arg" in
@@ -54,6 +56,7 @@ for arg in $@; do
     -3|--python3)  use_python3=1;;
     -p|--python)   use_python=1;;
     -k|--kill)     doexit;;
+    -d|--daemon)   screen_args="-dm";;
   esac
 done
 
@@ -69,15 +72,17 @@ if [[ $be_verbose -eq 1 ]]; then
 fi
 
 if [[ $use_python3 -eq 1 ]]; then
-  screen python3 bot.py
+  screen $screen_args python3 bot.py
 elif [[ $use_python -eq 1 ]]; then
-  screen python bot.py
+  screen $screen_args python bot.py
 else
   pytest=`python3 -c "print('1')"`  # Some machines run both python2 and python3, if python3 is a command we use that.
 
   if [[ $pytest -eq 1 ]]; then
-    screen python3 bot.py
+    screen $screen_args python3 bot.py
   else
-    screen python bot.py
+    screen $screen_args python bot.py
   fi
 fi
+
+exit 0

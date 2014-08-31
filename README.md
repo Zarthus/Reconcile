@@ -14,6 +14,7 @@ To make use of Reconcile, ensure the following requirements are met:
 * A working internet connection.
 * You have downloaded the requirements with pip or apt-get (`pip install -r requirements.txt`)
 * The network you wish to run this on uses Atheme services. It may not work on other services.
+* To have `screen` installed (for the init script and start.sh).
 
 ### Configuring your bot.
 
@@ -23,6 +24,14 @@ Once the installation requirements are satified, copy or rename `config.example.
 But do not copy it directly, use `config.example.json` for that.
 
 Once these requirements are met, go ahead and run `python bot.py` or `./start.sh` to start the bot.
+
+### Run the bot on system init.
+
+To run the bot on init you can copy (as root or via sudo) the file `reconcile` (from the root of the repo) to /etc/init.d/
+You will then want to edit the file (do this as root/via sudo!).
+Change the BOTUSER and BOTDIR variables to match your setup.
+Make sure to chmod +x the init script in /etc/init.d/
+Make sure to have `screen` installed!
 
 ### Disabling (or enabling) a module
 
