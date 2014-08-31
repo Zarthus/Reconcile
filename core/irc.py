@@ -700,6 +700,7 @@ class IrcConnection:
         self.server = network["server"]
         self.port = network["port"]
         self.ssl = network["ssl"]
+        self.ipv4 = network["ipv4"]
 
         self.znc = type(network["znc"]) == str  # False if not using znc, true otherwise.
         if self.znc:
@@ -755,8 +756,15 @@ class IrcConnection:
         self.force_quit = False  # Tell the main loop in bot.py that we wish to exit the entire bot.
 
     def _connect_ssl(self):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.connect((self.server, self.port))
+        sock = None
+
+        if self.ipv4:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.connect((self.server, self.port))
+        else:
+            sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+            sock.connect((self.server, self.port, 0, 0))
+
         self.socket = ssl.wrap_socket(sock)
 
         self.send_raw("NICK {}".format(self.mnick))
@@ -766,8 +774,14 @@ class IrcConnection:
         self.connected = True
 
     def _connect(self):
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.connect((self.server, self.port))
+        sock = None
+
+        if self.ipv4:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.connect((self.server, self.port))
+        else:
+            sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+            sock.connect((self.server, self.port, 0, 0))
 
         self.send_raw("NICK {}".format(self.mnick))
         self.currentnick = self.mnick

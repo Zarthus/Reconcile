@@ -4,6 +4,7 @@
       "server": "irc.esper.net",
       "port": 6667,
       "ssl": false,
+      "ipv4": false,
 
       "nick": "",
       "altnick": "",
@@ -45,6 +46,10 @@
   "modules": {
     "Entertainment": {
       "rate_limit_delay": 10
+    },
+
+    "Factoid": {
+      "global_factoids": false
     },
 
     "Quote": {

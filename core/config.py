@@ -177,6 +177,9 @@ class Config:
             if "network_name" not in self.networks[network_name]:
                 self.networks[network_name]["network_name"] = network_name
 
+            if "ipv4" not in self.networks[network_name]:
+                self.networks[network_name]["ipv4"] = True
+
             if "nick" not in self.networks[network_name]:
                 self.networks[network_name]["nick"] = "ReconcileBot"
                 self.logger.log_verbose("'nick' was not configured in {} - default value assumed".format(network_name))
