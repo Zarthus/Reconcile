@@ -285,6 +285,10 @@ class IrcConnection:
             if params.startswith(":"):
                 params = params[1:]
 
+        if target:
+            if target.startswith(":"):
+                target = target[1:]
+
         if event == "PRIVMSG":
             self.on_privmsg(nick, target, params, [nick, user, host, uinfo])
         elif event == "NOTICE":
@@ -350,6 +354,11 @@ class IrcConnection:
         return True
 
     def on_notice(self, nick, target, message):
+        if self.znc and self.znc_auth and nick == "irc.znc.in" and target == "AUTH":
+            # Log in to ZNC.
+            self.send_raw("PASS {}".format(self.znc_auth))
+            self.znc = True
+            self.znc_auth = False
         if target == "*":
             self.logger.log(message)
             self.server_name = nick  # TODO: This will be set four times, better ways? perhaps whois
@@ -487,12 +496,23 @@ class IrcConnection:
             # Nick is already taken.
             if self.currentnick != self.altnick:
                 self.nick(self.altnick)
-            return True
+                return True
 
         if numeric == 422 or numeric == 376:
             # No MOTD found or End of MOTD
+
+            # Set name to what it really is as provided by the server over what we think it is.
+            nick = data.split()[2]
+            if nick != self.currentnick:
+                self.logger.notice_verbose("Incorrect currentnick: {} -> {}".format(self.currentnick, nick))
+                self.currentnick = nick
+
             if self.password and self.account:
                 self.send_raw("PRIVMSG NickServ :IDENTIFY {} {}".format(self.account, self.password))
+                self.password = False
+            elif self.password and not self.account:
+                self.send_raw("PRIVMSG NickServ :IDENTIFY {}".format(self.password))
+                self.password = False
 
             if self.modes:
                 self.mode(self.currentnick, self.modes)
@@ -505,6 +525,10 @@ class IrcConnection:
             if self.perform:
                 for perform in self.perform:
                     self.send_raw(perform)
+
+            if not self.server_name:
+                self.logger.notice_verbose("Could not retrieve server name, using network name instead.")
+                self.server_name = self.network_name
 
             self.logger.log("A connection has been established with {}.".format(self.server_name))
 
@@ -677,13 +701,21 @@ class IrcConnection:
         self.port = network["port"]
         self.ssl = network["ssl"]
 
+        self.znc = type(network["znc"]) == str  # False if not using znc, true otherwise.
+        if self.znc:
+            # the user/network:password phrase if self.znc is true
+            # for security reasons, this will unset itself automatically once used.
+            self.znc_auth = network["znc"]
+        else:
+            self.znc_auth = False
+
         self.mnick = network["nick"]
         self.altnick = network["altnick"]
         self.ident = network["ident"]
         self.realname = network["realname"]
 
         self.account = network["account"]
-        self.password = network["password"]
+        self.password = network["password"]  # Will unset itself after it is used.
 
         self.command_prefix = network["command_prefix"]
         self.invite_join = network["invite_join"]

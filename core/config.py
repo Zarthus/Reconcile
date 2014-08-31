@@ -243,6 +243,9 @@ class Config:
             if "password" not in self.networks[network_name]:
                 self.networks[network_name]["password"] = ""
 
+            if "znc" not in self.networks[network_name]:
+                self.networks[network_name]["znc"] = False
+
             if "command_prefix" not in self.networks[network_name]:
                 self.networks[network_name]["command_prefix"] = "!"
                 self.logger.log_verbose("'command_prefix' was not configured in {} - '!' assumed".format(network_name))
