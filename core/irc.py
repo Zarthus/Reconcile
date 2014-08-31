@@ -776,8 +776,6 @@ class IrcConnection:
         self.connected = True
 
     def _connect(self):
-        sock = None
-
         if self.ipv4:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.socket.connect((self.server, self.port))
