@@ -29,7 +29,7 @@ function doexit() {
   success_rm=$?
 
   if [[ $success_kill -eq 0 ]]; then
-    echo "The bot have been forcefully shut down."
+    echo "The bot has been forcefully shut down."
   else
     echo "Could not kill the process."
   fi
