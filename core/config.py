@@ -177,8 +177,15 @@ class Config:
             if "network_name" not in self.networks[network_name]:
                 self.networks[network_name]["network_name"] = network_name
 
-            if "ipv4" not in self.networks[network_name]:
+            if "ipv4" in self.networks[network_name] and "ipv6" in self.networks[network_name]:
+                if self.networks[network_name]["ipv4"] is self.networks[network_name]["ipv6"]:
+                    self.logger.log_verbose("'ipv4' and 'ipv6' were configured in {} and the same, "
+                                            "can only connect via one protocol.".format(network_name))
+                    warnings += 1
+            elif "ipv4" not in self.networks[network_name] and "ipv6" not in self.networks[network_name]:
                 self.networks[network_name]["ipv4"] = True
+            elif "ipv6" in self.networks[network_name] and "ipv4" not in self.networks[network_name]:
+                self.networks[network_name]["ipv4"] = not self.networks[network_name]["ipv6"]
 
             if "nick" not in self.networks[network_name]:
                 self.networks[network_name]["nick"] = "ReconcileBot"

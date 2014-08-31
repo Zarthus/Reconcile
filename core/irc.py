@@ -194,10 +194,12 @@ class IrcConnection:
                             .format(self.server, self.currentnick))
 
         if self.ssl:
-            self.logger.log("Attempting to connect to server ({}:{}) with SSL.".format(self.server, self.port))
+            self.logger.log("Attempting to connect to server ({}:{}) with SSL using {}."
+                            .format(self.server, self.port, "IPv4" if self.ipv4 else "IPv6"))
             self._connect_ssl()
         else:
-            self.logger.log("Attempting to connect to server. ({}:{})".format(self.server, self.port))
+            self.logger.log("Attempting to connect to server. ({}:{}) using {}."
+                            .format(self.server, self.port, "IPv4" if self.ipv4 else "IPv6"))
             self._connect()
         if not reconnecting:
             self.ratelimiter.start()
@@ -777,11 +779,11 @@ class IrcConnection:
         sock = None
 
         if self.ipv4:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.connect((self.server, self.port))
+            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.socket.connect((self.server, self.port))
         else:
-            sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
-            sock.connect((self.server, self.port, 0, 0))
+            self.socket = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+            self.socket.connect((self.server, self.port, 0, 0))
 
         self.send_raw("NICK {}".format(self.mnick))
         self.currentnick = self.mnick
