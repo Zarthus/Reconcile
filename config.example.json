@@ -4,7 +4,7 @@
       "server": "irc.esper.net",
       "port": 6667,
       "ssl": false,
-      "ipv4": false,
+      "ipv4": true,
 
       "nick": "",
       "altnick": "",
