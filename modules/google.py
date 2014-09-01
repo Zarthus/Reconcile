@@ -49,7 +49,7 @@ class Google(moduletemplate.BotModule):
             request = requests.get(url, params=payload)
             request.raise_for_status()
 
-            json = request.json
+            json = request.json()
         except Exception as e:
             return "Failed to look up query: {}".format(str(e))
 
@@ -89,7 +89,7 @@ class Google(moduletemplate.BotModule):
             request = requests.get(url, params=payload)
             request.raise_for_status()
 
-            json = request.json
+            json = request.json()
         except Exception as e:
             return "Failed to look up query: {}".format(str(e))
 

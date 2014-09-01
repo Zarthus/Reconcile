@@ -103,7 +103,7 @@ class Weather(moduletemplate.BotModule):
             r = requests.get(api_url)
 
             r.raise_for_status()
-            json = r.json
+            json = r.json()
         except Exception as e:
             self.error("Could not find weather information for {}: {}".format(location, str(e)))
             return "Could not find weather information for {}: {}".format(location, str(e))
@@ -127,7 +127,7 @@ class Weather(moduletemplate.BotModule):
                 r = requests.get(lookup_url)
 
                 r.raise_for_status()
-                json = r.json
+                json = r.json()
             except Exception as e:
                 self.error("Could not lookup weather information for {}: {}".format(location, str(e)))
                 return "Could not lookup weather information for {}: {}".format(location, str(e))

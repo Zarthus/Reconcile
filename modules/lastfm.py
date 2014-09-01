@@ -140,7 +140,7 @@ class LastFM(moduletemplate.BotModule):
         try:
             r = requests.get(api_url, params=payload)
             r.raise_for_status()
-            json = r.json
+            json = r.json()
         except Exception as e:
             self.warning("Could not retrieve LastFM np information for {}: {}".format(account, str(e)))
             self.message(target, nick, "Could not retrieve information: {}".format(str(e)))
