@@ -47,8 +47,8 @@ class Paste:
         try:
             r = requests.post(url, data=json.dumps(payload))
 
-            if r.ok and "html_url" in r.json:
-                returnurl = r.json["html_url"]
+            if r.ok and "html_url" in r.json():
+                returnurl = r.json()["html_url"]
             else:
                 r.raise_for_status()
         except Exception as e:
@@ -89,8 +89,8 @@ class Paste:
         try:
             r = requests.post(url, data=json.dumps(payload))
 
-            if r.ok and "html_url" in r.json:
-                returnurl = r.json["html_url"]
+            if r.ok and "html_url" in r.json():
+                returnurl = r.json()["html_url"]
             else:
                 r.raise_for_status()
         except Exception as e:

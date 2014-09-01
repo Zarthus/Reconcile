@@ -57,7 +57,7 @@ class Wikipedia(moduletemplate.BotModule):
         try:
             r = requests.get(api_url, params=payload)
             r.raise_for_status()
-            json = r.json
+            json = r.json()
         except Exception as e:
             self.warning("Failed to retrieve wikipedia article '{}' - {}".format(article, str(e)))
             return False if ret_boolean else "Failed to retrieve wikipedia article '{}' - {}".format(article, str(e))

@@ -34,7 +34,7 @@ class Xkcd(moduletemplate.BotModule):
         try:
             r = requests.get("{}info.0.json".format(url))
             r.raise_for_status()
-            json = r.json
+            json = r.json()
         except Exception as e:
             self.warning("Failed to get xkcd '{}': {}".format(url, str(e)))
             return False if ret_boolean else "Failed to get xkcd '{}': {}".format(url, str(e))

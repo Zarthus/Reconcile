@@ -41,8 +41,8 @@ class ShortUrl:
         try:
             r = requests.post(url, data=json.dumps(payload), headers=header)
 
-            if r.ok and "id" in r.json:
-                shorturl = r.json["id"]
+            if r.ok and "id" in r.json():
+                shorturl = r.json()["id"]
             else:
                 r.raise_for_status()
         except Exception as e:
@@ -74,8 +74,8 @@ class ShortUrl:
         try:
             r = requests.get(isgd, params=payload)
 
-            if r.ok and "shorturl" in r.json:
-                shorturl = r.json["shorturl"]
+            if r.ok and "shorturl" in r.json():
+                shorturl = r.json()["shorturl"]
             else:
                 r.raise_for_status()
         except Exception as e:
@@ -116,8 +116,8 @@ class ShortUrl:
         try:
             r = requests.get(scenesat, params=payload)
 
-            if r.ok and "shorturl" in r.json:
-                shorturl = r.json["shorturl"]
+            if r.ok and "shorturl" in r.json():
+                shorturl = r.json()["shorturl"]
             else:
                 r.raise_for_status()
         except Exception as e:
