@@ -268,7 +268,7 @@ class Conversion(moduletemplate.BotModule):
         try:
             r = requests.get(api_url, params=payload)
             r.raise_for_status()
-            json = r.json
+            json = r.json()
         except Exception as e:
             self.warning("Error occured caching currency conversion: {}".format(str(e)))
             return False
@@ -291,7 +291,7 @@ class Conversion(moduletemplate.BotModule):
         try:
             r = requests.get(api_url, params=payload)
             r.raise_for_status()
-            json = r.json
+            json = r.json()
         except Exception as e:
             self.warning("Error occured caching currency info: {}".format(str(e)))
             return False
