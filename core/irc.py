@@ -492,13 +492,12 @@ class IrcConnection:
             # RPL_WHOREPLY
             whodata = data.split()[3:]
             if len(whodata):
-                self.on_whoreply(data.split()[3:])
+                self.on_whoreply(whodata)
 
         if numeric == 433:
             # Nick is already taken.
             if self.currentnick != self.altnick:
                 self.nick(self.altnick)
-                return True
 
         if numeric == 422 or numeric == 376:
             # No MOTD found or End of MOTD
