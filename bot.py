@@ -49,10 +49,15 @@ while running:
     for connection in irc_connections.items():
         force_quit = connection[1].tick()
         if force_quit:
-            print("Quit requested, bot exiting")
+            print("Forced quit requested. Disconnecting from all networks.")
+            running = False
 
             for c in irc_connections.items():
-                c[1].quit("Shutdown requested.")
-            running = False
+                try:
+                    c[1].logger.log("Quit requested, bot exiting")
+                    c[1].quit("Shutdown requested.")
+                except Exception as e:
+                    c[1].logger.error("Error while sending Quit: {}".format(str(e)))
+
 
 os.remove("ircbot.pid")  # Remove pid file as it is no longer running.

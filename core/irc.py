@@ -32,6 +32,8 @@ class IrcConnection:
     def tick(self):
         try:
             self.readBuffer()
+        except KeyboardInterrupt:
+            self.force_quit = True
         except Exception as e:
             traceback.print_exc()
             tb = traceback.format_exc()
@@ -41,9 +43,6 @@ class IrcConnection:
                                         time.strftime(self.config.getMetadata("timestamp"))),
                                         tb, "traceback.py", False, self.logger)
                 self.debug("An exception has occured and has been logged: {} | {}".format(gist, str(e)))
-
-        except KeyboardInterrupt:
-            self.force_quit = True
 
         return self.force_quit
 
