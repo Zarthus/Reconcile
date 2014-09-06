@@ -15,6 +15,7 @@ To make use of Reconcile, ensure the following requirements are met:
 * You have downloaded the requirements with pip or apt-get (`pip install -r requirements.txt`)
 * The network you wish to run this on uses Atheme services. It may not work on other services.
 * To have `screen` installed (for the init script and start.sh).
+* Ideally, have a UTF-8 locale configured - encoding problems may occur if this is not the case.
 
 ### Configuring your bot.
 
