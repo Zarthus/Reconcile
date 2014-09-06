@@ -10,6 +10,9 @@ Starts the python bot in a screen session if it is not already running.
   -v, --verbose     show more verbose output.
   -3, --python3     use the 'python3' command over 'python'.
   -p, --python      use the 'python' command over 'python3'.
+  -r, --restart     kill the bots process, then start it up again with no parameters.
+  -u, --update      retrieve data from git, the same as 'git pull'.
+  -ur, --updrest    kill the bots process, retrieve updates from git, then start it up again with no parameters.
   -k, --kill        kill the process the bot is using, this is not a graceful way of exiting,
                       use of the bots actual functions are recommended.
   -d, --daemon      launch the bot but don't attach to the created screen (mostly for use by the init script)."
@@ -44,6 +47,25 @@ function doexit() {
   exit $success_kill
 }
 
+function doupdate() {
+  echo "Pulling data from git.."
+  git pull
+  exit 0
+}
+
+function dorestart() {
+  $0 -k
+  $0
+  exit 0
+}
+
+function update_and_restart() {
+  $0 -k
+  git pull
+  $0
+  exit 0
+}
+
 be_verbose=0
 use_python3=0
 use_python=0
@@ -55,6 +77,9 @@ for arg in $@; do
     -v|--verbose)  be_verbose=1;;
     -3|--python3)  use_python3=1;;
     -p|--python)   use_python=1;;
+    -r|--restart)  dorestart;;
+    -u|--update)   doupdate;;
+    -ur|--updrest) update_and_restart;;
     -k|--kill)     doexit;;
     -d|--daemon)   screen_args="-dm";;
   esac
