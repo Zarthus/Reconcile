@@ -198,11 +198,18 @@ class Config:
                                         .format(network_name))
                 warnings += 1
 
-            if "ident" not in self.networks[network_name]:
-                self.networks[network_name]["ident"] = self.networks[network_name]["nick"]
-                self.logger.log_verbose("'ident' was not configured in {} - default value assumed"
-                                        .format(network_name))
-                warnings += 1
+            if "user" not in self.networks[network_name]:
+
+                if "ident" not in self.networks[network_name]:
+                    self.networks[network_name]["user"] = self.networks[network_name]["nick"]
+                    self.logger.log_verbose("'user' was not configured in {} - default value assumed"
+                                            .format(network_name))
+                    warnings += 1
+                else:
+                    self.networks[network_name]["user"] = self.networks[network_name]["ident"]
+                    self.logger.log_verbose("the 'ident' config option is deprecated and will be removed in "
+                                            "future versions in {}, use 'user' instead."
+                                            .format(network_name))
 
             if "realname" not in self.networks[network_name]:
                 self.networks[network_name]["realname"] = self.networks[network_name]["nick"] + \

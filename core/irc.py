@@ -8,6 +8,7 @@ import time
 import re
 import traceback
 import queue
+import threading
 
 from core import channel
 from core import module
@@ -19,32 +20,39 @@ from tools import logger
 from tools import paste
 
 
-class IrcConnection:
+class IrcConnection(threading.Thread):
     def __init__(self, network, config, modules=None):
+        self.running = True
+        self.connected = False
+
+        self.network = network
         self.config = config
-        self.loadNetworkVariables(network)
+
+        threading.Thread.__init__(self)
+        self.start()
+
+    def run(self):
+        self.loadNetworkVariables()
         self._loadModules()
 
         self.numeric_regex = re.compile(":.* [0-9]{3}")
 
         self.connect()
+        while self.running:
+            try:
+                self.readBuffer()
+            except KeyboardInterrupt:
+                self.running = False
+                self.quit("Requested disconnect by script.")
+            except Exception as e:
+                traceback.print_exc()
+                tb = traceback.format_exc()
 
-    def tick(self):
-        try:
-            self.readBuffer()
-        except KeyboardInterrupt:
-            self.force_quit = True
-        except Exception as e:
-            traceback.print_exc()
-            tb = traceback.format_exc()
-
-            if self.debug_chan:
-                gist = paste.Paste.gist("Traceback for {} on {} at {}".format(self.currentnick, self.network_name,
-                                        time.strftime(self.config.getMetadata("timestamp"))),
-                                        tb, "traceback.py", False, self.logger)
-                self.debug("An exception has occured and has been logged: {} | {}".format(gist, str(e)))
-
-        return self.force_quit
+                if self.debug_chan:
+                    gist = paste.Paste.gist("Traceback for {} on {} at {}".format(self.currentnick, self.network_name,
+                                            time.strftime(self.config.getMetadata("timestamp"))),
+                                            tb, "traceback.py", False, self.logger)
+                    self.debug("An exception has occured and has been logged: {} | {}".format(gist, str(e)))
 
     def readBuffer(self):
         buff = self.socket.recv(4096)
@@ -135,7 +143,7 @@ class IrcConnection:
         self.logger.log("Sending CTCPREPLY '{}' to {}.".format(ctcp, target))
         self.send_raw("NOTICE {} :\x01{} {}\x01".format(target, ctcp, ctcpreply))
 
-    def join(self, channel):
+    def join_channel(self, channel):
         if len(self.disallowed_channels):
             for chan in self.disallowed_channels:
                 if chan.lower() == channel:
@@ -145,7 +153,7 @@ class IrcConnection:
         self.logger.log("Joining channel: {}".format(channel))
         self.send_raw("JOIN :{}".format(channel))
 
-    def part(self, channel, reason=None):
+    def part_channel(self, channel, reason=None):
         if not reason:
             self.logger.log("Parting channel '{}'".format(channel))
             self.send_raw("PART {}".format(channel))
@@ -426,7 +434,7 @@ class IrcConnection:
         self.logger.event("INVITE", "{} invited me to join {}".format(nick, channel))
 
         if self.invite_join:
-            self.join(channel)
+            self.join_channel(channel)
 
     def on_quit(self, nick, message=None):
         self.logger.event("QUIT", "{} has quit IRC: {}".format(nick, "Quit" if not message else message))
@@ -672,6 +680,12 @@ class IrcConnection:
             return self.channel_data[channel]
         return False
 
+    def isRunning(self):
+        return True if self.running else False
+
+    def getName(self):
+        return self.server_name if "server_name" in self else self.network_name
+
     def check_channel_empty(self, channel):
         if self.leave_empty_channels:
             ucount = 0
@@ -682,7 +696,7 @@ class IrcConnection:
                         ucount += 1
 
             if ucount == 1:
-                self.part(channel, "Channel is empty, leaving channel.")
+                self.part_channel(channel, "Channel is empty, leaving channel.")
 
     def register_command(self, command, params, help, priv, aliases=None, module=None):
         self.commandhelp.register(command, params, help, priv, aliases, module)
@@ -690,9 +704,10 @@ class IrcConnection:
     def unregister_command(self, command):
         self.commandhelp.unregister(command)
 
-    def loadNetworkVariables(self, network, curnick=None):
+    def loadNetworkVariables(self, network=None, curnick=None):
         """variables that will get created on initialisation, recreated on rehash"""
-        self.connected = False
+        if not network:
+            network = self.network
 
         self.id = network["id"]
         self.network_name = network["network_name"]
@@ -712,7 +727,7 @@ class IrcConnection:
 
         self.mnick = network["nick"]
         self.altnick = network["altnick"]
-        self.ident = network["ident"]
+        self.user = network["user"]
         self.realname = network["realname"]
 
         self.account = network["account"]
@@ -758,33 +773,41 @@ class IrcConnection:
     def _connect_ssl(self):
         sock = None
 
-        if self.ipv4:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.connect((self.server, self.port))
-        else:
-            sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
-            sock.connect((self.server, self.port, 0, 0))
+        try:
+            if self.ipv4:
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                sock.connect((self.server, self.port))
+            else:
+                sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+                sock.connect((self.server, self.port, 0, 0))
+        except Exception:
+            self.reconnect()
+            return
 
         self.socket = ssl.wrap_socket(sock)
 
         self.send_raw("NICK {}".format(self.mnick))
         self.currentnick = self.mnick
         # <username> <hostname> <servername> :<realname> - servername/hostname will be ignored by the ircd.
-        self.send_raw("USER {} 0 0 :{}".format(self.ident, self.realname))
+        self.send_raw("USER {} 0 0 :{}".format(self.user, self.realname))
         self.connected = True
 
     def _connect(self):
-        if self.ipv4:
-            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.socket.connect((self.server, self.port))
-        else:
-            self.socket = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
-            self.socket.connect((self.server, self.port, 0, 0))
+        try:
+            if self.ipv4:
+                self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.socket.connect((self.server, self.port))
+            else:
+                self.socket = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+                self.socket.connect((self.server, self.port, 0, 0))
+        except Exception:
+            self.reconnect()
+            return
 
         self.send_raw("NICK {}".format(self.mnick))
         self.currentnick = self.mnick
         # <username> <hostname> <servername> :<realname> - servername/hostname will be ignored by the ircd.
-        self.send_raw("USER {} 0 0 :{}".format(self.ident, self.realname))
+        self.send_raw("USER {} 0 0 :{}".format(self.user, self.realname))
         self.connected = True
 
     def _loadModules(self):

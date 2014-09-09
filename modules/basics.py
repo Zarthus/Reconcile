@@ -111,14 +111,14 @@ class BasicCommands(moduletemplate.BotModule):
                 if not commandtext:
                     return self.notice(nick, "Usage: join <channels to join>")
 
-                self._conn.join(commandtext)
+                self._conn.join_channel(commandtext)
                 return self.notice(nick, "Attempting to join: {}".format(commandtext.replace(",", ", ")))
 
             if command == "part":
                 if not commandtext:
                     return self.notice(nick, "Usage: part <channels to part>")
 
-                self._conn.part(commandtext)
+                self._conn.part_channel(commandtext)
                 return self.notice(nick, "Attempting to part: {}".format(commandtext.replace(",", ", ")))
 
             if command == "nick":

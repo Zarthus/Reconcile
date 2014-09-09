@@ -44,20 +44,17 @@ for network in conf.getNetworks().items():
     irc_connections[network[0]] = irc.IrcConnection(network[1], conf)
 
 while running:
-    time.sleep(0.1)
+    time.sleep(1)
+    runningThreads = 0
 
     for connection in irc_connections.items():
-        force_quit = connection[1].tick()
-        if force_quit:
-            print("Forced quit requested. Disconnecting from all networks.")
-            running = False
+        running = connection[1].isRunning()
 
-            for c in irc_connections.items():
-                try:
-                    c[1].logger.log("Quit requested, bot exiting")
-                    c[1].quit("Shutdown requested.")
-                except Exception as e:
-                    c[1].logger.error("Error while sending Quit: {}".format(str(e)))
+        if running:
+            runningThreads += 1
 
+    if runningThreads == 0:
+        conf.logger.log("No more connections remain, stopping script.")
+        running = False
 
 os.remove("ircbot.pid")  # Remove pid file as it is no longer running.
