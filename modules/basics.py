@@ -37,6 +37,9 @@ class BasicCommands(moduletemplate.BotModule):
         self.register_command("shutdown", None,
                               "Shut the entire bot down. This includes connections to different networks",
                               self.PRIV_ADMIN)
+        self.register_command("disconnect", None,
+                              "Disconnect from this network. This means connections to other networks will remain online.",
+                              self.PRIV_ADMIN)
         self.register_command("rehash", "[reconnect]",
                               "Rehash the bots configuration, use 'rehash reconnect' if you want the bot to reconnect",
                               self.PRIV_ADMIN)
@@ -150,8 +153,13 @@ class BasicCommands(moduletemplate.BotModule):
 
             if admin:
                 if command == "shutdown":
+                    self._conn.shutdownRequested = True
+                    self._conn.logger.log("Shutdown requested by {}".format(nick))
+                    return True
+
+                if command == "disconnect":
                     self._conn.force_quit = True
-                    self._conn.quit("Shutdown requested by {}".format(nick))
+                    self._conn.quit("Disconnect requested by {}".format(nick))
                     return True
 
                 if command == "rehash":

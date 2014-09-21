@@ -24,6 +24,7 @@ class IrcConnection(threading.Thread):
     def __init__(self, network, config, modules=None):
         self.running = True
         self.connected = False
+        self.shutdownRequested = False
 
         self.network = network
         self.config = config
@@ -67,6 +68,7 @@ class IrcConnection(threading.Thread):
                                                 time.strftime(self.config.getMetadata("timestamp"))),
                                                 tb, "traceback.py", False, self.logger)
                         self.debug("An exception has occured and has been logged: {} | {}".format(gist, str(e)))
+        self.connected = False
 
     def readBuffer(self):
         buff = self.socket.recv(4096)
