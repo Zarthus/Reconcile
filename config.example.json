@@ -77,7 +77,7 @@
   },
 
   "metadata": {
-    "bot_version": "1.1-dev",
+    "bot_version": "1.1",
     "bot_maintainer": "Zarthus",
     "github_url": "https:\/\/github.com\/zarthus\/reconcile",
     "verbose": false,
