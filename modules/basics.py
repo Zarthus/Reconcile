@@ -39,7 +39,7 @@ class BasicCommands(moduletemplate.BotModule):
                               self.PRIV_ADMIN)
         self.register_command("disconnect", None,
                               "Disconnect from this network."
-                              + "This means connections to other networks will remain online.",
+                              + " This means connections to other networks will remain online.",
                               self.PRIV_ADMIN)
         self.register_command("rehash", "[reconnect]",
                               "Rehash the bots configuration, use 'rehash reconnect' if you want the bot to reconnect",
