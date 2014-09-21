@@ -1,6 +1,6 @@
 config.json
 *.pyc
-db/*.db
+db/*
 logs/*.log
 ircbot.pid
 *~
