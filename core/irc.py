@@ -43,8 +43,7 @@ class IrcConnection(threading.Thread):
             try:
                 self.readBuffer()
             except KeyboardInterrupt:
-                self.running = False
-                self.quit("Requested disconnect by script.")
+                self.shutdownRequested = True
             except OSError:
                 self.logger.log("OSError caught. Automatically terminating...")
                 self.running = False

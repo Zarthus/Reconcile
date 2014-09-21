@@ -44,25 +44,33 @@ for network in conf.getNetworks().items():
     irc_connections[network[0]] = irc.IrcConnection(network[1], conf)
 
 while running:
-    time.sleep(1)
-    runningThreads = 0
-    shutdownRequested = False
+    try:
+        time.sleep(1)
+        runningThreads = 0
+        shutdownRequested = False
 
-    for connection in irc_connections.items():
-        running = connection[1].isRunning()
-        shutdownRequested = shutdownRequested or connection[1].shutdownRequested
-        if running:
-            runningThreads += 1
+        for connection in irc_connections.items():
+            running = connection[1].isRunning()
+            shutdownRequested = shutdownRequested or connection[1].shutdownRequested
+            if running:
+                runningThreads += 1
 
-    if runningThreads == 0:
-        conf.logger.log("No more connections remain, stopping script.")
+        if runningThreads == 0:
+            conf.logger.log("No more connections remain, stopping script.")
+            running = False
+        if shutdownRequested:
+            conf.logger.log("Shutdown requested.")
+            for connection in irc_connections.items():
+                if connection[1].connected:
+                    connection[1].force_quit = True
+                    connection[1].quit("Shutting down...")
+                    connection[1].shutdownRequested = False  # to prevent this from running twice.
+    except KeyboardInterrupt:
+        conf.logger.log("Shutdown requested by console.")
         running = False
-    if shutdownRequested:
-        conf.logger.log("Shutdown requested.")
         for connection in irc_connections.items():
             if connection[1].connected:
                 connection[1].force_quit = True
                 connection[1].quit("Shutting down...")
-                connection[1].shutdownRequested = False  # to prevent this from running twice.
 
 os.remove("ircbot.pid")  # Remove pid file as it is no longer running.
