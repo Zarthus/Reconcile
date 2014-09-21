@@ -63,6 +63,6 @@ while running:
             if connection[1].connected:
                 connection[1].force_quit = True
                 connection[1].quit("Shutting down...")
-                connection[1].shutdownRequested = False #to prevent this from running twice.
+                connection[1].shutdownRequested = False  # to prevent this from running twice.
 
 os.remove("ircbot.pid")  # Remove pid file as it is no longer running.
