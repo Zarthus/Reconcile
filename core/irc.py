@@ -48,14 +48,25 @@ class IrcConnection(threading.Thread):
                 self.logger.log("OSError caught. Automatically terminating...")
                 self.running = False
             except Exception as e:
-                traceback.print_exc()
-                tb = traceback.format_exc()
+                if int(time.time()) > self.time_error_per_minute + 60:
+                    self.time_error_per_minute = int(time.time())
+                    self.errors_per_minute = 0
 
-                if self.debug_chan:
-                    gist = paste.Paste.gist("Traceback for {} on {} at {}".format(self.currentnick, self.network_name,
-                                            time.strftime(self.config.getMetadata("timestamp"))),
-                                            tb, "traceback.py", False, self.logger)
-                    self.debug("An exception has occured and has been logged: {} | {}".format(gist, str(e)))
+                self.errors_per_minute += 1
+
+                if self.errors_per_minute > 25:
+                    self.running = False
+                    self.quit("Too many errors per minute, exiting.")
+                else:
+                    traceback.print_exc()
+                    tb = traceback.format_exc()
+
+                    if self.debug_chan:
+                        gist = paste.Paste.gist("Traceback for {} on {} at {}".format(self.currentnick,
+                                                self.network_name,
+                                                time.strftime(self.config.getMetadata("timestamp"))),
+                                                tb, "traceback.py", False, self.logger)
+                        self.debug("An exception has occured and has been logged: {} | {}".format(gist, str(e)))
 
     def readBuffer(self):
         buff = self.socket.recv(4096)
@@ -771,7 +782,8 @@ class IrcConnection(threading.Thread):
         self.commandhelp = commandhelp.CommandHelp(self.logger, self.config.getCommandPrefix(self.network_name))
         self.ratelimiter = ratelimit.Ratelimit(self, self.logger)
 
-        self.force_quit = False  # Tell the main loop in bot.py that we wish to exit the entire bot.
+        self.errors_per_minute = 0  # If we get too many EPM (errors per minute), we stop.
+        self.time_error_per_minute = int(time.time())
 
     def _connect_ssl(self):
         sock = None
