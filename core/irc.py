@@ -44,6 +44,9 @@ class IrcConnection(threading.Thread):
             except KeyboardInterrupt:
                 self.running = False
                 self.quit("Requested disconnect by script.")
+            except OSError:
+                self.logger.log("OSError caught. Automatically terminating...")
+                self.running = False
             except Exception as e:
                 traceback.print_exc()
                 tb = traceback.format_exc()
