@@ -159,7 +159,6 @@ class BasicCommands(moduletemplate.BotModule):
                     return True
 
                 if command == "disconnect":
-                    self._conn.force_quit = True
                     self._conn.quit("Disconnect requested by {}".format(nick))
                     return True
 

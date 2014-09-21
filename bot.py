@@ -70,7 +70,6 @@ while running:
         running = False
         for connection in irc_connections.items():
             if connection[1].connected:
-                connection[1].force_quit = True
                 connection[1].quit("Shutting down...")
 
 os.remove("ircbot.pid")  # Remove pid file as it is no longer running.
