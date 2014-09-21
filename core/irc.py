@@ -189,6 +189,7 @@ class IrcConnection(threading.Thread):
         self.connected = False
         self.server_name = None
         self.socket.close()
+        self.running = False
 
     def nick(self, newnick):
         if not self.validator.nickname(newnick):
