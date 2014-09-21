@@ -62,7 +62,6 @@ while running:
             conf.logger.log("Shutdown requested.")
             for connection in irc_connections.items():
                 if connection[1].connected:
-                    connection[1].force_quit = True
                     connection[1].quit("Shutting down...")
                     connection[1].shutdownRequested = False  # to prevent this from running twice.
     except KeyboardInterrupt:
