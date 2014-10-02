@@ -186,13 +186,14 @@ class IrcConnection(threading.Thread):
         if callDisconnect:
             self.disconnect()
 
-    def disconnect(self):
+    def disconnect(self, terminateThread=True):
         self.ratelimiter.stop()
         self.currentnick = None
         self.connected = False
         self.server_name = None
         self.socket.close()
-        self.running = False
+        if terminateThread:
+            self.running = False
 
     def nick(self, newnick):
         if not self.validator.nickname(newnick):
@@ -243,10 +244,7 @@ class IrcConnection(threading.Thread):
             self.reconnect_attempts += 1
             time.sleep(2 * self.reconnect_attempts)
 
-        self.ratelimiter.stop()
-        self.currentnick = None
-        self.connected = False
-        self.server_name = None
+        self.disconnect(False)
         self.socket.close()
 
         self.connect(True)
