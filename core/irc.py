@@ -176,13 +176,15 @@ class IrcConnection(threading.Thread):
             self.logger.log("Parting channel '{}' with reason: {}".format(channel, reason))
             self.send_raw("PART {} :{}".format(channel, reason))
 
-    def quit(self, message=None):
+    def quit(self, message=None, callDisconnect=True):
         if not message:
             message = "{} shutting down.".format(self.currentnick)
 
         self.logger.log("Quitting IRC: {}".format(message))
         self.send_raw("QUIT :{}".format(message))
-        self.disconnect()
+
+        if callDisconnect:
+            self.disconnect()
 
     def disconnect(self):
         self.ratelimiter.stop()
@@ -233,13 +235,19 @@ class IrcConnection(threading.Thread):
     def reconnect(self, message=None):
         if self.connected:
             if message:
-                self.quit("Reconnecting: {}".format(message))
+                self.quit("Reconnecting: {}".format(message), False)
             else:
-                self.quit("Reconnecting.")
+                self.quit("Reconnecting.", False)
             time.sleep(2)
         else:  # We quit by other means than user input.
             self.reconnect_attempts += 1
             time.sleep(2 * self.reconnect_attempts)
+
+        self.ratelimiter.stop()
+        self.currentnick = None
+        self.connected = False
+        self.server_name = None
+        self.socket.close()
 
         self.connect(True)
 
@@ -462,7 +470,6 @@ class IrcConnection(threading.Thread):
 
         if nick == self.currentnick and self.connected:
             self.logger.notice("We have disconnected from {}, attempting to reconnect.".format(self.server_name))
-            self.disconnect()
             self.reconnect()
 
         self.ModuleHandler.sendQuit(nick, message)
