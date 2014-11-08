@@ -91,7 +91,13 @@ def check_module(module_name):
             optional["has_configuration_block"] = True
             for word in line.split():
                 if word.startswith("self.module_data["):
-                    funcname = word.split("\"")[1]
+                    funcname = ''
+
+                    try:
+                        funcname = word.split("\"")[1]
+                    except Exception:
+                        funcname = word.split("'")[1]
+
                     confblock_func.append(funcname)
 
     confblock_func = list(set(confblock_func))
