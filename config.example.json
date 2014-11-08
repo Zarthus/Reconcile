@@ -44,6 +44,10 @@
   },
 
   "modules": {
+    "Cloud2Butt": { 
+      "rate_limit_delay": 60
+    },
+    
     "Entertainment": {
       "rate_limit_delay": 10
     },
