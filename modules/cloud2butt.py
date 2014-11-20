@@ -23,7 +23,14 @@ class Cloud2Butt(moduletemplate.BotModule):
     def on_privmsg(self, target, nick, message):
         if 'cloud' in message.lower():
             if self.ratelimit('cloud2butt'):
-                butt = 'BUTT' if 'CLOUD' in message else 'butt'
+                
+                butt = '' 
+                if 'CLOUD' in message:
+                    butt = 'BUTT'
+                elif 'Cloud' in message:
+                    butt = 'Butt'
+                else
+                    butt = 'butt'
 
                 self.message(target, nick, self.cloud_regex.sub(butt, message))
 
