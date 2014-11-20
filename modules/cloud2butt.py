@@ -29,7 +29,7 @@ class Cloud2Butt(moduletemplate.BotModule):
                     butt = 'BUTT'
                 elif 'Cloud' in message:
                     butt = 'Butt'
-                else
+                else:
                     butt = 'butt'
 
                 self.message(target, nick, self.cloud_regex.sub(butt, message))
