@@ -367,9 +367,9 @@ class IrcConnection(threading.Thread):
     def on_ctcp(self, nick, target, ctcp):
         self.logger.event("CTCP", "{}/{}: {}".format(nick, target, ctcp))
 
-        if ctcp == "VERSION":
-            self.ctcp_reply(nick, ctcp, "{} by {} v{} - {} - written in python".format(self.currentnick,
-                            self.config.getMaintainer(), self.config.getVersion(), self.config.getGithubURL()))
+
+        if ctcp == "CLIENTINFO":
+            self.ctcp_reply(nick, ctcp, "CLIENTINFO MAINTAINER PING TIME VERSION")
 
         elif ctcp == "MAINTAINER":
             self.ctcp_reply(nick, ctcp, "Maintained by {}".format(self.config.getMaintainer()))
@@ -379,6 +379,10 @@ class IrcConnection(threading.Thread):
 
         elif ctcp.startswith("PING"):
             self.ctcp_reply(nick, "PING", ctcp.strip("\x01")[5:])
+
+        elif ctcp == "VERSION":
+            self.ctcp_reply(nick, ctcp, "{} by {} v{} - {} - written in python".format(self.currentnick,
+                            self.config.getMaintainer(), self.config.getVersion(), self.config.getGithubURL()))
 
         else:
             return False
