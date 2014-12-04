@@ -17,10 +17,6 @@ To make use of Reconcile, ensure the following requirements are met:
 * To have `screen` installed (for the init script and start.sh).
 * Ideally, have a UTF-8 locale configured - encoding problems may occur if this is not the case.
 
-### Bleeding Edge
-
-To get Reconcile always running the latest version (i.e. synced with the development branch), ensure you issue `git checkout development`. The Bleeding Edge versions are generally tested well and shouldn't affect your bot too negatively. You may wish to run Bleeding Edge since the `master` branch syncs only on releases, whereas `development` is where all changes will be commited to, and new releases may take a long period of time.
-
 ### Configuring your bot.
 
 Once the installation requirements are satified, copy or rename `config.example.json` to `config.json` and configure it to your liking.

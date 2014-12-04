@@ -367,7 +367,6 @@ class IrcConnection(threading.Thread):
     def on_ctcp(self, nick, target, ctcp):
         self.logger.event("CTCP", "{}/{}: {}".format(nick, target, ctcp))
 
-
         if ctcp == "CLIENTINFO":
             self.ctcp_reply(nick, ctcp, "CLIENTINFO MAINTAINER PING TIME VERSION")
 
