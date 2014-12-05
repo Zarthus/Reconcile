@@ -18,7 +18,8 @@ script:
   - "python travis/test_module.py"
 
 notifications:
-  email: true
+  email:
+    - buughost+travis@gmail.com
   irc:
     channels:
       - "irc.esper.net#zarthus"
