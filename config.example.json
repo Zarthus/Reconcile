@@ -45,7 +45,8 @@
 
   "modules": {
     "Cloud2Butt": { 
-      "rate_limit_delay": 60
+      "rate_limit_delay": 60,
+      "ignore_nicks": true
     },
     
     "Entertainment": {
