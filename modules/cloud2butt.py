@@ -15,6 +15,7 @@ class Cloud2Butt(moduletemplate.BotModule):
 
     def on_module_load(self):
         self.cloud_regex = re.compile("cloud", re.IGNORECASE)
+        self.strip_nick = re.compile("[:,]")
         self.last_command = {}
 
         if "rate_limit_delay" not in self.module_data:
@@ -28,14 +29,15 @@ class Cloud2Butt(moduletemplate.BotModule):
             return
 
         if "cloud" in message.lower():
-            # If it is a name in the channel, we don"t want to constantly "correct" it.
+            # If it is a name in the channel, we don't want to constantly "correct" it.
             if self.module_data["ignore_nicks"]:
                 splitMsg = message.split()
 
                 for word in splitMsg:
                     if "cloud" in word.lower():
-                        if self.isOn(word, target):
-                            self.log_verbose("Ignoring replacement of nickname '{}'.".format(word))
+                        strippedNick = self.strip_nick.sub("", word)
+                        if self.isOn(strippedNick, target):
+                            self.log_verbose("Ignoring replacement of nickname '{}'.".format(strippedNick))
                             return
 
             if self.ratelimit("cloud2butt"):
