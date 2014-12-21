@@ -249,6 +249,16 @@ class IrcConnection(threading.Thread):
 
         self.connect(True)
 
+    def identify(self):
+        """Attempt to identify to services using the auth_string, returns True if auth_string was set, False if not."""
+        if self._auth_string:
+            self.send_raw(self._auth_string)
+            self.logger.log_verbose("Identifying to services.")
+            return True
+
+        self.logger.log_verbose("Not identifying - no auth_string is set.")
+        return False
+
     def send_who(self, nick):
         """
         Request /WHO data from server
@@ -539,12 +549,7 @@ class IrcConnection(threading.Thread):
                 self.logger.notice_verbose("Incorrect currentnick: {} -> {}".format(self.currentnick, nick))
                 self.currentnick = nick
 
-            if self.password and self.account:
-                self.send_raw("PRIVMSG NickServ :IDENTIFY {} {}".format(self.account, self.password))
-                self.password = False
-            elif self.password and not self.account:
-                self.send_raw("PRIVMSG NickServ :IDENTIFY {}".format(self.password))
-                self.password = False
+            self.identify()  # Identify to services.
 
             if self.modes:
                 self.mode(self.currentnick, self.modes)
@@ -754,8 +759,7 @@ class IrcConnection(threading.Thread):
         self.user = network["user"]
         self.realname = network["realname"]
 
-        self.account = network["account"]
-        self.password = network["password"]  # Will unset itself after it is used.
+        self._auth_string = network["auth_string"]
 
         self.command_prefix = network["command_prefix"]
         self.invite_join = network["invite_join"]

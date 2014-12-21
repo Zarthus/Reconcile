@@ -161,6 +161,72 @@ class Config:
     def getModuleData(self, module_name):
         return self.modules[module_name] if module_name in self.modules else None
 
+    def parseAuthString(self, network_name):
+        """
+        Parse the auth_string - this configuration is quite verbose as there are many things that could be unwanted.
+
+        This attempts to convert values wrapped in %<option>% to their respective networks array configuration.
+        In the case you have custom network configurations, this method will also include that.
+
+        The end product of the bot will only have auth_string in it.
+        """
+        nwname = network_name.lower()
+
+        password = self.networks[network_name]["password"] if "password" in self.networks[network_name] else ""
+
+        if not password:
+            self.networks[network_name]["auth_string"] = False
+            self.logger.log("No password set, cannot generate auth_string.")
+            return
+        elif "auth_string" not in self.networks[network_name]:
+            if nwname == "quakenet":
+                self.networks[network_name]["auth_string"] = "PRIVMSG Q@CServe.quakenet.org :AUTH %account% %password%"
+            elif nwname == "espernet":
+                self.networks[network_name]["auth_string"] = ("PRIVMSG NickServ@services.esper.net "
+                                                              ":IDENTIFY %account% %password%")
+            elif nwname == "freenode":
+                self.networks[network_name]["auth_string"] = ("PRIVMSG NickServ@services. "
+                                                              ":IDENTIFY %account% %password%")
+            else:
+                self.networks[network_name]["auth_string"] = "PRIVMSG NickServ :IDENTIFY %password%"
+
+            self.logger.notice("No auth_string set. Assuming default value of: " +
+                               self.networks[network_name]["auth_string"])
+        else:
+            self.logger.log("Attempting to parse auth_string: " + self.networks[network_name]["auth_string"])
+
+        auth_string = self.networks[network_name]["auth_string"]
+        replacements_count = 0
+        replacements = []
+
+        for key, value in self.networks[network_name].items():
+            if not isinstance(key, str) or not isinstance(value, str):
+                continue
+
+            if key == "auth_string":
+                continue
+
+            if "%" + key + "%" in auth_string:
+                auth_string = auth_string.replace("%" + key + "%", value)
+                replacements_count += 1
+                replacements.append(key)
+                self.logger.log_verbose("Replacing '%" + key + "%' with value in configuration for auth_string.")
+
+        if auth_string.count("%") / 2 >= 1:
+            self.logger.notice("Still counting " + auth_string.count("%") +
+                               " instances of the '%' character in auth_string after replacements.")
+        if replacements_count > 0:
+            self.logger.log("Replaced " + str(replacements_count) + " item" + ("s" if replacements_count > 1 else "") +
+                            " in the auth_string.")
+            self.logger.log_verbose("auth_string items replaced: " + str(replacements))
+        else:
+            self.logger.notice("Replaced " + replacements + " items in the auth_string.")
+
+        if not auth_string.lower().startswith("privmsg "):
+            self.logger.notice("auth_string does not start with 'PRIVMSG' - please verify your auth_string config.")
+
+        self.networks[network_name]["auth_string"] = auth_string
+
     def _validate(self, verbose=None):
         count = 0
         warnings = 0
@@ -291,6 +357,7 @@ class Config:
             if "disallowed_channels" not in self.networks[network_name]:
                 self.networks[network_name]["disallowed_channels"] = []
 
+            self.parseAuthString(network_name)
             count += 1
 
         return [count, warnings]

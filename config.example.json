@@ -6,6 +6,7 @@
       "ssl": false,
       "ipv4": true,
 
+
       "nick": "",
       "altnick": "",
 
@@ -14,6 +15,7 @@
 
       "account": "",
       "password": "",
+      "auth_string": "PRIVMSG NickServ@services.esper.net :IDENTIFY %account% %password%",
 
       "command_prefix": "!",
       "invite_join": true,
@@ -44,11 +46,11 @@
   },
 
   "modules": {
-    "Cloud2Butt": { 
+    "Cloud2Butt": {
       "rate_limit_delay": 60,
       "ignore_nicks": true
     },
-    
+
     "Entertainment": {
       "rate_limit_delay": 10
     },

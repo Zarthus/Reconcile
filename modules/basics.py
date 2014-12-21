@@ -34,6 +34,7 @@ class BasicCommands(moduletemplate.BotModule):
                               ["mod", "modules"])
         self.register_command("availablemodules", None, "Display a list of available modules.", self.PRIV_MOD,
                               ["amod"])
+        self.register_command("identify", None, "Attempt to identify to services.", self.PRIV_ADMIN, ["auth"])
         self.register_command("shutdown", None,
                               "Shut the entire bot down. This includes connections to different networks",
                               self.PRIV_ADMIN)
@@ -153,6 +154,13 @@ class BasicCommands(moduletemplate.BotModule):
                                          .format(str(self._conn.ModuleHandler.getAvailableModulesList())))
 
             if admin:
+                if command == "identify" or command == "auth":
+                    identified = self._conn.identify()
+
+                    self.message(target, nick, "Attempted to identify to services: " +
+                                               "Command sent!" if identified else "Failed.")
+                    return True
+
                 if command == "shutdown":
                     self._conn.shutdownRequested = True
                     self._conn.logger.log("Shutdown requested by {}".format(nick))
