@@ -519,10 +519,10 @@ class IrcConnection(threading.Thread):
 
         if (not success and target == self.currentnick and nick != self.currentnick and
             ((nick not in self.cmdhelp_delays) or  # Not in cmdhelp dict or 10 seconds passed.
-            (nick in self.cmdhelp_delays and int(time.time()) > self.cmdhelp_delays[nick] + 10))):
+             (nick in self.cmdhelp_delays and int(time.time()) > self.cmdhelp_delays[nick] + 10))):
             self.say(nick, ("I'm sorry, but I did not understand the command '$(bold){}$(bold)'. " +
-                           "Try $(bold){}help$(bold) for more information about my commands.")
-                           .format(command, self.command_prefix), True)
+                            "Try $(bold){}help$(bold) for more information about my commands.")
+                     .format(command, self.command_prefix), True)
             self.cmdhelp_delays[nick] = int(time.time())
 
         return success
