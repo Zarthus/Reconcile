@@ -1,3 +1,10 @@
+"""
+The core bot module template, include this in every module you write.
+"""
+
+import time
+
+
 class BotModule:
 
     PRIV_NONE = "none"
@@ -15,6 +22,7 @@ class BotModule:
 
         self._registered_commands = []
         self.api_key = {}
+        self.last_command = {}
         self.module_data = self._getModuleData()
 
         self.isBotAdmin = self.isBotAdministrator  # aliases for admin/moderator
@@ -184,6 +192,25 @@ class BotModule:
 
     def isBotModerator(self, nick):
         return self._conn.isBotModerator(nick)
+
+    def ratelimit(self, command, confName="rate_limit_delay", delay=10):
+        """Limit the use of commands - false is recently used, true is can use"""
+
+        if ((command not in self.last_command) or
+           (command in self.last_command and int(time.time()) > self.last_command[command])):
+
+            rld = delay
+
+            if confName not in self.module_data:
+                self.logger.notice("Using ratelimit({}) when no '{}' is set, assuming {} seconds."
+                                   .format(command, confName, delay))
+            else:
+                rld = self.module_data[confName]
+
+            self.last_command[command] = int(time.time()) + rld
+            return True
+
+        return False
 
     def register_command(self, command, params, help, priv, aliases=None):
         """

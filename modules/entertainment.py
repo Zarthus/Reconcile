@@ -7,7 +7,6 @@ Miscellaneous entertainment commands such as coin/slap/hug.
 
 from core import moduletemplate
 import random
-import time
 
 
 class Entertainment(moduletemplate.BotModule):
@@ -18,8 +17,6 @@ class Entertainment(moduletemplate.BotModule):
         self.register_command("pick", "<item1> <item2> [item3 ...]", "Randomly pick one item out of selection.",
                               self.PRIV_NONE, ["choose"])
         self.register_command("hug", None, "Show someone how much you love them!", self.PRIV_NONE)
-
-        self.last_command = {}
 
     def on_command(self, target, nick, command, commandtext, mod, admin):
         if command == "coin" or command == "coinflip":
@@ -81,11 +78,3 @@ class Entertainment(moduletemplate.BotModule):
         ]
 
         return self.action(target, random.choice(hugs).format(hugged))
-
-    def ratelimit(self, command):  # Limit the use of commands - false is recently used, true is can use..
-        if ((command not in self.last_command) or
-           (command in self.last_command and int(time.time()) > self.last_command[command])):
-            self.last_command[command] = int(time.time()) + self.module_data["rate_limit_delay"]
-            return True
-
-        return False

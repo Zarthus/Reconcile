@@ -6,7 +6,6 @@
       "ssl": false,
       "ipv4": true,
 
-
       "nick": "",
       "altnick": "",
 
@@ -79,6 +78,7 @@
     },
 
     "XkcdHyphen": {
+      "rate_limit_delay": 10,
       "full_sentence": false
     }
   },

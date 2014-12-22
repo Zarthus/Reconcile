@@ -7,16 +7,16 @@ http://xkcd.com/37/
 """
 
 from core import moduletemplate
-import time
 
 
 class XkcdHyphen(moduletemplate.BotModule):
 
     def on_module_load(self):
-        self.ass_cooldown = time.time()
+        if "rate_limit_delay" not in self.module_data:
+            self.module_data["rate_limit_delay"] = 10
 
     def on_privmsg(self, target, nick, message):
-        if time.time() + 10 > self.ass_cooldown:
+        if self.ratelimit("xkcdhyphen_privmsg"):
             if not self.module_data or "full_sentence" in self.module_data and self.module_data["full_sentence"]:
                 self.parse_full(target, nick, message)
             else:
@@ -31,7 +31,6 @@ class XkcdHyphen(moduletemplate.BotModule):
                 assword = "ass-{}".format(word)
                 m = message.replace("-ass", "").replace(word, assword)
                 self.message(target, nick, m)
-                self.ass_cooldown = time.time()
                 break
 
             if word.endswith("-ass"):
@@ -45,7 +44,6 @@ class XkcdHyphen(moduletemplate.BotModule):
             if ass_next:
                 m = "{} ass-{}".format(ass_next, word)
                 self.message(target, nick, m)
-                self.ass_cooldown = time.time()
                 break
 
             if word.endswith("-ass"):
