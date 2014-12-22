@@ -2,6 +2,7 @@
 
 import sys
 import os
+import re
 
 
 check_modules = []
@@ -46,9 +47,11 @@ def check_module(module_name):
         "requires_api_key": False,
         "registers_commands": False,
         "has_configuration_block": False,
+        "uses_rate_limitation": False
     }
 
     confblock_func = []
+    ratelimited_commands = []
 
     error_count = 0
 
@@ -63,7 +66,11 @@ def check_module(module_name):
 
     print("\nChecking module {} for any errors".format(module_name))
 
+    ratelimit_regex = re.compile(r"self\.ratelimit\((.*)\)")
+
+    line_num = 0
     for line in f:
+        line_num += 1
         line = line.lower().strip()
 
         if line.startswith("from core import moduletemplate"):
@@ -87,6 +94,34 @@ def check_module(module_name):
         if line.startswith("self.register_command("):
             optional["registers_commands"] = True
 
+        if ratelimit_regex.search(line):
+            optional["uses_rate_limitation"] = True
+            optional["has_configuration_block"] = True
+
+            cmdname = ""
+            confname = ""
+
+            params = ratelimit_regex.search(line).group(1)
+
+            if "," in params:
+                params = params.split(",")
+
+                if len(params) > 1:
+                    cmdname = params[0]
+                    confname = params[1]
+                    confblock_func.append(confname)
+                else:
+                    cmdname = params[0]
+            else:
+                cmdname = params
+                confblock_func.append("rate_limit_delay")
+
+            if ((cmdname.startswith("\"") or cmdname.startswith("'")) and
+               (cmdname.endswith("\"") or cmdname.endswith("'"))):
+                ratelimited_commands.append(cmdname.replace("\"", "").replace("'", ""))
+            else:
+                ratelimited_commands.append("line:{} var:{}".format(line_num, cmdname))
+
         if "self.module_data" in line:
             optional["has_configuration_block"] = True
             for word in line.split():
@@ -100,6 +135,7 @@ def check_module(module_name):
 
                     confblock_func.append(funcname)
 
+    ratelimited_commands = list(set(ratelimited_commands))
     confblock_func = list(set(confblock_func))
 
     for requirement in requirements.items():
@@ -115,6 +151,9 @@ def check_module(module_name):
 
     for func in confblock_func:
         print("  Introduces module block configuration: {}".format(func))
+
+    for cmd in ratelimited_commands:
+        print("  Ratelimitation on: {}".format(cmd))
 
     print("check_module('{}') ran with {} errors.\n"
           .format(module_name, error_count))
