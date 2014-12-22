@@ -99,7 +99,6 @@ def check_module(module_name):
             optional["has_configuration_block"] = True
 
             cmdname = ""
-            confname = ""
 
             params = ratelimit_regex.search(line).group(1)
 
@@ -108,10 +107,10 @@ def check_module(module_name):
 
                 if len(params) > 1:
                     cmdname = params[0]
-                    confname = params[1]
-                    confblock_func.append(confname)
+                    confblock_func.append(params[1])
                 else:
                     cmdname = params[0]
+                    confblock_func.append("rate_limit_delay")
             else:
                 cmdname = params
                 confblock_func.append("rate_limit_delay")
