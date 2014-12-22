@@ -517,8 +517,14 @@ class IrcConnection(threading.Thread):
         self.logger.event("COMMAND", "{}/{} sent command '{}' with result: {}"
                                      .format(nick, target, command, "Success" if success else "Command did not exist"))
 
-        if not success and target == self.currentnick and nick != self.currentnick:
-            self.say(nick, "I'm sorry, but I did not understand the command '{}'.".format(command))
+        if (not success and target == self.currentnick and nick != self.currentnick and
+            ((nick not in self.cmdhelp_delays) or  # Not in cmdhelp dict or 10 seconds passed.
+            (nick in self.cmdhelp_delays and int(time.time()) > self.cmdhelp_delays[nick] + 10))):
+            self.say(nick, ("I'm sorry, but I did not understand the command '$(bold){}$(bold)'. " +
+                           "Try $(bold){}help$(bold) for more information about my commands.")
+                           .format(command, self.command_prefix), True)
+            self.cmdhelp_delays[nick] = int(time.time())
+
         return success
 
     def on_numeric(self, numeric, data):
@@ -784,6 +790,7 @@ class IrcConnection(threading.Thread):
         self.last_uwho = None
         self.channel_data = {}
         self.last_chanwho = None  # Last channel who (self.send_chanwho())
+        self.cmdhelp_delays = {}  # Pause before telling someone their command was not correct to avoid endless loops
 
         self.reconnect_attempts = 0  # Each time we reconnect we take a bit longer to reconnect.
 
