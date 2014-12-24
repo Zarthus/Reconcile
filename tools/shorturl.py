@@ -15,11 +15,11 @@ class ShortUrl:
     Whenever possible, passing this parameter ensures errors will be logged to console, so it is recommended you do.
     """
 
-    def googl(longurl, api_key=None, logger=None):
+    def googl(url, api_key=None, logger=None):
         """
         Shorten an URL with http://goo.gl - googles own url shortener.
 
-        longurl: string, url to shorten
+        url: string, url to shorten
         api_key: api key
 
         returns shortened url, or False on failure
@@ -28,7 +28,7 @@ class ShortUrl:
 
         url = "https://www.googleapis.com/urlshortener/v1/url"
         payload = {
-            "longUrl": longurl
+            "longUrl": url
         }
         if api_key:
             payload["key"] = api_key
@@ -53,11 +53,12 @@ class ShortUrl:
             return shorturl
         return False
 
-    def isgd(url, logger=None):
+    def isgd(url, api_key=None, logger=None):
         """
         Shorten an URL with http://is.gd
 
         url: string, url to shorten
+        api_key: None, is not used
 
         returns shortened url, or False on failure.
         Information: http://is.gd/apishorteningreference.php
@@ -86,12 +87,12 @@ class ShortUrl:
             return shorturl
         return False
 
-    def scenesat(url, apikey=None, alias=None, password=None, logger=None):
+    def scenesat(url, api_key=None, alias=None, password=None, logger=None):
         """
         Shorten an URL with http://scenes.at
 
         url: string, url to shorten
-        apikey: string, Your API key
+        api_key: string, Your API key
         alias: string, Alias for the URL to have.
         password: string, Password the shorturl should have to be accessed.
 
@@ -103,7 +104,7 @@ class ShortUrl:
         payload = {
             "link": url,
             "api": "yes",
-            "key": apikey
+            "key": api_key
         }
 
         if alias:
