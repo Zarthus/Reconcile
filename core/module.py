@@ -5,6 +5,7 @@ Module handler -- handles the loading, unloading, and sending instructions to mo
 import os
 import importlib
 import inspect
+import traceback
 
 
 class ModuleHandler:
@@ -82,6 +83,10 @@ class ModuleHandler:
                 self.modules[module].on_module_load()
         except Exception as e:
             self.logger.error("Failed to load module {}: {}".format(module, str(e)))
+
+            if "requires API key" not in str(e):  # The error is not related to API keys not existing, print the tb.
+                traceback.print_exc()
+
             success = False
             self.unload(module)
 
