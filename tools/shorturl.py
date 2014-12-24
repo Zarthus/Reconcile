@@ -26,7 +26,7 @@ class ShortUrl:
         Information: https://developers.google.com/url-shortener/v1/getting_started
         """
 
-        url = "https://www.googleapis.com/urlshortener/v1/url"
+        googl = "https://www.googleapis.com/urlshortener/v1/url"
         payload = {
             "longUrl": url
         }
@@ -39,7 +39,7 @@ class ShortUrl:
 
         shorturl = ""
         try:
-            r = requests.post(url, data=json.dumps(payload), headers=header)
+            r = requests.post(googl, data=json.dumps(payload), headers=header)
 
             if r.ok and "id" in r.json():
                 shorturl = r.json()["id"]
