@@ -83,7 +83,7 @@ class IrcFormatter:
             raise KeyError("The colour '{}' is not in the list of available colours.".format(colour))
 
         if colour == "random":  # Special keyword for a random colour
-            rand = randint(0, 16)
+            rand = randint(0, 15)
             if rand < 10:  # Prepend '0' before colour so it always is double digits.
                 rand = "0" + str(rand)
             rand = str(rand)
