@@ -21,16 +21,17 @@ class Tell(moduletemplate.BotModule):
 
         self.register_command("tell", "<nickname> <message>",
                               "Once <nickname> appears online (by sending a message to a channel I am in), "
-                              "message them with <message>", self.PRIV_NONE)
+                              "message them with <message>", self.PRIV_NONE, ["note"])
         self.register_command("telldel", "<nickname | *>",
                               "Delete all pending messages for <nickname>, or all if * is specified.",
-                              self.PRIV_NONE, ["deltell"])
+                              self.PRIV_NONE, ["deltell", "delnote"])
         self.register_command("tellslist", None,
                               "Show if you have any pending messages or not, if you do, they are sent to your query.",
-                              self.PRIV_NONE, ["listtells", "listtell"])
+                              self.PRIV_NONE, ["listtells", "listtell", "notelist", "noteslist", "listnotes"])
         self.register_command("tellhas", "[nickname]", "Check if [nickname] has any pending tells.",
-                              self.PRIV_NONE, ["hastell", "hastells"])
-        self.register_command("tells", None, "Count the number of active tells in the database.", self.PRIV_MOD)
+                              self.PRIV_NONE, ["hastell", "hastells", "hasnote"])
+        self.register_command("tells", None, "Count the number of active tells in the database.",
+                              self.PRIV_MOD, ["notes"])
 
         if "max_tells" not in self.module_data:
             self.module_data["max_tells"] = 5
@@ -53,13 +54,13 @@ class Tell(moduletemplate.BotModule):
                                          "channel we share.".format(nick, count, "s" if count != 1 else ""), True)
 
     def on_command(self, target, nick, command, commandtext, mod, admin):
-        if command == "listtells" or command == "listtell" or command == "tellslist":
+        if command in ["listtells", "listtell", "tellslist", "notelist", "noteslist", "listnotes"]:
             if self.has_tells(nick):
                 return self.show_tells(nick)
             else:
                 return self.notice(nick, "You do not have any pending messages.")
 
-        if command == "hastell" or command == "hastells" or command == "tellhas":
+        if command in ["hastell", "hastells", "tellhas", "hasnote", "hasnotes", "notehas"]:
             targ = commandtext
             if not targ:
                 targ = nick
@@ -71,7 +72,7 @@ class Tell(moduletemplate.BotModule):
                 return self.message(target, nick, "{} has pending messages.".format(targ))
             return self.message(target, nick, "{} has no pending messages.".format(targ))
 
-        if command == "tell":
+        if command in ["tell", "note"]:
             ct = commandtext.split()
             if not commandtext or len(ct) < 2:
                 return self.notice(nick, "Usage: tell <nickname> <message>")
@@ -81,6 +82,9 @@ class Tell(moduletemplate.BotModule):
 
             if not self.validator.nickname(to):
                 return self.notice(nick, "'{}' is an invalid nickname.".format(to))
+
+            if to == self._conn.currentnick:
+                return self.notice(nick, "I cannot set tells for myself.")
 
             if self.tell_passes_limit(nick):
                 return self.notice(nick, "You cannot set anymore tells. "
@@ -94,10 +98,10 @@ class Tell(moduletemplate.BotModule):
 
             success = self.tell_store(nick, to, msg)
             if success:
-                return self.message(target, nick, "I will let {} know he has a pending message.".format(to))
+                return self.message(target, nick, "I will let {} know they have a pending message.".format(to))
             return self.message(target, nick, "I was unable to add a message for {}.".format(to))
 
-        if command == "deltell" or command == "telldel":
+        if command in ["deltell", "telldel", "delnote", "notedel"]:
             if not commandtext:
                 return self.notice(nick, "Usage: deltell <nickname | *>")
 
@@ -120,7 +124,7 @@ class Tell(moduletemplate.BotModule):
             return self.message(target, nick, "Was unable to delete pending messages sent by you.")
 
         if mod:
-            if command == "tells":
+            if command in ["notes", "tells"]:
                 count = self.tell_count("*")
                 return self.message(target, nick, "There are {} pending message{} in my database."
                                                   .format(count, "s" if count != 1 else ""))
