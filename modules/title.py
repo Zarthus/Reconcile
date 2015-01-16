@@ -6,9 +6,9 @@ Fetches titles from messages that seem to contain URLs.
 """
 
 from core import moduletemplate
+from tools import url as urlcheck
 
 import lxml.html
-import urllib.parse
 import re
 import requests
 
@@ -81,9 +81,7 @@ class Title(moduletemplate.BotModule):
         return False
 
     def is_url(self, url):
-        parsedurl = urllib.parse.urlparse(url)
-
-        if parsedurl.netloc:
+        if urlcheck.Url(url).isUrl():
             return True
         return False
 
@@ -121,7 +119,9 @@ class Title(moduletemplate.BotModule):
 
         if not len(title):
             return "Cannot find title for '{}'".format(url) if not ret_false else False
-        return "'{}' at {}".format(title.strip(), urllib.parse.urlparse(url).netloc)
+
+        urlclass = urlcheck.Url(url)
+        return "'{}' at {}.{}".format(title.strip(), urlclass.getDomain(), urlclass.getTld())
 
     def get_xkcd_info(self, url, ret_boolean=False):
         if not url.endswith("/"):
