@@ -30,6 +30,8 @@ class BasicCommands(moduletemplate.BotModule):
         self.register_command("nick", "<new nick>", "Change name to <new nick> if available.",
                               self.PRIV_MOD)
         self.register_command("message", "<target> <message>", "Message <target> with <message>.", self.PRIV_MOD)
+        self.register_command("action", "<target> <message>", "Perform a CTCP ACTION on <target> with <message>.",
+                              self.PRIV_MOD)
         self.register_command("loadedmodules", None, "Display a list of loaded modules.", self.PRIV_MOD,
                               ["mod", "modules"])
         self.register_command("availablemodules", None, "Display a list of available modules.", self.PRIV_MOD,
@@ -144,6 +146,18 @@ class BasicCommands(moduletemplate.BotModule):
 
                 self.message(targ, None, mess)
                 return self.message(target, nick, "Sent message '{}' to '{}'.".format(mess, targ))
+
+            if command == "action":
+                m = commandtext.split()
+
+                if not commandtext or len(m) < 2:
+                    return self.notice(nick, "Usage: action <target> <message>")
+
+                mess = " ".join(m[1:])
+                targ = m[0]
+
+                self.action(targ, None, mess)
+                return self.message(target, nick, "Sent ACTION '{}' to '{}'.".format(mess, targ))
 
             if command == "loadedmodules" or command == "modules" or command == "mod":
                 return self.notice(nick, "The following modules are loaded: {}"
