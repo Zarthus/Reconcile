@@ -6,16 +6,16 @@ Usage: $0 [OPTIONS].
 
 Starts the python bot in a screen session if it is not already running.
 
-  -h, --help        display this help file.
-  -v, --verbose     show more verbose output.
-  -3, --python3     use the 'python3' command over 'python'.
-  -p, --python      use the 'python' command over 'python3'.
-  -r, --restart     kill the bots process, then start it up again with no parameters.
-  -u, --update      retrieve data from git, the same as 'git pull'.
-  -ur, --updrest    kill the bots process, retrieve updates from git, then start it up again with no parameters.
-  -k, --kill        kill the process the bot is using, this is not a graceful way of exiting,
+  -d,  --daemon      launch the bot but don't attach to the created screen (mostly for use by the init script).
+  -h,  --help        display this help file.
+  -k,  --kill        kill the process the bot is using, this is not a graceful way of exiting,
                       use of the bots actual functions are recommended.
-  -d, --daemon      launch the bot but don't attach to the created screen (mostly for use by the init script)."
+  -p,  --python      use the 'python' command over 'python3'.
+  -p3, --python3     use the 'python3' command over 'python'.
+  -r,  --restart     kill the bots process, then start it up again with no parameters.
+  -u,  --update      retrieve data from git, the same as 'git pull'.
+  -ur, --updrest     kill the bots process, retrieve updates from git, then start it up again with no parameters.
+  -v,  --verbose     show more verbose output."
 
   exit 0
 }
@@ -73,15 +73,15 @@ screen_args=""
 
 for arg in $@; do
   case "$arg" in
+    -d|--daemon)   screen_args="-dm";;
     -h|--help)     help;;
-    -v|--verbose)  be_verbose=1;;
-    -3|--python3)  use_python3=1;;
+    -k|--kill)     doexit;;
     -p|--python)   use_python=1;;
+    -p3|--python3)  use_python3=1;;
     -r|--restart)  dorestart;;
     -u|--update)   doupdate;;
     -ur|--updrest) update_and_restart;;
-    -k|--kill)     doexit;;
-    -d|--daemon)   screen_args="-dm";;
+    -v|--verbose)  be_verbose=1;;
   esac
 done
 
