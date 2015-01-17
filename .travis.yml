@@ -6,7 +6,7 @@ python:
   - 3.4
 
 install:
-  - "pip install -r travis/requirements.txt"
+  - "pip install -r .travis/requirements.txt"
 
 before_script:
   - "flake8 --version"
@@ -14,8 +14,8 @@ before_script:
 
 script:
   - "flake8 ."
-  - "python travis/test_config.py"
-  - "python travis/test_module.py"
+  - "python .travis/test_config.py"
+  - "python .travis/test_module.py"
 
 notifications:
   email:
