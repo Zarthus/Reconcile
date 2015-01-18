@@ -6,7 +6,7 @@ Fetches titles from messages that seem to contain URLs.
 """
 
 from core import moduletemplate
-from tools import url as urlcheck
+from tools import urlparse
 
 import lxml.html
 import re
@@ -26,14 +26,15 @@ class Title(moduletemplate.BotModule):
         self.wikipedia_url = re.compile(r"(https?:\/\/)?([a-z]{2}\.)?wikipedia\.[a-z]{1,3}\/wiki\/(.{1,32})")
 
     def on_privmsg(self, target, nick, message):
-        for word in message.split():
-            if self.is_url(word):
-                if self.xkcdurl.match(word):
-                    info = self.get_xkcd_info(word, True)
+        urls = urlparse.Url.findAll(message)
+        for url in urls: 
+            if url.isUrl():
+                if self.xkcdurl.match(url.getUrl()):
+                    info = self.get_xkcd_info(url.getUrl(), True)
                     if info:
                         self.message(target, None, "({}) {}".format(nick, info), True)
-                elif self.wikipedia_url.match(word):
-                    match = self.wikipedia_url.match(word)
+                elif self.wikipedia_url.match(url.getUrl()):
+                    match = self.wikipedia_url.match(url.getUrl())
                     groups = match.groups()
                     groups_len = len(groups)
                     article = groups[groups_len - 1]
@@ -52,7 +53,7 @@ class Title(moduletemplate.BotModule):
                     if info:
                         self.message(target, None, "({}) {}".format(nick, info), True)
                 else:
-                    title = self.get_title(word, True, True)
+                    title = self.get_title(url.getUrl(), True, True)
                     if title and title != self.last_title:
                         self.last_title = title
                         self.message(target, None, "({}) {}".format(nick, title))
@@ -81,7 +82,7 @@ class Title(moduletemplate.BotModule):
         return False
 
     def is_url(self, url):
-        if urlcheck.Url(url).isUrl():
+        if urlparse.Url(url).isUrl():
             return True
         return False
 
@@ -120,8 +121,8 @@ class Title(moduletemplate.BotModule):
         if not len(title):
             return "Cannot find title for '{}'".format(url) if not ret_false else False
 
-        urlclass = urlcheck.Url(url)
-        return "'{}' at {}.{}".format(title.strip(), urlclass.getDomain(), urlclass.getTld())
+        pUrl = urlparse.Url(url)
+        return "'{}' at {}.{}".format(title.strip(), pUrl.getDomain(), pUrl.getTld())
 
     def get_xkcd_info(self, url, ret_boolean=False):
         if not url.endswith("/"):

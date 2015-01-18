@@ -4,7 +4,7 @@ Licensed under MIT
 """
 
 from core import moduletemplate
-from tools import url
+from tools import urlparse
 
 
 class UrlDebug(moduletemplate.BotModule):
@@ -24,7 +24,7 @@ class UrlDebug(moduletemplate.BotModule):
 
                 link = commandtext
 
-                urlclass = url.Url(link)
+                urlclass = urlparse.Url(link)
 
                 self.log(str(urlclass.getAsDict()))
                 self.message(target, nick, ("{}: {}/{} certain, {}"
@@ -39,7 +39,7 @@ class UrlDebug(moduletemplate.BotModule):
                 if not commandtext:
                     return self.notice(nick, "Usage: findurl <string>")
 
-                u = url.Url.find(commandtext)
+                u = urlparse.Url.find(commandtext)
                 if not u:
                     return self.message(target, nick, "no matches")
 
@@ -56,7 +56,7 @@ class UrlDebug(moduletemplate.BotModule):
                 if not commandtext:
                     return self.notice(nick, "Usage: dumpurl <string>")
 
-                u = url.Url.find(commandtext)
+                u = urlparse.Url.find(commandtext)
                 if not u:
                     return self.message(target, nick, "no matches")
 
@@ -67,7 +67,7 @@ class UrlDebug(moduletemplate.BotModule):
                 if not commandtext:
                     return self.notice(nick, "Usage: urlstring <string>")
 
-                urllist = url.Url.findAll(commandtext)
+                urllist = urlparse.Url.findAll(commandtext)
                 if not urllist:
                     return self.message(target, nick, "no matches")
 
