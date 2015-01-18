@@ -1,7 +1,7 @@
 Contributors
 ============
 
-Reconicle is developed by these people:  
+Reconcile is developed by these people:  
 
 Zarthus \<zarthus@zarth.us\> (lead developer)  
 
