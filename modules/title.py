@@ -27,8 +27,14 @@ class Title(moduletemplate.BotModule):
 
     def on_privmsg(self, target, nick, message):
         urls = urlparse.Url.findAll(message)
+
+        urls_found = 0
         for url in urls:
             if url.isUrl():
+                urls_found += 1
+                if urls_found > 3:
+                    break
+
                 if self.xkcdurl.match(url.getUrl()):
                     info = self.get_xkcd_info(url.getUrl(), True)
                     if info:
