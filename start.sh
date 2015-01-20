@@ -50,7 +50,6 @@ function doexit() {
 function doupdate() {
   echo "Pulling data from git.."
   git pull
-  update_version
   exit 0
 }
 
@@ -65,10 +64,6 @@ function update_and_restart() {
   git pull
   $0
   exit 0
-}
-
-function update_version() {
-
 }
 
 be_verbose=0
@@ -100,6 +95,8 @@ fi
 if [[ $be_verbose -eq 1 ]]; then
   echo "Starting bot."
 fi
+
+# TODO: Update versions by comparing example.*.json with config.json
 
 if [[ $use_python3 -eq 1 ]]; then
   screen $screen_args python3 bot.py
