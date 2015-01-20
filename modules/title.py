@@ -8,9 +8,10 @@ Fetches titles from messages that seem to contain URLs.
 from core import moduletemplate
 from tools import urlparse
 
-import lxml.html
+import bs4
 import re
 import requests
+import urllib.request
 
 
 class Title(moduletemplate.BotModule):
@@ -59,10 +60,11 @@ class Title(moduletemplate.BotModule):
                     if info:
                         self.message(target, None, "({}) {}".format(nick, info), True)
                 else:
-                    title = self.get_title(url.getUrl(), True, True)
+                    title = self.get_title(url.getUrl(), True)
                     if title and title != self.last_title:
                         self.last_title = title
-                        self.message(target, None, "({}) {}".format(nick, title))
+                        self.message(target, None, ("({}) '{}' at {}.{}"
+                                                    .format(nick, title, url.getDomain(), url.getTld())))
 
     def on_command(self, target, nick, command, commandtext, mod, admin):
         if command == "title" or command == "gettitle":
@@ -87,48 +89,20 @@ class Title(moduletemplate.BotModule):
             return self.message(target, nick, self.get_wiki_info(language, article), True)
         return False
 
-    def is_url(self, url):
-        if urlparse.Url(url).isUrl():
-            return True
-        return False
-
-    def get_title(self, url, check_url=True, ret_false=False):
-        if check_url and not self.is_url(url):
-            return "'{}' is not a valid URL".format(url)
-
-        fail_retry = False
-        html = ""
-
+    def get_title(self, url, ret_false=False):
         try:
-            html = lxml.html.parse(url)
-        except IOError:
-            if not url.startswith("http"):
-                fail_retry = True
-        except Exception:
-            pass
+            soup = bs4.BeautifulSoup(urllib.request.urlopen(url))
+        except Exception as e:
+            return "Failed to parse '{}' with error '{}'".format(url, str(e)) if not ret_false else False
 
-        if fail_retry:
-            url = "http://" + url
-
-            try:
-                html = lxml.html.parse(url)
-            except Exception:
-                pass
-
-        if not html:
+        if not soup:
             return "Failed to parse '{}'".format(url) if not ret_false else False
 
-        title = ""
-        try:
-            title = html.find(".//title").text
-        except Exception:
-            pass
-
+        title = soup.title.string
         if not len(title):
             return "Cannot find title for '{}'".format(url) if not ret_false else False
 
-        pUrl = urlparse.Url(url)
-        return "'{}' at {}.{}".format(title.strip(), pUrl.getDomain(), pUrl.getTld())
+        return "{}".format(title.strip())
 
     def get_xkcd_info(self, url, ret_boolean=False):
         if not url.endswith("/"):
