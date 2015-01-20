@@ -50,6 +50,7 @@ function doexit() {
 function doupdate() {
   echo "Pulling data from git.."
   git pull
+  update_version
   exit 0
 }
 
@@ -64,6 +65,10 @@ function update_and_restart() {
   git pull
   $0
   exit 0
+}
+
+function update_version() {
+
 }
 
 be_verbose=0
