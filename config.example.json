@@ -58,6 +58,13 @@
       "global_factoids": false
     },
 
+    "FloodDetect": {
+      "max_warnings": 3,
+      "message_interval": 10,
+      "message_max_per_interval": 8,
+      "expiry_seconds": 7200
+    },
+    
     "Quote": {
         "quote_ratelimit": 15,
         "quote_ratelimit_individual": true
