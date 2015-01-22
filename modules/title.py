@@ -95,7 +95,7 @@ class Title(moduletemplate.BotModule):
         except Exception as e:
             return "Failed to parse '{}' with error '{}'".format(url, str(e)) if not ret_false else False
 
-        if not soup or not soup.title.string:
+        if not soup or not soup.title or not soup.title.string:
             return "Failed to parse '{}'".format(url) if not ret_false else False
 
         title = soup.title.string
