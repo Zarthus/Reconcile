@@ -59,6 +59,9 @@
     },
 
     "FloodDetect": {
+      "channels": "",
+      "report_channel": "",
+      
       "max_warnings": 3,
       "message_interval": 10,
       "message_max_per_interval": 8,

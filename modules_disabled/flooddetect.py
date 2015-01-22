@@ -75,7 +75,7 @@ class FloodDetect(moduletemplate.BotModule):
                               self.PRIV_MOD)
         self.register_command("fdchans", None, "List channels flood detection is enabled in.", self.PRIV_MOD)
 
-        if "channels" not in self.module_data:
+        if "channels" not in self.module_data or not self.module_data["channels"]:
             raise Exception("This module is not configured properly, no channels to protect from flooding set.")
         else:
             self.channels = self.module_data["channels"].replace(" ", "").split(",")
@@ -90,7 +90,7 @@ class FloodDetect(moduletemplate.BotModule):
         if "message_max_per_interval" not in self.module_data:
             self.module_data["message_max_per_interval"] = 8
 
-        if "report_channel" in self.module_data:
+        if "report_channel" in self.module_data and self.module_data["channels"]:
             # TODO (issue #56)
             # self._conn.join_channel(self.module_data["report_channel"])
             pass
