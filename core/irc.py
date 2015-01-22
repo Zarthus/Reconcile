@@ -211,7 +211,7 @@ class IrcConnection(threading.Thread):
             return False
 
         self.logger.log("Setting modes '{}' on {}".format(modes, target))
-        self.send_raw("MODE {} :{}".format(target, modes))
+        self.send_raw("MODE {} {}".format(target, modes))
         return True
 
     def connect(self, reconnecting=False):
