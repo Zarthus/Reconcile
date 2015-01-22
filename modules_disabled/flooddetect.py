@@ -76,7 +76,7 @@ class FloodDetect(moduletemplate.BotModule):
         self.register_command("fdchans", None, "List channels flood detection is enabled in.", self.PRIV_MOD)
 
         if "channels" not in self.module_data:
-            raise Exception("This module is not configured and will not be able to do anything")
+            raise Exception("This module is not configured properly, no channels to protect from flooding set.")
         else:
             self.channels = self.module_data["channels"].replace(" ", "").split(",")
             # TODO (issue #56)
