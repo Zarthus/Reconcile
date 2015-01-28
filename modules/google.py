@@ -29,6 +29,7 @@ Look up data from google images and search.
 
 from core import moduletemplate
 from tools import shorturl
+from tools import urltools
 
 import requests
 import urllib.parse
@@ -80,7 +81,7 @@ class Google(moduletemplate.BotModule):
             result = ""
 
             try:
-                gurl = shorturl.ShortUrl.isgd("https://google.com/#q={}".format(urllib.parse.quote(search)))
+                gurl = urltools.UrlTools.shorten("https://google.com/#q={}".format(urllib.parse.quote(search)))
             except Exception:
                 gurl = "https://google.com/#q={}".format(urllib.parse.quote(search))
 
@@ -140,18 +141,4 @@ class Google(moduletemplate.BotModule):
         return "Google Image Search failed"
 
     def html_decode(self, string):
-        entities = {
-            "&amp;": "&",
-            "&lt;": "<",
-            "&gt;": ">",
-            "&quot;": "\"", "&#34;": "\"",
-            "&apos;": "'", "&#39;": "'"
-        }
-
-        # A nasty workaround because some sites have &amp;quot; - you'll need to at least replace &amp; twice.
-        string = string.replace("&amp;", "&")
-
-        for entity in entities.items():
-            string = string.replace(entity[0], entity[1])
-
-        return string
+        return urltools.UrlTools.htmlEntityDecode(string)

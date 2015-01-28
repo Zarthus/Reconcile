@@ -24,6 +24,7 @@ THE SOFTWARE.
 UrlTools: Interact and manipulate URLs
 """
 
+import html
 import bs4
 import urllib.request
 
@@ -79,3 +80,9 @@ class UrlTools:
             return "Cannot find title for '{}'".format(url) if not ret_false else False
 
         return title.strip()
+
+    def htmlEntityEncode(string):
+        return html.escape(string)
+
+    def htmlEntityDecode(string):
+        return html.unescape(string)
