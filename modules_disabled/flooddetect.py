@@ -50,7 +50,7 @@ on_module_load(). This includes writing your own actions, and adjusting the sett
 channel.
 
 Known Issues:
- Channels with a ':' in them are not supported by the banlist. To fix this, manually adjust the code to use a different
+ Channels with a '/' in them are not supported by the banlist. To fix this, manually adjust cdelim to use a different
  delimiter
 """
 
@@ -67,7 +67,7 @@ class FloodDetect(moduletemplate.BotModule):
         self.flood_detect = {}
         self.last_purge = int(time.time())
         self.banlist = []
-        self.cdelim = ":"  # change this if you use channels with a colon in it, short for channel delimiter
+        self.cdelim = "/"  # change this if you use channels with a colon in it, short for channel delimiter
 
         """
         Example of a flood detection dict
@@ -91,6 +91,9 @@ class FloodDetect(moduletemplate.BotModule):
         self.register_command("fdinfo", "<nick>",
                               "Retrieve flood data information about <nick> (requires OP or bot moderator).",
                               self.PRIV_NONE)
+        self.register_command("fdbanlist", None,
+                              "Retrieve ban information about (requires OP or bot moderator).",
+                              self.PRIV_NONE, ['fdbl'])
         self.register_command("fdenable", "<#channel>", "Temporarily Enable flood detection for <#channel>.",
                               self.PRIV_MOD)
         self.register_command("fddisable", "<#channel>", "Temporarily Disable flood detection for <#channel>.",
@@ -119,7 +122,7 @@ class FloodDetect(moduletemplate.BotModule):
                 self.expiry = 7200
                 self.log("Expiry was not a number, defaulting to 2 hours (7200 sec)")
 
-        # Supported actions: private_message, message, kick, kickban
+        # Supported actions: private_message, message, quiet, kick, kickban
         self.actions = {
             "message": int(self.getWarnMaxCount() / 2 - 1),
             "kick": math.ceil(self.getWarnMaxCount() / 2),
@@ -172,11 +175,20 @@ class FloodDetect(moduletemplate.BotModule):
                                          .format(channel))
                 self._conn.send_raw("KICK {} {} :Repeated Flooding ({} messages in {} seconds)"
                                     .format(channel, nick, mi, mmpi))
+            elif action == "QUIET":
+                self.message(nick, None, "You have been quieted from {} for flooding. Please contact a channel OP."
+                                         .format(channel))
+                mask = self.getMask(nick)
+                self.mode(channel, "+q {}".format(mask))
+                self.banlist.append("q{}{}{}{}".format(self.cdelim, channel.replace(self.cdelim, ""),
+                                                       self.cdelim, nick, mask))
             elif action == "KICKBAN":
                 self.message(nick, None, "You have been banned from {} for flooding. Please contact a channel OP."
                                          .format(channel))
-                self.mode(channel, "+b {}!*@*".format(nick))
-                self.banlist.append("{}{}{}!*@*".format(channel.replace(self.cdelim, ""), self.cdelim, nick))
+                mask = self.getMask(nick)
+                self.mode(channel, "+b {}".format(mask))
+                self.banlist.append("b{}{}{}{}".format(self.cdelim, channel.replace(self.cdelim, ""),
+                                                       self.cdelim, nick, mask))
                 self._conn.send_raw("KICK {} {} :Repeated Flooding ({} messages in {} seconds)"
                                     .format(channel, nick, mi, mmpi))
             else:
@@ -287,6 +299,20 @@ class FloodDetect(moduletemplate.BotModule):
 
                 self.logreport("fdinfo on {} requested by {} in {}.".format(commandtext, nick, target))
                 return self.notice(nick, str(self.flood_detect[target][commandtext.lower()]))
+
+            if command in ["fdblacklist", "fdbl"]:
+                if not self.isOp(nick, target) and not mod:
+                    return self.notice(nick, "Sorry, you need to be an OP to use this command.")
+                if target not in self.channels:
+                    return self.notice(nick, "You need to use this command in a flood detecting channel.")
+
+                self.logreport("fdblacklist on {} requested by {}.".format(target, nick))
+                bl = []
+                for blitem in self.banlist:
+                    if target in blitem:
+                        bl.append(blitem)
+
+                return self.notice(nick, "Banlist: {}".format(str(bl)))
 
             if command == "fdpurge":
                 if not self.isOp(nick, target) and not mod:
