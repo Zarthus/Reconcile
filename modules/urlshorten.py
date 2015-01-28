@@ -28,22 +28,17 @@ urlshorten - Shorten URLs using one of the many shortening services Reconcile su
 """
 
 from core import moduletemplate
-from tools import shorturl
-
-import urllib.parse
+from tools import urltools
 
 
 class UrlShorten(moduletemplate.BotModule):
 
     def on_module_load(self):
-        self.shorten_services = ["isgd", "googl", "scenesat"]
-
         self.register_command("urlshorten", "<url> [service]", "Shorten <URL> with [service]. " +
                               "Service can be: " + self.getAvailableServices(),
                               self.PRIV_NONE, ["shorten", "shorturl"])
 
     def on_command(self, target, nick, command, commandtext, mod, admin):
-
         if command in ["urlshorten", "shorten", "shorturl"]:
             if not commandtext:
                 return self.notice(nick, "Usage: urlshorten <url> [service]")
@@ -51,7 +46,7 @@ class UrlShorten(moduletemplate.BotModule):
             ct = commandtext.split()
             url = ct[0]
 
-            if not self.is_url(url):
+            if not urltools.UrlTools.isUrl(url):
                 return self.message(target, nick, "'{}' is not a valid URL.".format(url))
 
             if len(ct) > 1:
@@ -59,51 +54,18 @@ class UrlShorten(moduletemplate.BotModule):
 
                 if not service or service.replace(".", "") not in self.shorten_services:
                     self.notice(nick, "Cannot find service '{}' - using {} instead."
-                                      .format(service, self.getDefaultShortenService()))
-                    service = self.getDefaultShortenService()
+                                      .format(service, urltools.UrlTools.getDefaultShortenService()))
+                    service = urltools.UrlTools.getDefaultShortenService()
             else:
-                service = self.getDefaultShortenService()
+                service = urltools.UrlTools.getDefaultShortenService()
 
             service = service.replace(".", "")
-            if service in self.shorten_services:
+            if service in urltools.UrlTools.SHORTEN_SERVICES:
+                shorturl = urltools.UrlTools.shorten(url, service, self.api_keys, self.logger)
                 return self.message(target, nick,
                                     ("{} was shortened to$(bold) {} $(bold)using {}'s shortening service."
-                                     .format(url, self.shorten_url(url, service), service)), True)
+                                     .format(url, shorturl, service)), True)
 
             return self.message(target, nick, "Could not find the requested service.")
 
         return False
-
-    def getAvailableServices(self):
-        serv = ""
-
-        for s in self.shorten_services:
-            serv += s + ", "
-
-        return serv[:-2]
-
-    def getDefaultShortenService(self):
-        return self.shorten_services[0]
-
-    def is_url(self, url):
-        parsedurl = urllib.parse.urlparse(url)
-
-        if parsedurl.netloc:
-            return True
-        return False
-
-    def shorten_url(self, url, service):
-        if service not in self.shorten_services:
-            return "Service was not in available services."
-
-        api_key = None
-
-        try:
-            self.requireApiKey(service)
-        except Exception:
-            pass
-
-        if service in self.api_key:
-            api_key = self.api_key[service]
-
-        return getattr(shorturl.ShortUrl, service)(url=url, api_key=api_key, logger=self.logger)

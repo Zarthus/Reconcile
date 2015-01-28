@@ -29,11 +29,10 @@ Fetches titles from messages that seem to contain URLs.
 
 from core import moduletemplate
 from tools import urlparse
+from tools import urltools
 
-import bs4
 import re
 import requests
-import urllib.request
 
 
 class Title(moduletemplate.BotModule):
@@ -111,20 +110,8 @@ class Title(moduletemplate.BotModule):
             return self.message(target, nick, self.get_wiki_info(language, article), True)
         return False
 
-    def get_title(self, url, ret_false=False):
-        try:
-            soup = bs4.BeautifulSoup(urllib.request.urlopen(url))
-        except Exception as e:
-            return "Failed to parse '{}' with error '{}'".format(url, str(e)) if not ret_false else False
-
-        if not soup or not soup.title or not soup.title.string:
-            return "Failed to parse '{}'".format(url) if not ret_false else False
-
-        title = soup.title.string
-        if not len(title):
-            return "Cannot find title for '{}'".format(url) if not ret_false else False
-
-        return "{}".format(title.strip())
+    def get_title(url, ret_false=False):
+        return urltools.UrlTools.getTitle(url, ret_false)
 
     def get_xkcd_info(self, url, ret_boolean=False):
         if not url.endswith("/"):
