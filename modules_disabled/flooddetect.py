@@ -101,8 +101,6 @@ class FloodDetect(moduletemplate.BotModule):
             raise Exception("This module is not configured properly, no channels to protect from flooding set.")
         else:
             self.channels = self.module_data["channels"].replace(" ", "").split(",")
-            # TODO (issue #56)
-            # self._conn.join_channel(self.module_data["channels"].replace(" ", ""))
 
         if "max_warnings" not in self.module_data:
             self.module_data["max_warnings"] = 5
@@ -111,11 +109,6 @@ class FloodDetect(moduletemplate.BotModule):
             self.module_data["message_interval"] = 15
         if "message_max_per_interval" not in self.module_data:
             self.module_data["message_max_per_interval"] = 8
-
-        if "report_channel" in self.module_data and self.module_data["channels"]:
-            # TODO (issue #56)
-            # self._conn.join_channel(self.module_data["report_channel"])
-            pass
 
         if "expiry_seconds" not in self.module_data:
             self.expiry = 7200
@@ -254,6 +247,12 @@ class FloodDetect(moduletemplate.BotModule):
 
         for rts in rem:
             self.flood_detect[channel][nick.lower()]["messages"].remove(rts)
+
+    def on_connect(self):
+        if "report_channel" in self.module_data:
+            self._conn.join_channel(self.module_data["report_channel"])
+        if self.channels:
+            self._conn.join_channel(self.channels.join(","))
 
     def on_privmsg(self, target, nick, message):
         for chan in self.channels:
