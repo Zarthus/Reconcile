@@ -157,6 +157,9 @@ class BotModule:
     def mode(self, target, modes):
         self._conn.mode(target, modes)
 
+    def ban(self, nick, channel, quiet=False):
+        return self._conn.mode(nick, channel, quiet)
+
     def send_raw(self, raw_message):
         """
         Send a raw message to the network.

@@ -40,6 +40,7 @@ from tools import validator
 from tools import formatter
 from tools import logger
 from tools import paste
+from tools import banmask
 
 
 class IrcConnection(threading.Thread):
@@ -235,6 +236,32 @@ class IrcConnection(threading.Thread):
         self.logger.log("Setting modes '{}' on {}".format(modes, target))
         self.send_raw("MODE {} {}".format(target, modes))
         return True
+
+    def ban(self, nick, channel, quiet=False):
+        mask = self.getMask(nick)
+        if not mask:
+            self.notice_verbose("Cannot get mask for {}/{}.".format(nick, channel))
+            return False
+
+        self.mode(channel, "+{} {}".format("q" if quiet else "b", mask))
+
+        if not self.isOp(self.currentnick, channel):
+            self.notice_verbose("Attempted to ban '{}' but was not an op in channel.".format(mask))
+            return False
+        return True
+
+    def getMask(self, nick):
+        ud = self.getUserData(nick.lower())
+        bm = banmask.Banmask.createFromUserData(ud)
+
+        if not bm:
+            self.notice_verbose("Cannot create Mask {}: Banmask class was NoneType.".format(nick))
+            return False
+
+        mask = bm.getBestMatch()
+        if mask:
+            return mask
+        return None
 
     def connect(self, reconnecting=False):
         if self.connected:
