@@ -49,6 +49,9 @@ class Cloud2Butt(moduletemplate.BotModule):
             return
 
         if "cloud" in message.lower():
+            if "irccloud.com" in message.lower():  # Ignore irccloud.com
+                return
+
             # If it is a name in the channel, we don't want to constantly "correct" it.
             if self.module_data["ignore_nicks"]:
                 splitMsg = message.split()
