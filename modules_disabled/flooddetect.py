@@ -310,7 +310,7 @@ class FloodDetect(moduletemplate.BotModule):
 
                 self.logreport("fdpurgenick on {} requested by {} in {}.".format(commandtext, nick, target))
                 self.flood_detect[target][nick.lower()] = {"messages": [], "warnings": 0}
-                return self.notice(nick, "Data purged for channel.")
+                return self.notice(nick, "Data purged for nick '{}' on '{}'.".format(commandtext, target))
 
             if mod:
                 if command == "fdchans":
