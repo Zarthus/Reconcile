@@ -39,6 +39,14 @@ class ModuleHandler:
         self.modules = {}
         self.module_dir = "modules"
 
+    def sendConnect(self):
+        for module in self.modules:
+            self.modules[module].on_connect()
+
+    def sendDisconnect(self):
+        for module in self.modules:
+            self.modules[module].on_disconnect()
+
     def sendCommand(self, target, nick, command, commandtext, mod=False, admin=False):
         for module in self.modules:
             if self.modules[module].on_command(target, nick, command, commandtext, mod, admin):
@@ -56,6 +64,14 @@ class ModuleHandler:
     def sendJoin(self, nick, channel):
         for module in self.modules:
             self.modules[module].on_join(nick, channel)
+
+    def sendSelfJoin(self, channel):
+        for module in self.modules:
+            self.modules[module].on_self_join(channel)
+
+    def sendSelfPart(self, channel):
+        for module in self.modules:
+            self.modules[module].on_self_part(channel)
 
     def sendPart(self, nick, channel, message):
         for module in self.modules:

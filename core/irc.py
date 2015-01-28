@@ -210,6 +210,7 @@ class IrcConnection(threading.Thread):
             self.disconnect()
 
     def disconnect(self, terminateThread=True):
+        self.ModuleHandler.sendDisconnect()
         self.ratelimiter.stop()
         self.currentnick = None
         self.connected = False
@@ -454,7 +455,9 @@ class IrcConnection(threading.Thread):
             self.znc_auth = False
         if target == "*":
             self.logger.log(message)
-            self.server_name = nick  # TODO: This will be set four times, better ways? perhaps whois
+            if self.server_name != nick:
+                self.server_name = nick
+                self.ModuleHandler.sendConnect()
         else:
             self.logger.event("NOTICE", "{}/{}: {}".format(nick, target, message))
 
@@ -476,6 +479,7 @@ class IrcConnection(threading.Thread):
             self.send_chanwho(channel)
             if channel not in self.channels:
                 self.channels.append(channel)
+                self.ModuleHandler.sendSelfJoin(channel)
                 self.channelmanager.add(channel)
 
         self.ModuleHandler.sendJoin(nick, channel)
@@ -492,11 +496,13 @@ class IrcConnection(threading.Thread):
             self.check_channel_empty(channel)
         else:
             self.channelmanager.delete(channel)
+
             if channel.lower() in self.channel_data:
                 self.channel_data.pop(channel.lower())
 
             if channel in self.channels:
                 self.channels.remove(channel)
+                self.ModuleHandler.sendSelfPart(channel)
 
         self.ModuleHandler.sendPart(nick, channel, message)
 
@@ -509,6 +515,7 @@ class IrcConnection(threading.Thread):
                 self.channel_data.pop(channel.lower())
             if channel in self.channels:
                 self.channels.remove(channel)
+                self.ModuleHandler.sendSelfPart(channel)
         else:
             self.check_channel_empty(channel)
 

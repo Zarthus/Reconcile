@@ -58,6 +58,14 @@ class BotModule:
         """Module destructor"""
         pass
 
+    def on_connect(self):
+        """Gets called whenever the bot connects to the network."""
+        pass
+
+    def on_disconnect(self):
+        """Gets called whenever the bot disconnects from the network."""
+        pass
+
     def on_privmsg(self, target, nick, message):
         """
         On privmsg gets sent to the module whenever someone says something to a target.
@@ -77,6 +85,14 @@ class BotModule:
 
     def on_part(self, nick, channel, message):
         """Occurs when someone parts a channel"""
+        pass
+
+    def on_self_join(self, channel):
+        """Occurs when the bot joins a channel itself"""
+        pass
+
+    def on_self_part(self, channel):
+        """Occurs when the bot parts a channel itself"""
         pass
 
     def on_kick(self, nick, channel, knick, reason):
