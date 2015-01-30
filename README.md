@@ -9,7 +9,7 @@ This bot was designed with Atheme services in mind, and may not work optimally o
 
 To make use of Reconcile, ensure the following requirements are met:
 
-* Running an installation of Windows or Linux (Windows 7, Debian, and Ubuntu are tested)
+* Reconcile is tested and only verified to work on Linux (Debian, Ubuntu), while it *should* run on both Windows and Mac, we do not guarantee full compatibility.
 * Python 3 or higher is installed (http://python.org)
 * A working internet connection.
 * You have downloaded the requirements with pip or apt-get (`pip install -r requirements.txt`)
