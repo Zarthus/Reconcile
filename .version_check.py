@@ -129,4 +129,3 @@ except Exception as e:
     sys.exit(8)
 
 log("Actual version set to '{}' (old version: '{}')".format(example_version, actual_version), verbose)
-
