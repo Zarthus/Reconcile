@@ -99,7 +99,7 @@ for arg in $@; do
     -h|--help)     help;;
     -k|--kill)     doexit;;
     -p|--python)   use_python=1;;
-    -p3|--python3)  use_python3=1;;
+    -p3|--python3) use_python3=1;;
     -r|--restart)  dorestart;;
     -u|--update)   doupdate;;
     -ur|--updrest) update_and_restart;;
@@ -114,11 +114,16 @@ if [ -e "ircbot.pid" ]; then
   exit 0
 fi
 
+./.version_check.py $be_verbose
+vercheck_exit=$?
+
 if [[ $be_verbose -eq 1 ]]; then
-  echo "Starting bot."
+    echo "Version Check exited with: $vercheck_exit"
 fi
 
-# TODO: Update versions by comparing example.*.json with config.json
+if [[ $be_verbose -eq 1 ]]; then
+    echo "Starting bot."
+fi
 
 if [[ $use_python3 -eq 1 ]]; then
   screen $screen_args python3 bot.py
@@ -135,3 +140,4 @@ else
 fi
 
 exit 0
+
