@@ -35,8 +35,14 @@ class UrlShorten(moduletemplate.BotModule):
 
     def on_module_load(self):
         self.register_command("urlshorten", "<url> [service]", "Shorten <URL> with [service]. " +
-                              "Service can be: " + self.getAvailableServices(),
+                              "Service can be: " + urltools.UrlTools.getAvailableServices(),
                               self.PRIV_NONE, ["shorten", "shorturl"])
+
+        for service in urltools.UrlTools.SHORTEN_SERVICES:
+            try:
+                self.requireApiKey(service)
+            except Exception:
+                pass
 
     def on_command(self, target, nick, command, commandtext, mod, admin):
         if command in ["urlshorten", "shorten", "shorturl"]:
@@ -52,7 +58,7 @@ class UrlShorten(moduletemplate.BotModule):
             if len(ct) > 1:
                 service = ct[1]
 
-                if not service or service.replace(".", "") not in self.shorten_services:
+                if not service or service.replace(".", "") not in urltools.UrlTools.SHORTEN_SERVICES:
                     self.notice(nick, "Cannot find service '{}' - using {} instead."
                                       .format(service, urltools.UrlTools.getDefaultShortenService()))
                     service = urltools.UrlTools.getDefaultShortenService()
@@ -61,7 +67,7 @@ class UrlShorten(moduletemplate.BotModule):
 
             service = service.replace(".", "")
             if service in urltools.UrlTools.SHORTEN_SERVICES:
-                shorturl = urltools.UrlTools.shorten(url, service, self.api_keys, self.logger)
+                shorturl = urltools.UrlTools.shorten(url, service, self.api_key, self.logger)
                 return self.message(target, nick,
                                     ("{} was shortened to$(bold) {} $(bold)using {}'s shortening service."
                                      .format(url, shorturl, service)), True)

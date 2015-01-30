@@ -110,7 +110,7 @@ class Title(moduletemplate.BotModule):
             return self.message(target, nick, self.get_wiki_info(language, article), True)
         return False
 
-    def get_title(url, ret_false=False):
+    def get_title(self, url, ret_false=False):
         return urltools.UrlTools.getTitle(url, ret_false)
 
     def get_xkcd_info(self, url, ret_boolean=False):
