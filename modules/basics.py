@@ -178,7 +178,7 @@ class BasicCommands(moduletemplate.BotModule):
                 mess = " ".join(m[1:])
                 targ = m[0]
 
-                self.action(targ, None, mess)
+                self.action(targ, mess)
                 return self.message(target, nick, "Sent ACTION '{}' to '{}'.".format(mess, targ))
 
             if command == "loadedmodules" or command == "modules" or command == "mod":
