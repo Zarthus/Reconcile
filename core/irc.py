@@ -645,7 +645,7 @@ class IrcConnection(threading.Thread):
                 self.user_data.pop(iName)
 
             self.user_data[iName] = {
-                "identified":  True if args[5] != "0" else False,
+                "identified": True if args[5] != "0" else False,
                 "account": args[5],  # Will contain 0 if not identified.
                 "nick": args[3],
                 "user": args[1],
@@ -662,7 +662,7 @@ class IrcConnection(threading.Thread):
                 self.user_data.pop(iName)
 
             self.user_data[iName] = {
-                "identified":  True if args[6] != "0" else False,
+                "identified": True if args[6] != "0" else False,
                 "account": args[6],  # Will contain 0 if not identified.
                 "nick": args[4],
                 "user": args[2],
