@@ -891,11 +891,11 @@ class IrcConnection(threading.Thread):
         try:
             if self.ipv4:
                 self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                self.bind_socket(sock)
+                self.bind_socket()
                 self.socket.connect((self.server, self.port))
             else:
                 self.socket = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
-                self.bind_socket(sock)
+                self.bind_socket()
                 self.socket.connect((self.server, self.port, 0, 0))
         except Exception:
             self.reconnect()
@@ -907,10 +907,14 @@ class IrcConnection(threading.Thread):
         self.send_raw("USER {} 0 0 :{}".format(self.user, self.realname))
         self.connected = True
 
-    def bind_socket(self, sock):
+    def bind_socket(self, sock=False):
         if self.bindhost:
             self.logger.log('Attempting to bind to {}'.format(self.bindhost))
-            sock.bind((self.bindhost, 0))
+
+            if not sock:
+                this.socket.bind((self.bindhost, 0))
+            else:
+                sock.bind((self.bindhost, 0))
 
     def _loadModules(self):
         self.ModuleHandler = module.ModuleHandler(self)
