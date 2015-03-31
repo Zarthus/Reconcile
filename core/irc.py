@@ -907,7 +907,7 @@ class IrcConnection(threading.Thread):
         self.send_raw("USER {} 0 0 :{}".format(self.user, self.realname))
         self.connected = True
 
-    def bind_socket(sock):
+    def bind_socket(self, sock):
         if self.bindhost:
             self.logger.log('Attempting to bind to {}'.format(self.bindhost))
             sock.bind((self.bindhost, 0))
