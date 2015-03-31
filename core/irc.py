@@ -807,6 +807,7 @@ class IrcConnection(threading.Thread):
         self.port = network["port"]
         self.ssl = network["ssl"]
         self.ipv4 = network["ipv4"]
+        self.bindhost = network["bindhost"]
 
         self.znc = type(network["znc"]) == str  # False if not using znc, true otherwise.
         if self.znc:
@@ -868,9 +869,11 @@ class IrcConnection(threading.Thread):
         try:
             if self.ipv4:
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.bind_socket(sock)
                 sock.connect((self.server, self.port))
             else:
                 sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+                self.bind_socket(sock)
                 sock.connect((self.server, self.port, 0, 0))
         except Exception:
             self.reconnect()
@@ -888,9 +891,11 @@ class IrcConnection(threading.Thread):
         try:
             if self.ipv4:
                 self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.bind_socket(sock)
                 self.socket.connect((self.server, self.port))
             else:
                 self.socket = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+                self.bind_socket(sock)
                 self.socket.connect((self.server, self.port, 0, 0))
         except Exception:
             self.reconnect()
@@ -901,6 +906,11 @@ class IrcConnection(threading.Thread):
         # <username> <hostname> <servername> :<realname> - servername/hostname will be ignored by the ircd.
         self.send_raw("USER {} 0 0 :{}".format(self.user, self.realname))
         self.connected = True
+
+    def bind_socket(sock):
+        if self.bindhost:
+            self.logger.log('Attempting to bind to {}'.format(self.bindhost))
+            sock.bind((self.bindhost, 0))
 
     def _loadModules(self):
         self.ModuleHandler = module.ModuleHandler(self)
