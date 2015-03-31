@@ -912,7 +912,7 @@ class IrcConnection(threading.Thread):
             self.logger.log('Attempting to bind to {}'.format(self.bindhost))
 
             if not sock:
-                this.socket.bind((self.bindhost, 0))
+                self.socket.bind((self.bindhost, 0))
             else:
                 sock.bind((self.bindhost, 0))
 
