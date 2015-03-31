@@ -120,7 +120,7 @@ if not actual_match or not actual_match.groups():
 actual_json["metadata"]["bot_version"] = example_version
 
 try:
-    json.dump(actual_json, open(actualconf, "w"))
+    json.dump(actual_json, open(actualconf, "w"), sort_keys=True, indent=4, separators=(',', ': '))
 except IOError as e:
     log("Failed to write new version: {}".format(str(e)), verbose)
     sys.exit(8)
