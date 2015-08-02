@@ -41,6 +41,7 @@ from tools import formatter
 from tools import logger
 from tools import paste
 from tools import banmask
+from tools import ignorelist
 
 
 class IrcConnection(threading.Thread):
@@ -379,6 +380,11 @@ class IrcConnection(threading.Thread):
         if target:
             if target.startswith(":"):
                 target = target[1:]
+
+        if ((target != "*" and self.ignorelist.isIgnoredWildcard(target)) or
+           (nick != "*" and self.ignorelist.isIgnoredWildcard(nick))):
+            self.logger.log("Not processing " + event + " event because [" + str(uinfo) + "] is ignored.")
+            return False
 
         if event == "PRIVMSG":
             self.on_privmsg(nick, target, params, [nick, user, host, uinfo])
@@ -837,6 +843,8 @@ class IrcConnection(threading.Thread):
         self.moderators = network["moderators"]
 
         self.disallowed_channels = network["disallowed_channels"]
+
+        self.ignorelist = ignorelist.IgnoreList(network["ignorelist"])
 
         self.currentnick = curnick
 

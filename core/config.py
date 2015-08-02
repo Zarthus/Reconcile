@@ -380,7 +380,10 @@ class Config:
                 self.networks[network_name]["disallowed_channels"] = []
 
             if "bindhost" not in self.networks[network_name]:
-                self.networks[network_name]['bindhost'] = False
+                self.networks[network_name]["bindhost"] = False
+
+            if "ignorelist" not in self.networks[network_name]:
+                self.networks[network_name]["ignorelist"] = []
 
             self.parseAuthString(network_name)
             count += 1
