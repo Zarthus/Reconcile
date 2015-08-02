@@ -381,8 +381,7 @@ class IrcConnection(threading.Thread):
             if target.startswith(":"):
                 target = target[1:]
 
-        if ((target != "*" and self.ignorelist.isIgnoredWildcard(target)) or
-           (nick != "*" and self.ignorelist.isIgnoredWildcard(nick))):
+        if uinfo != "*" and self.ignorelist.isIgnoredWildcard(uinfo):
             self.logger.log("Not processing " + event + " event because [" + str(uinfo) + "] is ignored.")
             return False
 
